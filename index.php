@@ -1,5 +1,6 @@
 <head>
-    <title>Macopres</title>
+
+    <title>Macopres.com</title>
     <link rel="icon" type="image/png" href="logo.jpeg">
 </head>
 <style>
