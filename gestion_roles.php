@@ -116,7 +116,7 @@ $id_user = $_SESSION["id_user"];
                 </div>
 
                 <?php
-                $req1 = mysqli_prepare($con, "SELECT * FROM user u JOIN role r ON u.idRole = r.idRole");
+                $req1 = mysqli_prepare($con, "SELECT * FROM role r JOIN user u ON u.idRole = r.idRole");
                 
 
                 if (isset($_GET["search"]) && $_GET["search"] != "") {
@@ -130,11 +130,10 @@ $id_user = $_SESSION["id_user"];
                 <div class="liste">
                     <table>
                         <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Téléphone</th>
-                            <th>Rôle</th>
-                            <th>Statut</th>
+                            <th>#</th>
+                            <th>Nom du rôle</th>
+                            <th>Description</th>
+                            <th>Nombre d'utilisateurs</th>
                             <th>Actions</th>
                         </tr>
 

@@ -1,7 +1,7 @@
 <?php 
 session_start();
 if (!isset($_SESSION["id_user"])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 require "connexion.php";
@@ -19,142 +19,13 @@ $user = mysqli_fetch_assoc($result);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macopres</title>
     <link rel="icon" type="image/png" href="logo.jpeg">
-    <style>
-        :root {
-        --primary: #323E82;
-        --primary_trans: #e6e8f3;
-        --bg: #ffffffff;
-        }
-        
-        body {
-            margin: 0;
-            background: var(--bg);
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-
-        .page {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        .menu {
-            width: 18%;
-            min-width: 220px;
-            max-width: 280px;
-            background: var(--primary);
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .company {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            align-items: center;
-            color: white;
-        }
-
-        .logo {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
-            overflow: hidden;
-        }
-
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .menu-item-group {
-            margin-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.3);
-            padding-top: 1.5rem;
-        }
-
-        .menu-item,
-        .menu-item-dashboard {
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-          padding: 0.7rem;
-          color: white;
-          text-decoration: none;
-          font-size: 1rem;
-          margin-bottom: 0.8rem;
-          border-radius: 0.4rem;
-        }
-
-        .menu-item-dashboard {
-          background: #7882bc;
-        }
-
-        .menu-item:hover {
-          background: #7882bc;
-        }
-
-        .main {
-            flex: 1;
-            padding: 1.5rem;
-        }
-
-        .top {
-            background: var(--primary);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            border-radius: 0.5rem;
-        }
-
-        .user {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-pp {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            overflow: hidden;
-        }
-
-        .user-pp img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-                    
-                    
-        .deconnexion a {
-          background: white;
-          color: var(--primary);
-          border: 1px solid white;
-          border-radius: 0.4rem;
-          padding: 0.45rem 0.9rem;
-          font-size: 0.85rem;
-          font-weight: 600;
-          text-decoration: none;
-          transition: all 0.3s ease;
-        }
-
-        .deconnexion a:hover {
-          background: transparent;
-          color: white;
-          border: 1px solid white;
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="page">
         <div class="menu">
             <div class="company">
-                <div class="logo">
+                <div class="logo-menu">
                     <img src="logo.jpeg" alt="macopres">
                 </div>
                 <div class="slogan">
