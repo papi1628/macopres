@@ -1,0 +1,15 @@
+details{
+    position: relative;
+}
+
+details a{
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    background: white;
+    color: black;
+}
+
+details a:hover{
+    background: #eee;
+}

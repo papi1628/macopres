@@ -183,11 +183,22 @@
             object-fit: cover;
         }
 
+        
+
+        #menu-toggle {
+            display: none;
+        }
+
+        .menu-icon {
+            display: none;
+        }
+
         .menu-item-group {
             margin-top: 2rem;
             border-top: 1px solid rgba(255,255,255,0.3);
             padding-top: 1.5rem;
         }
+
 
         .menu-item,
         .menu-item-dashboard, 
@@ -252,6 +263,10 @@
             height: 100%;
             object-fit: cover;
         }
+
+        .welcome {
+            font-size: 1.6rem;
+        }
                     
                     
         .deconnexion a {
@@ -270,6 +285,102 @@
           background: transparent;
           color: white;
           border: 1px solid white;
+        }
+
+        .micro-menu {
+            display: flex;
+            justify-content: center;
+            padding-top: 1.8rem;
+        }
+
+        @media (max-width: 768px) {  
+
+        .page {
+            width: 10%;
+        }
+        
+        .menu {
+            display: none;
+        }
+
+        .company {
+            display: none;
+        }   
+        
+        .logo-menu {
+            display: none;
+        }   
+        
+        .slogan {
+            display: none;
+        }
+
+        .menu-item-group {
+            display: none;
+        }
+
+        .menu-icon {
+            display: block;
+            cursor: pointer;
+            margin-top: 2rem;
+        }
+        .main {
+            justify-content: center;
+            margin: 0;
+        }
+
+        .top {
+            padding: 0.4rem 0.4rem;
+            display: flex;
+            align-items: center;
+            color: white;
+            border-radius: 0.5rem;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-pp {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .user-pp img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .welcome {
+            font-size: 1rem;
+        }
+         
+        
+                    
+        .deconnexion a {
+          background: white;
+          color: var(--primary);
+          border: 1px solid white;
+          border-radius: 0.4rem;
+          padding: 0.2rem;
+          font-size: 0.5rem;
+          font-weight: 500;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          margin-bottom: 1rem;
+        }
+
+        /* Quand on clique sur ☰ */
+        #menu-toggle:checked + .menu-icon + .menu-item-group {
+            display: block;
+        }
+
+
         }
 
         /*GESTION_UTILISATEURS*/
@@ -781,6 +892,7 @@
 
     @media (max-width: 768px) {
 
+        
         .fiche_employe {
             width: 95%;
             right: 2.5%;

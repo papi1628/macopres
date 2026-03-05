@@ -4,19 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        .auto_mask {
-    animation: hide 3s forwards;
-}
-
-@keyframes hide {
-    0% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { opacity: 0; display: none; }
-}
-    </style>
+    <link rel="stylesheet" href="style_test.css">
 </head>
 <body>
-    <div class="auto_mask">Message envoyé</div>
+    <nav class="navbar">
+        <input type="checkbox" id="menu-toggle">
+        <label for="menu-toggle" class="menu-icon">☰</label>
+
+        <ul class="menu">
+            <li><a href="#">Accueil</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
 </body>
 </html>
