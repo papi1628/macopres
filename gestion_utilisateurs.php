@@ -16,7 +16,6 @@ $id_user = $_SESSION["id_user"];
     <title>Macopres</title>
     <link rel="icon" type="image/png" href="logo.jpeg">
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
     <div class="page">

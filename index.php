@@ -4,7 +4,6 @@
     <link rel="icon" type="image/png" href="logo.jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <div class="login-page">
   <?php
     if (isset($_GET["log"])) {
