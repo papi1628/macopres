@@ -188,7 +188,7 @@ $idEmploye = $_GET["id"];
             width: 45%;
             min-width: 320px;
             max-width: 600px;
-            height: 65vh;
+            height: 68vh;
             background: white;
             padding: 1rem;
             border-radius: 0.6rem;
@@ -318,12 +318,14 @@ $idEmploye = $_GET["id"];
         align-items: center;
         gap: 0.8rem;
         flex-wrap: wrap;
+        width: 100%;
     }
 
     .info_employe svg {
         color: var(--primary);
     }
 
+    
 
     .modifier {
         background: var(--primary);
@@ -495,7 +497,7 @@ $idEmploye = $_GET["id"];
                     </svg>
                     <div>Gestion des utilisateurs</div>
                 </a>
-                <a class="menu-item">
+                <a class="menu-item" href="gestion_role.php">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-badge" viewBox="0 0 16 16">
                         <path d="M6.5 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                         <path d="M4.5 0A2.5 2.5 0 0 0 2 2.5V14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2.5A2.5 2.5 0 0 0 11.5 0zM3 2.5A1.5 1.5 0 0 1 4.5 1h7A1.5 1.5 0 0 1 13 2.5v10.795a4.2 4.2 0 0 0-.776-.492C11.392 12.387 10.063 12 8 12s-3.392.387-4.224.803a4.2 4.2 0 0 0-.776.492z"/>
@@ -635,9 +637,6 @@ $idEmploye = $_GET["id"];
                             </div>
                             <div class="info_employe">
                                 <div class="Prenom_nom">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-                                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-                                    </svg>
                                     <h1 class="prenom"><?php echo mb_convert_case($fiche_employe["prenom"], 2)." ".mb_strtoupper($fiche_employe["nom"]) ?> </h1>
                                 </div>
                                 <div class="naissance" style="border-bottom: 1px solid var(--primary); padding-bottom:10px;">

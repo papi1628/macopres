@@ -6,12 +6,7 @@ if (!isset($_SESSION["id_user"])) {
     header("Location: login.php");
     exit();
 }
-
 $id_user = $_SESSION["id_user"];
-
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +17,23 @@ $id_user = $_SESSION["id_user"];
     <link rel="icon" type="image/png" href="logo.jpeg">
     <link rel="stylesheet" href="style.css">
 
+    <style>
+        .menu-item-roles {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+          padding: 0.7rem;
+          color: white;
+          text-decoration: none;
+          font-size: 1rem;
+          margin-bottom: 0.8rem;
+          border-radius: 0.4rem;
+        }
+
+        .menu-item-roles {
+          background: #7882bc;
+        }
+    </style>
 </head>
 <body>
     <div class="page">
@@ -44,13 +56,13 @@ $id_user = $_SESSION["id_user"];
                     </svg>
                     <div>Tableau de Bord</div>
                 </a>
-                <a href="gestion_utilisateurs.php" class="menu-item-utilisateurs">
+                <a href="gestion_utilisateurs.php" class="menu-item">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                         <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
                     </svg>
                     <div>Gestion des utilisateurs</div>
                 </a>
-                <a class="menu-item">
+                <a class="menu-item-roles" href="gestion_role.php">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-badge" viewBox="0 0 16 16">
                         <path d="M6.5 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                         <path d="M4.5 0A2.5 2.5 0 0 0 2 2.5V14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2.5A2.5 2.5 0 0 0 11.5 0zM3 2.5A1.5 1.5 0 0 1 4.5 1h7A1.5 1.5 0 0 1 13 2.5v10.795a4.2 4.2 0 0 0-.776-.492C11.392 12.387 10.063 12 8 12s-3.392.387-4.224.803a4.2 4.2 0 0 0-.776.492z"/>
@@ -116,13 +128,13 @@ $id_user = $_SESSION["id_user"];
                 </div>
 
                 <?php
-                $req1 = mysqli_prepare($con, "SELECT * FROM role r JOIN user u ON u.idRole = r.idRole");
+                $req1 = mysqli_prepare($con, "SELECT * FROM role");
                 
 
                 if (isset($_GET["search"]) && $_GET["search"] != "") {
                     $search = mysqli_real_escape_string($con, $_GET["search"]);
-                    $req1 = mysqli_prepare($con, "SELECT * FROM user u JOIN role r ON u.idRole = r.idRole WHERE u.nom LIKE ?  OR u.prenom LIKE ? OR u.tel LIKE ? OR r.nomRole LIKE ? OR u.statut LIKE ?");
-                    mysqli_stmt_bind_param($req1, "sssss", $search, $search, $search, $search, $search);
+                    $req1 = mysqli_prepare($con, "SELECT * FROM role r JOIN user u ON r.idRole = u.idRole WHERE r.nomRole LIKE ?  OR r.description LIKE ? OR r.idRole LIKE ? ");
+                    mysqli_stmt_bind_param($req1, "sss", $search, $search, $search);
                 }
                 mysqli_stmt_execute($req1);
                 $result1 = mysqli_stmt_get_result($req1);
@@ -138,19 +150,19 @@ $id_user = $_SESSION["id_user"];
                         </tr>
 
                         <?php
-                        while ($user1 = mysqli_fetch_assoc($result1)) {
-                            $statut = $user1["statut"] == 1 ? "Actif" : "Bloqué";
-                            echo "<tr>";
-                            echo "<td>".mb_strtoupper($user1['nom'])."</td>";
-                            echo "<td>".mb_convert_case($user1['prenom'],"2")."</td>";
-                            echo "<td>".$user1['tel']."</td>";
+                        while ($role1 = mysqli_fetch_assoc($result1)) {
                             
-                            echo "<td><strong>".$user1['nomRole']."</strong></td>";
-                            if ($statut == "Actif") {
-                                echo "<td><div class='actif'>".$statut."</div></td>";
-                            } else {
-                                  echo "<td><div class='bloque'>".$statut."</div></td>";
-                            }
+                            echo "<tr>";
+                            echo "<td>".$role1['idRole']."</td>";
+                            echo "<td><strong>".mb_strtoupper($role1['nomRole'])."</strong></td>";
+                            echo "<td>".$role1['description']."</td>";
+                            $nbrUser = mysqli_prepare($con, "SELECT * FROM user u JOIN role r ON u.idRole = r.idRole WHERE u.idRole = ?");
+                            mysqli_stmt_bind_param($nbrUser, "i", $role1["idRole"]);
+                            mysqli_stmt_execute($nbrUser);
+                            $result_nbr = mysqli_stmt_get_result($nbrUser);
+                            $utilisateurs = mysqli_num_rows($result_nbr);
+                            echo "<td><strong>".$utilisateurs."</strong></td>";
+                            
                             echo "<td>
                                     <a class='update' href=''><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'>
   <path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3'/>

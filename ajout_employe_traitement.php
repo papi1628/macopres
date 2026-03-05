@@ -36,12 +36,12 @@ if (isset($_POST["enregistrer"])) {
     //on crée une matricule pour l'employé qui vient d'être enregistré
     
     if ($result_simple>0) {
-        $id_last_user = mysqli_insert_id($con);
+        $id_last_emp = mysqli_insert_id($con);
 
-        $matricule = "MCPRS25/26-".strtoupper($departement)."".$id_last_user;
+        $matricule = "MCPRS25/26-".strtoupper($departement)."".$id_last_emp;
 
         $req_mat = mysqli_prepare($con, "UPDATE employe SET matricule = ? WHERE idEmploye = ?");
-        mysqli_stmt_bind_param($req_mat, "si", $matricule, $id_last_user);
+        mysqli_stmt_bind_param($req_mat, "si", $matricule, $id_last_emp);
         mysqli_stmt_execute($req_mat);
         $result_mat = mysqli_stmt_affected_rows($req_mat);
 
@@ -59,15 +59,15 @@ if (isset($_POST["enregistrer"])) {
     }
     
     if ($result_simple>0 && $result_mat>0 && $result_user>0) {
-        header("location:afficher_un_employe.php?id=".$id."&success=2");
+        header("location:afficher_un_employe.php?id=".$id_last_emp."&success=2");
 
         exit();
 
     } elseif ($result_simple>0 && $result_mat>0) {
-        header("location:afficher_un_employe.php?id=".$id."&success=1");
+        header("location:afficher_un_employe.php?id=".$id_last_emp."&success=1");
         exit();
     } else {
-        header("location:afficher_un_employe.php?id=".$id."&success=0");
+        header("location:afficher_un_employe.php?id=".$id_last_emp."&success=0");
         exit();
     }
 }
