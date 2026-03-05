@@ -16,24 +16,6 @@ $id_user = $_SESSION["id_user"];
     <title>Macopres</title>
     <link rel="icon" type="image/png" href="logo.jpeg">
     <link rel="stylesheet" href="style.css">
-
-    <style>
-        .menu-item-roles {
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-          padding: 0.7rem;
-          color: white;
-          text-decoration: none;
-          font-size: 1rem;
-          margin-bottom: 0.8rem;
-          border-radius: 0.4rem;
-        }
-
-        .menu-item-roles {
-          background: #7882bc;
-        }
-    </style>
 </head>
 <body>
     <div class="page">
