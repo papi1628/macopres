@@ -444,105 +444,105 @@
 
 
         .before-table {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .search-box-form {
-        display: flex;
-        flex: 1;
-        min-width: 250px;
+            display: flex;
+            flex: 1;
+            min-width: 250px;
         }
 
         .barre_de_recherche {
-        flex: 1;
-        padding: 0.6rem;
-        border: 1px solid var(--primary);
-        border-radius: 0.4rem 0 0 0.4rem;
-        border-right: none;
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid var(--primary);
+            border-radius: 0.4rem 0 0 0.4rem;
+            border-right: none;
         }
 
         .search-box-form button {
-        padding: 0.6rem 1rem;
-        border: 1px solid var(--primary);
-        background: lightgray;
-        border-radius: 0 0.4rem 0.4rem 0;
-        cursor: pointer;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--primary);
+            background: lightgray;
+            border-radius: 0 0.4rem 0.4rem 0;
+            cursor: pointer;
         }
 
         .search-box-form button:hover {
-        background: var(--primary);
-        color: white;
+            background: var(--primary);
+            color: white;
         }
 
         .add {
-        background: white;
-        color: var(--primary);
-        border: 1px solid var(--primary);
-        padding: 0.6rem 1rem;
-        border-radius: 0.4rem;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.6rem 1rem;
+            border-radius: 0.4rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .add:hover {
-        background: var(--primary);
-        color: white;
+            background: var(--primary);
+            color: white;
         }
 
 
         .liste {
-        overflow-x: auto;
+            overflow-x: auto;
         }
 
         table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        min-width: 900px;
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 900px;
         }
 
         th, td {
-        padding: 0.8rem;
-        border-bottom: 1px solid var(--primary);
-        text-align: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--primary);
+            text-align: center;
         }
 
         th {
-        background: var(--primary);
-        color: white;
+            background: var(--primary);
+            color: white;
         }
 
         tr:hover td {
-        background: var(--primary_trans);
+            background: var(--primary_trans);
         }
 
         .actif {
-        background: green;
-        color: white;
-        padding: 0.3rem 0.3rem;
-        border-radius: 0.3rem;
+            background: green;
+            color: white;
+            padding: 0.3rem 0.3rem;
+            border-radius: 0.3rem;
         }
 
         .bloque {
-        background: red;
-        color: white;
-        padding: 0.3rem 0.3rem;
-        border-radius: 0.3rem;
+            background: red;
+            color: white;
+            padding: 0.3rem 0.3rem;
+            border-radius: 0.3rem;
         }
 
         .update, .delete {
         padding: 0.4rem;
-        border-radius: 0.3rem;
-        color: white;
-        text-decoration: none;
+            border-radius: 0.3rem;
+            color: white;
+            text-decoration: none;
         }
 
         .update { 
@@ -926,22 +926,6 @@
     }
 
 
-    @media (max-width: 1200px) {
-        .fiche_employe {
-            width: 50%;
-        }
-    }
-
-    @media (max-width: 992px) {
-        .fiche_employe {
-            width: 80%;
-            right: 10%;
-        }
-
-        .info_employe {
-            padding-left: 1rem;
-        }
-    }
 
     @media (max-width: 768px) {
 

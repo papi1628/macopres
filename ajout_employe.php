@@ -137,7 +137,7 @@ $user = mysqli_fetch_assoc($result);
                 </div>
                 <div class="all">
                     <div class="new-employe">
-                        <div class="image">
+                        <form action="ajout_employe_traitement.php" method="post" class="image" enctype="multipart/form-data">
 
                             <div class="photo-box">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -147,10 +147,10 @@ $user = mysqli_fetch_assoc($result);
                             </div>
                             <div class="choisir-photo">
                                 <span>Choisir une photo</span>
-                                <input class="choisir-pho" type="file" name="photo" id="photo" accept="image/*" placeholder="Choisir une photo">
+                                <input class="choisir-photo" type="file" name="photo" id="photo" accept="image/*" placeholder="Choisir une photo">
                             </div>
 
-                        </div>
+                        </form>
                     </div>
                     <form action="ajout_employe_traitement.php" method="post">
                         <div class="champ-name">

@@ -2,6 +2,7 @@
 require "connexion.php";
 if (isset($_POST["enregistrer"])) {
     //on récupère les données de l'employé.
+
     $prenom = $_POST["prenom"];
     $nom = $_POST["nom"];
     $naissance = $_POST["naissance"];
@@ -11,6 +12,9 @@ if (isset($_POST["enregistrer"])) {
     $departement = $_POST["departement"];
     $code = $_POST["code"];
     $embauche = $_POST["embauche"];
+
+    
+    
 
     //on vérifie si l'employé n'est pas déjà ajouté dans la base.
     $verif = mysqli_prepare($con, "SELECT * FROM `employe` WHERE (`prenom` = ? AND `nom` = ? AND `dateNaissance` = ? AND `sexe` = ? AND `tel` = ? AND `adresse` = ? AND `departement` = ? AND `code` = ? AND `dateEmbauche` = ?) OR `tel` = ?");
@@ -33,15 +37,44 @@ if (isset($_POST["enregistrer"])) {
     mysqli_stmt_execute($req);
     $result_simple = mysqli_stmt_affected_rows($req);
 
+    $id_last_emp = mysqli_insert_id($con);
+
+    //pour tester si l'utilisateur a bien choisi une photo. UPLOAD_ERR_NO_FILE permet de vérifier si un fichier est charger. A noter qu'on le teste avec error.
+
+    $titre_photo = "photo_defaut.jpeg";
+
+    if (isset($_FILES["photo"]) && $_FILES["photo"]["error"] == 0) {
+
+            $photo = $_FILES["photo"];
+            $tmp = $photo["tmp_name"];
+
+            if ($photo["error"] != 0) {
+                die ("oups, la photo n'est pas enregistrée. <br> <a href='ajout_empploye.php' >Réessayer</a>" );
+            }
+
+            $extension = mb_strtolower(pathinfo($photo["name"],PATHINFO_EXTENSION));
+            $extension_image = ["jpg", "jpeg", "png"];
+ 
+            if (!in_array($extension, $extension_image) ) {
+                die ("oups, la photo n'est pas enregistrée. <br> <a href='ajout_employe.php' >Réessayer</a>" );
+            }
+
+            $titre_photo = "emp".$id_last_emp.".".$extension;
+            $location = "/Applications/MAMP/htdocs/macopres/photo_profil/";
+            move_uploaded_file($tmp, $location);
+        
+    }
+
+
     //on crée une matricule pour l'employé qui vient d'être enregistré
     
     if ($result_simple>0) {
-        $id_last_emp = mysqli_insert_id($con);
+        
 
         $matricule = "MCPRS25/26-".strtoupper($departement)."".$id_last_emp;
 
-        $req_mat = mysqli_prepare($con, "UPDATE employe SET matricule = ? WHERE idEmploye = ?");
-        mysqli_stmt_bind_param($req_mat, "si", $matricule, $id_last_emp);
+        $req_mat = mysqli_prepare($con, "UPDATE employe SET matricule = ?, photo = ? WHERE idEmploye = ?");
+        mysqli_stmt_bind_param($req_mat, "ssi", $matricule, $titre_photo, $id_last_emp);
         mysqli_stmt_execute($req_mat);
         $result_mat = mysqli_stmt_affected_rows($req_mat);
 
