@@ -207,7 +207,6 @@ $idEmploye = $_GET["id"];
                             }
                             ?>
                         </table>
-
                     </div>
                     <?php 
                     $fiche = mysqli_prepare($con, "SELECT * FROM employe WHERE idEmploye = ? ");
