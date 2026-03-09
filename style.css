@@ -157,8 +157,8 @@
             padding: 1rem;
             display: flex;
             flex-direction: column;
-            position: fixed;
             height: 100%;
+            position: fixed;
             overflow-y: auto;
         }
 
@@ -223,8 +223,10 @@
             padding: 1.5rem;
             overflow-y: auto;
             margin-left: 18rem;
-            min-width: 500px;
+            min-width: 400px;
         }
+
+        
 
         .top {
             background: var(--primary);
@@ -277,6 +279,8 @@
           color: white;
           border: 1px solid white;
         }
+
+        
 
 
         #menu-toggle {
@@ -435,28 +439,51 @@
             }
 
             .all {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            justify-content: center;
-            margin-top: 20px;
-        }
+                display: flex;
+                flex-direction: column;
+                gap: 2rem;
+                justify-content: center;
+                margin-top: 20px;
+            }
 
         .all form {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            margin-left: 30px;
-            width: 80%;
+            width: 100%;
         }
 
         .new-employe .image {
-            width: 100%;
-            padding-left: 1.24rem;
+            width: 92%;
+            border-right: white;
         }
+
+        .champ-name {
+            flex-direction: column;
+            
+        }
+
+        
 
         .main-form {
             margin-top: -2.8rem;
+            padding: 1px;
+        }
+
+        .annuler span {
+            display: none;
+        }
+
+        .enregistrer span {
+            display: none;
+        }
+        
+
+        .add div {
+            display: none;
+        }
+        .add {
+            padding: 0.8rem 1rem;
         }
 
         }
@@ -649,8 +676,9 @@
             border-radius: 5px;
             padding: 5px;
             color: var(--primary);
+            width: 100%;
         }
-
+        
         .champ input {
             border: none;
             border-radius: 5px;
@@ -698,7 +726,6 @@
             overflow: hidden;
             margin-right: 2.1rem;
             margin-left: 0.7rem;
-            
         }
 
         .photo-box svg {
@@ -792,12 +819,12 @@
         .fiche_employe {
             position: fixed;
             z-index: 2000;
-            top: 26%;
+            top: 20%;
             right: 5%;
             width: 45%;
-            min-width: 320px;
+            min-width: 300px;
             max-width: 600px;
-            height: 68vh;
+            max-height: 600px;
             background: white;
             padding: 1rem;
             border-radius: 0.6rem;
@@ -812,6 +839,7 @@
             display: flex;
             gap: 3rem;
             align-items: center;
+            justify-content: center;
             margin-bottom: 1.875rem;
         }
 
@@ -962,21 +990,21 @@
         .superposition .liste table tr td a {
             display: none;
         }
-
+        
         .fiche_employe {
-            width: 74%;
+            position: static;
+            width: 60%;
             height: 100vh;
             max-height: 700px;
             overflow-y: auto;
-            margin-top: -11.7rem;
+            margin-top: -4.2rem;
         }
 
         .employe {
             flex-direction: column;
             height: 100%;
+            gap: 0.1rem;
         }
-
-        
 
         .info_employe {
             border-left: white;
@@ -995,3 +1023,27 @@
 
         
     }
+
+    /* AFFICHER UN UTILISATEUR */
+
+    .user_actif {
+        background: green;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.4rem;
+        font-weight: bold;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .user_bloque {
+        background: red;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.4rem;
+        font-weight: bold;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    

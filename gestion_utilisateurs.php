@@ -144,7 +144,7 @@ $id_user = $_SESSION["id_user"];
                             </button>
                         </form>
 
-                        <a href="ajout_employe.php" class="add">
+                        <a href="ajout_employe.php?ajout=user" class="add">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -181,18 +181,18 @@ $id_user = $_SESSION["id_user"];
                         while ($user1 = mysqli_fetch_assoc($result1)) {
                             $statut = $user1["statut"] == 1 ? "Actif" : "Bloqué";
                             echo "<tr>";
-                            echo "<td>".mb_strtoupper($user1['nom'])."</td>";
-                            echo "<td>".mb_convert_case($user1['prenom'],"2")."</td>";
-                            echo "<td>".$user1['tel']."</td>";
+                            echo "<td><a style='font-size: 16px; display: flex; gap: 50px; text-decoration: none; color: black' href='afficher_un_user.php?id=".$user1["idUser"]."'><div class='employe_photo'><img src='photo_profil/".$user1["photoDeProfil"]."'></div>".mb_strtoupper($user1['nom'])."</a></td>";
+                            echo "<td><a style='font-size: 16px; display: flex; align-items: center; gap: 50px; text-decoration: none; color: black; justify-content: center' href='afficher_un_user.php?id=".$user1["idUser"]."'>".mb_convert_case($user1['prenom'],"2")."</a></td>";
+                            echo "<td><a style='font-size: 16px; display: flex; align-items: center; gap: 50px; text-decoration: none; color: black; justify-content: center' href='afficher_un_user.php?id=".$user1["idUser"]."'>".$user1['tel']."</a></td>";
                             
-                            echo "<td><strong>".$user1['nomRole']."</strong></td>";
+                            echo "<td><strong><a style='font-size: 16px; display: flex; align-items: center; gap: 50px; text-decoration: none; color: black; justify-content: center' href='afficher_un_user.php?id=".$user1["idUser"]."'>".$user1['nomRole']."</a></strong></td>";
                             if ($statut == "Actif") {
-                                echo "<td><div class='actif'>".$statut."</div></td>";
+                                echo "<td><a style='font-size: 16px; display: flex; align-items: center; gap: 50px; text-decoration: none; color: black; justify-content: center' href='afficher_un_user.php?id=".$user1["idUser"]."'><div class='actif'>".$statut."</div></a></td>";
                             } else {
-                                  echo "<td><div class='bloque'>".$statut."</div></td>";
+                                  echo "<td><a style='font-size: 16px; display: flex; align-items: center; gap: 50px; text-decoration: none; color: black; justify-content: center' href='afficher_un_user.php?id=".$user1["idUser"]."'><div class='bloque'>".$statut."</div></a></td>";
                             }
                             echo "<td>
-                                    <a class='update' href=''><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'>
+                                    <a class='update' href='update_employe.php'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'>
   <path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3'/>
 </svg></a> /
                                     <a class='delete' href=''><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash3' viewBox='0 0 16 16'>

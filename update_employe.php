@@ -133,19 +133,20 @@ $user = mysqli_fetch_assoc($result);
             <div class="after-top">
             <div class="main-form">
                 <div class="main-form-head">
-                    <?php if (isset($_GET["ajout"]) && $_GET["ajout"] = "user") { ?>
-                        <h2>Nouvel utilisateur</h2>
-                    <?php } else { ?>
-                        <h2>Nouvel employé</h2>
-                    <?php } ?>    
+                    <h2>Mise à jour</h2>
                 </div>
                 <div class="all">
+                    <?php
+                    $id_employe = $_GET["id"];
+                    $req_employe = mysqli_prepare($con, "SELECT * FROM employe WHERE idEmploye = ?");
+                    mysqli_stmt_bind_param($req_employe, "i", $id_employe) ;
+                    mysqli_stmt_execute($req_employe);
+                    $result_employe = mysqli_stmt_get_result($req_employe);
+                    $employe = mysqli_fetch_assoc($result_employe);
+                    ?>
                     <div class="new-employe">
-                        <?php if (isset($_GET["ajout"]) && $_GET["ajout"] = "user") { ?>
-                            <form action="ajout_employe_traitement.php?ajout=user" method="post" class="image" enctype="multipart/form-data">
-                        <?php } else { ?>
-                            <form action="ajout_employe_traitement.php" method="post" class="image" enctype="multipart/form-data">
-                        <?php } ?>
+                        <form action="update_employe_traitement.php" method="post" class="image" enctype="multipart/form-data">
+
                             <div class="photo-box">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
   <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
@@ -156,14 +157,10 @@ $user = mysqli_fetch_assoc($result);
                                 <span>Choisir une photo</span>
                                 <input class="choisir-photo" type="file" name="photo" id="photo" accept="image/*" placeholder="Choisir une photo">
                             </div>
+
                         </form>
                     </div>
-
-                    <?php if (isset($_GET["ajout"]) && $_GET["ajout"] = "user") { ?>  
-                        <form action="ajout_employe_traitement.php?ajout=user" method="post">
-                    <?php } else { ?> 
-                         <form action="ajout_employe_traitement.php" method="post">
-                    <?php } ?>      
+                    <form action="update_employe_traitement.php" method="post">
                         <div class="champ-name">
                             <div class="champ">
                                 <label for="prenom">
@@ -173,7 +170,7 @@ $user = mysqli_fetch_assoc($result);
                                     Prenom
                                 </label>
                                 <br>
-                                <input type="text" name="prenom" placeholder="Ex: Ablaye" required>
+                                <input type="text" name="prenom" value="<?php echo mb_convert_case($employe["prenom"], 2) ?>">
                             </div>
                             
                             <div class="champ">
@@ -184,7 +181,7 @@ $user = mysqli_fetch_assoc($result);
                                     Nom
                                 </label>
                                 <br>
-                                <input type="text" name="nom" placeholder="Ex: Ndiaye" required>
+                                <input type="text" name="nom" value="<?php echo mb_strtoupper($employe["nom"]) ?>">
                             </div>
                         </div>
                         
@@ -196,9 +193,15 @@ $user = mysqli_fetch_assoc($result);
                                 Date de naissance
                             </label>
                             <br>
-                            <input type="date" name="naissance" placeholder="Date de naissance" style="color: gray;" required>
+                            <input type="date" name="naissance" value="<?php echo $employe["dateNaissance"] ?>" style="color: gray;">
                         </div>
-                        
+                        <?php
+                        if ($employe["sexe"] = "H") {
+                            $sexe = "H";
+                        }else {
+                            $sexe = "F";
+                        }
+                        ?>
                         <div class="champ">
                             <label for="sexe">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gender-ambiguous" viewBox="0 0 16 16">
@@ -209,14 +212,27 @@ $user = mysqli_fetch_assoc($result);
       
                             <div name="sexe">
                                 <div class="sexe-choix">
-                                    <div>
-                                        <input type="radio" name="sexe" value="F" required>
-                                        <label style="font-size: 14px;">Femme</label>
-                                    </div>
-                                    <div>
-                                        <input type="radio" name="sexe" value="H" required>
-                                        <label style="font-size: 14px;">Homme</label>
-                                    </div>
+                                    <?php if ($sexe = "F") { ?>
+                                        <div>
+                                            <input type="radio" name="sexe" value="F" checked>
+                                            <label style="font-size: 14px;">Femme</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" name="sexe" value="H">
+                                            <label style="font-size: 14px;">Homme</label>
+                                        </div>
+                                    <?php 
+                                        } else { 
+                                    ?>
+                                        <div>
+                                            <input type="radio" name="sexe" value="F">
+                                            <label style="font-size: 14px;">Femme</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" name="sexe" value="H" checked>
+                                            <label style="font-size: 14px;">Homme</label>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +245,7 @@ $user = mysqli_fetch_assoc($result);
                                 Téléphone
                             </label>
                             <br>
-                            <input type="tel" name="tel" pattern="[0-9]{9}" maxlength="9" placeholder="Ex: 776543210" required>
+                            <input type="tel" name="tel" pattern="[0-9]{9}" maxlength="9" value="<?php echo $employe["tel"] ?>" required>
                         </div>
                         
                         <div class="champ">
@@ -240,7 +256,7 @@ $user = mysqli_fetch_assoc($result);
                                 Adresse
                             </label>
                             <br>
-                            <input type="text" name="adresse" placeholder="Ex: Dakar">
+                            <input type="text" name="adresse" value="<?php echo mb_strtoupper($employe["adresse"]) ?>">
                         </div>
                         
                         <div class="champ" style="display: flex; gap: 10px;">
@@ -251,32 +267,23 @@ $user = mysqli_fetch_assoc($result);
                                 Département
                             </div>
                             <br>
-                            <?php if (isset($_GET["ajout"]) && $_GET["ajout"] = "user") { ?>  
-                                <select name="departement" style="width: 40%;" required>
-                                    <option value="ad">
-                                        Administration
-                                    </option>
-                                </select>
-                            <?php } else { ?> 
-                                <select name="departement" style="width: 40%;" required>
-                                    <option value="">
-                                        --Chosir--
-                                    </option>
-                                    <option value="ad">
-                                        Administration
-                                    </option>
-                                    <option value="c">
-                                        Salle de coupe
-                                    </option>
-                                    <option value="m">
-                                        Salle de montage
-                                    </option>
-                                    <option value="f">
-                                        Finition
-                                    </option>
-                                </select>
-                            <?php } ?>
-                            
+                            <select name="departement" style="width: 40%;" required>
+                                <option value="">
+                                    --Chosir--
+                                </option>
+                                <option value="ad">
+                                    Administration
+                                </option>
+                                <option value="c">
+                                    Salle de coupe
+                                </option>
+                                <option value="m">
+                                    Salle de montage
+                                </option>
+                                <option value="f">
+                                    Finition
+                                </option>
+                            </select>
                         </div>
                         
                         <div class="champ" style="display: flex; gap: 80px;">
@@ -306,7 +313,7 @@ $user = mysqli_fetch_assoc($result);
                                 Date d'embauche
                             </label>
                             <br>
-                            <input type="date" name="embauche" style="color: gray;" required>
+                            <input type="date" name="embauche" style="color: gray;" value="<?php echo $employe["dateEmbauche"] ?>" required>
                         </div>
                         <div style="display: flex; justify-content: center; gap: 20px;">
                         <a class="annuler" name="annuler" href="gestion_utilisateurs.php">
@@ -323,15 +330,10 @@ $user = mysqli_fetch_assoc($result);
                                 <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                             <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
                             </svg>
-                            <?php if (isset($_GET["ajout"]) && $_GET["ajout"] = "user") { ?>  
-                                <span>
-                                    Ajouter utilisateur
-                                </span>
-                            <?php } else { ?> 
-                                <span>
-                                    Ajouter employé
-                                </span>
-                            <?php } ?>
+                            <span>
+                                Enregistrer
+                            </span>
+                            
                         </button>
                         </div>
                     </form>

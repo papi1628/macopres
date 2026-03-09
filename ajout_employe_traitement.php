@@ -1,4 +1,4 @@
-.<?php
+<?php
 require "connexion.php";
 if (isset($_POST["enregistrer"])) {
     //on récupère les données de l'employé.
@@ -25,13 +25,17 @@ if (isset($_POST["enregistrer"])) {
 
     if (mysqli_num_rows($result) > 0) {
         $id = $employe["idEmploye"];
-        header("location:afficher_un_employe.php?id=".$id."&success=3");
-        exit();
+        if (isset($_GET["ajout"]) && $_GET["ajout"] == "user") {
+            header("location:afficher_un_user.php?id=".$id."&success=3");
+            exit();
+        } else {
+            header("location:afficher_un_employe.php?id=".$id."&success=3");
+            exit();
+        }
     }
 
     //on enregistre l'employé et ses données dans la base de données.
 
-    
     $req = mysqli_prepare($con, "INSERT INTO employe (prenom, nom, dateNaissance, sexe, tel, adresse, departement, code, dateEmbauche) VALUES(?,?,?,?,?,?,?,?,?)");
     mysqli_stmt_bind_param($req, "ssssissss", $prenom, $nom, $naissance, $sexe, $tel, $adresse, $departement, $code, $embauche);
     mysqli_stmt_execute($req);
@@ -91,9 +95,8 @@ if (isset($_POST["enregistrer"])) {
         }
     }
     
-    if ($result_simple>0 && $result_mat>0 && $result_user>0) {
-        header("location:afficher_un_employe.php?id=".$id_last_emp."&success=2");
-
+    if ($result_simple>0 && $result_mat>0 && $result_user>0 && isset($_GET["ajout"]) && $_GET["ajout"] == "user") {
+        header("location:afficher_un_user.php?id=".$id_last_emp."&success=2");
         exit();
 
     } elseif ($result_simple>0 && $result_mat>0) {
