@@ -2,30 +2,349 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employe;
 use App\Models\Pointage;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class PointageController extends Controller
 {
-    public function index()
+    /*
+    |--------------------------------------------------------------------------
+    | FEUILLE DE PRÉSENCE DU JOUR
+    |--------------------------------------------------------------------------
+    | Affiche tous les employés actifs avec leur statut du jour
+    */
+    public function index(Request $request)
     {
-        $pointages = Pointage::with('employe')
-            ->latest()
+        $date = $request->get('date', today()->format('Y-m-d'));
+        $date = Carbon::parse($date);
+
+        // Tous les employés actifs
+        $employes = Employe::where('actif', true)
+            ->orderBy('nom')
             ->get();
 
-        return view('pointages.index', compact('pointages'));
+        // Pointages du jour
+        $pointagesDuJour = Pointage::with('employe')
+            ->whereDate('date', $date)
+            ->get()
+            ->keyBy('employe_id'); // indexé par employe_id pour accès rapide
+
+        // Stats du jour
+        $stats = [
+            'total'    => $employes->count(),
+            'presents' => $pointagesDuJour->whereIn('statut', ['present', 'retard'])->count(),
+            'absents'  => $employes->count() - $pointagesDuJour->count(),
+            'retards'  => $pointagesDuJour->where('statut', 'retard')->count(),
+        ];
+
+        return view('pointages.index', compact('employes', 'pointagesDuJour', 'date', 'stats'));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | POINTER MANUELLEMENT — ARRIVÉE
+    |--------------------------------------------------------------------------
+    */
+    public function pointer(Request $request)
+    {
+        $request->validate([
+            'employe_id'    => 'required|exists:employes,id',
+            'date'          => 'required|date',
+            'heure_arrivee' => 'required|date_format:H:i',
+        ]);
+
+        $employe = Employe::findOrFail($request->employe_id);
+
+        // Vérifier si déjà pointé aujourd'hui
+        $existant = Pointage::where('employe_id', $employe->id)
+            ->whereDate('date', $request->date)
+            ->first();
+
+        if ($existant) {
+            return back()->with('error', "{$employe->prenom} {$employe->nom} est déjà pointé pour cette date.");
+        }
+
+        // Créer le pointage
+        $pointage = new Pointage([
+            'employe_id'    => $employe->id,
+            'date'          => $request->date,
+            'heure_arrivee' => $request->heure_arrivee . ':00',
+            'type'          => 'manuel',
+            'created_by'    => auth()->id(),
+        ]);
+
+        // Calculer retard automatiquement
+        $pointage->calculerRetard();
+        $pointage->save();
+
+        $message = $pointage->retard
+            ? "⚠️ {$employe->prenom} {$employe->nom} pointé avec {$pointage->retard_formate} de retard."
+            : "✓ {$employe->prenom} {$employe->nom} pointé à {$request->heure_arrivee}.";
+
+        return back()->with('success', $message);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ENREGISTRER LE DÉPART
+    |--------------------------------------------------------------------------
+    */
+    public function enregistrerDepart(Request $request, Pointage $pointage)
+    {
+        $request->validate([
+            'heure_depart' => 'required|date_format:H:i',
+        ]);
+
+        $pointage->heure_depart = $request->heure_depart . ':00';
+        $pointage->load('employe');
+
+        // Calculer heures travaillées + salaire
+        $pointage->calculerHeuresEtSalaire();
+        $pointage->save();
+
+        $employe = $pointage->employe;
+
+        return back()->with('success', "✓ Départ de {$employe->prenom} {$employe->nom} enregistré — {$pointage->duree_formattee} travaillées.");
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | POINTER PAR QR CODE
+    |--------------------------------------------------------------------------
+    */
     public function scan()
     {
         return view('pointages.scan');
     }
 
-    public function historique()
+    public function scannerQr(Request $request)
     {
-        $pointages = Pointage::with('employe')
-            ->latest()
-            ->paginate(20);
+        $request->validate([
+            'qr_code' => 'required|string',
+        ]);
 
-        return view('pointages.historique', compact('pointages'));
+        // Trouver l'employé via son QR code
+        $employe = Employe::where('qr_code', $request->qr_code)
+            ->where('actif', true)
+            ->first();
+
+        if (!$employe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR code invalide ou employé inactif.',
+            ], 404);
+        }
+
+        $maintenant = now();
+        $date       = $maintenant->format('Y-m-d');
+        $heure      = $maintenant->format('H:i:s');
+
+        // Chercher pointage du jour
+        $pointage = Pointage::where('employe_id', $employe->id)
+            ->whereDate('date', $date)
+            ->first();
+
+        if (!$pointage) {
+            // Premier scan = arrivée
+            $pointage = new Pointage([
+                'employe_id'    => $employe->id,
+                'date'          => $date,
+                'heure_arrivee' => $heure,
+                'type'          => 'qr_code',
+                'created_by'    => auth()->id(),
+            ]);
+
+            $pointage->calculerRetard();
+            $pointage->save();
+
+            return response()->json([
+                'success' => true,
+                'action'  => 'arrivee',
+                'message' => "✓ Arrivée de {$employe->prenom} {$employe->nom} enregistrée à " . $maintenant->format('H:i'),
+                'retard'  => $pointage->retard,
+                'employe' => [
+                    'nom'       => $employe->nom,
+                    'prenom'    => $employe->prenom,
+                    'matricule' => $employe->matricule,
+                    'initiales' => strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)),
+                ],
+                'heure'   => $maintenant->format('H:i'),
+                'statut'  => $pointage->statut,
+            ]);
+
+        } elseif (!$pointage->heure_depart) {
+            // Deuxième scan = départ
+            $pointage->heure_depart = $heure;
+            $pointage->load('employe');
+            $pointage->calculerHeuresEtSalaire();
+            $pointage->save();
+
+            return response()->json([
+                'success' => true,
+                'action'  => 'depart',
+                'message' => "✓ Départ de {$employe->prenom} {$employe->nom} enregistré — {$pointage->duree_formattee} travaillées.",
+                'employe' => [
+                    'nom'       => $employe->nom,
+                    'prenom'    => $employe->prenom,
+                    'matricule' => $employe->matricule,
+                    'initiales' => strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)),
+                ],
+                'heure'            => $maintenant->format('H:i'),
+                'heures_travaillees' => $pointage->duree_formattee,
+            ]);
+
+        } else {
+            // Déjà pointé arrivée ET départ
+            return response()->json([
+                'success' => false,
+                'message' => "{$employe->prenom} {$employe->nom} a déjà été pointé à l'arrivée et au départ aujourd'hui.",
+            ], 409);
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HISTORIQUE GLOBAL
+    |--------------------------------------------------------------------------
+    */
+    public function historique(Request $request)
+    {
+        $query = Pointage::with('employe')
+            ->orderBy('date', 'desc')
+            ->orderBy('heure_arrivee', 'desc');
+
+        // Filtres
+        if ($request->filled('employe_id')) {
+            $query->where('employe_id', $request->employe_id);
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        if ($request->filled('date_debut')) {
+            $query->whereDate('date', '>=', $request->date_debut);
+        }
+
+        if ($request->filled('date_fin')) {
+            $query->whereDate('date', '<=', $request->date_fin);
+        }
+
+        if ($request->filled('mois')) {
+            [$annee, $mois] = explode('-', $request->mois);
+            $query->whereMonth('date', $mois)->whereYear('date', $annee);
+        }
+
+        $pointages = $query->paginate(25)->withQueryString();
+        $employes  = Employe::where('actif', true)->orderBy('nom')->get();
+
+        return view('pointages.historique', compact('pointages', 'employes'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FICHE INDIVIDUELLE D'UN EMPLOYÉ
+    |--------------------------------------------------------------------------
+    */
+    public function ficheEmploye(Request $request, Employe $employe)
+    {
+        $periode = $request->get('periode', 'mois'); // semaine | mois | annee
+
+        $query = Pointage::where('employe_id', $employe->id);
+
+        switch ($periode) {
+            case 'semaine':
+                $query->cetteSemaine();
+                $titre = 'Cette semaine';
+                break;
+            case 'annee':
+                $query->cetteAnnee();
+                $titre = 'Cette année';
+                break;
+            default:
+                $query->ceMois();
+                $titre = 'Ce mois';
+        }
+
+        $pointages = $query->orderBy('date', 'desc')->get();
+
+        // Stats de la période
+        $stats = [
+            'jours_presents'    => $pointages->whereIn('statut', ['present', 'retard'])->count(),
+            'jours_absents'     => $pointages->where('statut', 'absent')->count(),
+            'jours_retard'      => $pointages->where('statut', 'retard')->count(),
+            'heures_total'      => round($pointages->sum('heures_travaillees'), 2),
+            'salaire_periode'   => round($pointages->sum('salaire_jour'), 2),
+            'salaire_mensuel'   => $employe->salaire,
+        ];
+
+        return view('pointages.fiche-employe', compact('employe', 'pointages', 'stats', 'periode', 'titre'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | STATISTIQUES GLOBALES
+    |--------------------------------------------------------------------------
+    */
+    public function statistiques(Request $request)
+    {
+        $mois  = $request->get('mois', now()->format('Y-m'));
+        [$annee, $moisNum] = explode('-', $mois);
+
+        // Stats globales du mois
+        $pointagesMois = Pointage::with('employe')
+            ->whereMonth('date', $moisNum)
+            ->whereYear('date', $annee)
+            ->get();
+
+        $statsGlobales = [
+            'total_pointages'   => $pointagesMois->count(),
+            'total_presents'    => $pointagesMois->whereIn('statut', ['present', 'retard'])->count(),
+            'total_absents'     => $pointagesMois->where('statut', 'absent')->count(),
+            'total_retards'     => $pointagesMois->where('statut', 'retard')->count(),
+            'total_heures'      => round($pointagesMois->sum('heures_travaillees'), 2),
+            'total_salaires'    => round($pointagesMois->sum('salaire_jour'), 2),
+        ];
+
+        // Stats par employé
+        $employes = Employe::where('actif', true)
+            ->orderBy('nom')
+            ->get()
+            ->map(function ($employe) use ($moisNum, $annee) {
+                $pts = Pointage::where('employe_id', $employe->id)
+                    ->whereMonth('date', $moisNum)
+                    ->whereYear('date', $annee)
+                    ->get();
+
+                $joursPresents = $pts->whereIn('statut', ['present', 'retard'])->count();
+                $salaireJour   = $employe->salaire ? $employe->salaire / Pointage::JOURS_OUVRABLES_MOIS : 0;
+
+                return [
+                    'employe'        => $employe,
+                    'jours_presents' => $joursPresents,
+                    'jours_absents'  => $pts->where('statut', 'absent')->count(),
+                    'retards'        => $pts->where('statut', 'retard')->count(),
+                    'heures_total'   => round($pts->sum('heures_travaillees'), 2),
+                    'salaire_du'     => round($joursPresents * $salaireJour, 2),
+                    'salaire_base'   => $employe->salaire,
+                ];
+            });
+
+        return view('pointages.statistiques', compact('statsGlobales', 'employes', 'mois'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUPPRIMER UN POINTAGE (correction)
+    |--------------------------------------------------------------------------
+    */
+    public function destroy(Pointage $pointage)
+    {
+        $employe = $pointage->employe;
+        $pointage->delete();
+
+        return back()->with('success', "Pointage de {$employe->prenom} {$employe->nom} supprimé.");
     }
 }

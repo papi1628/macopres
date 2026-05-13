@@ -8,14 +8,12 @@ class Employe extends Model
 {
     protected $fillable = [
         'matricule',
-        'nom',
         'user_id',
+        'nom',
         'prenom',
         'tel',
-        'poste',
         'departement',
         'qr_code',
-        'actif',
         'date_embauche',
         'salaire',
         'created_by',
@@ -45,5 +43,10 @@ class Employe extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function userEmploye()
+    {
+        return $this->hasOne(User::class);
     }
 }

@@ -92,6 +92,48 @@ Route::middleware('auth')->group(function () {
     Route::post('/pointages/store', [PointageController::class, 'store'])
         ->name('pointages.store');
 
+    
+    /*
+    |--------------------------------------------------------------------------
+    | ROUTES POINTAGES
+    |--------------------------------------------------------------------------
+    */
+
+    // Feuille de présence du jour
+    Route::get('/pointages', [PointageController::class, 'index'])
+        ->name('pointages.index');
+
+    // Pointer manuellement (arrivée)
+    Route::post('/pointages/pointer', [PointageController::class, 'pointer'])
+        ->name('pointages.pointer');
+
+    // Enregistrer le départ
+    Route::patch('/pointages/{pointage}/depart', [PointageController::class, 'enregistrerDepart'])
+        ->name('pointages.depart');
+
+    // Scanner QR code (page)
+    Route::get('/pointages/scan', [PointageController::class, 'scan'])
+        ->name('pointages.scan');
+
+    // Scanner QR code (API — appelée en AJAX)
+    Route::post('/pointages/scan', [PointageController::class, 'scannerQr'])
+        ->name('pointages.scanner');
+
+    // Historique global
+    Route::get('/pointages/historique', [PointageController::class, 'historique'])
+        ->name('pointages.historique');
+
+    // Statistiques globales
+    Route::get('/pointages/statistiques', [PointageController::class, 'statistiques'])
+        ->name('pointages.statistiques');
+
+    // Fiche individuelle employé
+    Route::get('/pointages/employe/{employe}', [PointageController::class, 'ficheEmploye'])
+        ->name('pointages.fiche-employe');
+
+    // Supprimer un pointage (correction)
+    Route::delete('/pointages/{pointage}', [PointageController::class, 'destroy'])
+        ->name('pointages.destroy');
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT

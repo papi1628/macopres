@@ -82,7 +82,7 @@
                     <h3 class="text-[12px] font-semibold text-slate-800">Premières arrivées</h3>
                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                           style="background:#E6F1FB; color:#0C447C">
-                        {{ \Carbon\Carbon::today()->isoFormat('D MMM YYYY') }}
+                        {{ \Carbon\Carbon::now()->locale('fr')->isoFormat('dddd D MMM YYYY') }}
                     </span>
                 </div>
                 <table class="w-full text-[11px]">

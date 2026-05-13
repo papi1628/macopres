@@ -21,17 +21,13 @@
             <input x-model="search" type="text" placeholder="Rechercher un employé…"
                    class="w-full pl-9 pr-4 h-9 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
         </div>
-        <select x-model="filterDept" class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-600">
+        <!--<select x-model="filterDept" class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-600">
             <option value="">Tous les départements</option>
             @foreach ($departements as $dept)
                 <option value="{{ $dept }}">{{ $dept }}</option>
             @endforeach
-        </select>
-        <select x-model="filterStatut" class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-600">
-            <option value="">Tous les statuts</option>
-            <option value="1">Actif</option>
-            <option value="0">Inactif</option>
-        </select>
+        </select>-->
+        
         <button @click="openCreate()"
                 class="flex items-center gap-2 h-9 px-4 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-px"
                 style="background:linear-gradient(135deg,#185FA5,#378ADD)">
@@ -46,13 +42,12 @@
             <table class="w-full text-sm min-w-[700px]">
                 <thead>
                     <tr class="border-b border-slate-100" style="background:#f8fafc">
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Matricule</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Employé</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Poste</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Département</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Téléphone</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Statut</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
+                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Matricule</th>
+                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Employé</th>
+                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Département</th>
+                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Téléphone</th>
+                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Code</th>
+                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
@@ -70,23 +65,17 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-slate-500 text-[12px]">{{ $employe->poste ?? '–' }}</td>
                         <td class="px-4 py-3 text-slate-500 text-[12px]">{{ $employe->departement ?? '–' }}</td>
                         <td class="px-4 py-3 text-slate-400 text-[12px]">{{ $employe->tel ?? '–' }}</td>
-                        <td class="px-4 py-3">
-                            @if ($employe->actif)
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#EAF3DE;color:#3B6D11">Actif</span>
-                            @else
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#FCEBEB;color:#A32D2D">Inactif</span>
-                            @endif
-                        </td>
+                        <td class="px-4 py-3 text-slate-400 text-[12px]">{{ $employe->salaire ?? '–' }}</td>                        
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-1.5">
                                 {{-- QR --}}
-                                <a href="{{ route('employes.qr', $employe) }}"
-                                   class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors hover:bg-blue-50" style="color:#185FA5" title="Badge QR">
+                                <button @click="openQR({{ $employe->id }})"
+                                class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors hover:bg-blue-50" style="color:#185FA5" title="Badge QR"
+                                style="color:#185FA5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
-                                </a>
+                                </button>
                                 {{-- Modifier --}}
                                 <button @click="openEdit({{ $employe->toJson() }})"
                                         class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors hover:bg-amber-50 text-amber-500" title="Modifier">
@@ -102,7 +91,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-12 text-center text-slate-400 text-sm">Aucun employé trouvé</td>
+                        <td colspan="6" class="px-4 py-12 text-center text-slate-400 text-sm">Aucun employé trouvé</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -116,6 +105,39 @@
         </div>
         @endif
     </div>
+
+    {{-- ══════════════════════════════════════
+         MODAL QR_CODE
+    ══════════════════════════════════════ --}}
+
+        <div x-show="qrModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            style="display:none">
+
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center"
+                @click.outside="qrModal = false">
+
+                <h2 class="text-lg font-bold text-slate-800 mb-2" x-text="qrEmploye"></h2>
+
+                <p class="text-xs text-slate-400 mb-4" x-text="qrMatricule"></p>
+
+                <img :src="'data:image/svg+xml;base64,' + qr" class="mx-auto w-48 h-48"/>
+
+                <div class="flex gap-3 pt-2 border-t border-slate-100">
+                    <button type="button" @click="qrModal = false"
+                            class="flex-1 h-10 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors">
+                        Fermer
+                    </button>
+
+                    <button @click="downloadQR()"
+                            class="flex-1 h-10 rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-px"
+                            style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                        Télécharger
+                    </button>
+                </div>
+            </div>
+        </div>
+
 
     {{-- ══════════════════════════════════════
          MODAL CRÉER / MODIFIER
@@ -140,10 +162,11 @@
             </div>
 
             {{-- Formulaire --}}
-            <form :action="editMode ? `/employes/${form.id}`  '{{ route('employes.store') }}'" method="POST" class="px-6 py-5 space-y-4">
+            <form :action="editMode ? `/employes/${form.id}` : '{{ route('employes.store') }}'" method="POST" class="px-6 py-5 space-y-4">
                 @csrf
-                <input x-show="editMode" type="hidden" name="_method" value="PUT">
-                <input type="hidden" name="_method" x-show="editMode" value="PUT">
+                <template x-if="editMode">
+                    <input type="hidden" name="_method" value="PUT">
+                </template>
                 <div class="grid grid-cols-2 gap-4">
                     {{-- Prénom --}}
                     <div>
@@ -164,20 +187,21 @@
                                class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                                placeholder="77 000 00 00">
                     </div>
-                    {{-- Poste --}}
-                    <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Poste</label>
-                        <input type="text" name="poste" x-model="form.poste"
-                               class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                               placeholder="Ex: Couturière">
-                    </div>
                     {{-- Département --}}
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Département</label>
                         <select name="departement" x-model="form.departement"
                                 class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
                             <option value="">-- Choisir --</option>
-                            @foreach ($departements as $dept)
+                            @php
+                                $departementsListe = [
+                                    'administration',
+                                    'salle de coupe',
+                                    'salle de montage',
+                                    'finition'
+                                ];
+                            @endphp                            
+                            @foreach ($departementsListe as $dept)
                                 <option value="{{ $dept }}">{{ $dept }}</option>
                             @endforeach
                         </select>
@@ -193,15 +217,6 @@
                         <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Salaire (FCFA)</label>
                         <input type="number" name="salaire" x-model="form.salaire"
                                class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
-                    </div>
-                    {{-- Statut --}}
-                    <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Statut</label>
-                        <select name="actif" x-model="form.actif"
-                                class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
-                            <option value="1">Actif</option>
-                            <option value="0">Inactif</option>
-                        </select>
                     </div>
                 </div>
 
@@ -262,20 +277,40 @@ function employesApp() {
         modal: false,
         deleteModal: false,
         editMode: false,
+        qrModal: false,
+        qr: '',
+        qrEmploye: '',
+        qrMatricule: '',
         deleteId: null,
         deleteName: '',
         search: '',
         filterDept: '',
         filterStatut: '',
         form: {
-            id: null, prenom: '', nom: '', tel: '', poste: '',
-            departement: '', date_embauche: '', salaire: '', actif: 1
+            id: null, 
+            prenom: '', 
+            nom: '', 
+            tel: '',
+            departement: '', 
+            date_embauche: '', 
+            salaire: '', 
         },
+        
 
         openCreate() {
             this.editMode = false;
-            this.form = { id: null, prenom: '', nom: '', tel: '', poste: '', departement: '', date_embauche: '', salaire: '', actif: 1 };
+            this.form = { 
+                id: null, 
+                prenom: '', 
+                nom: '', 
+                tel: '', 
+                departement: '', 
+                date_embauche: '', 
+                salaire: '', 
+            };
+            
             this.modal = true;
+            
         },
 
         openEdit(employe) {
@@ -285,11 +320,11 @@ function employesApp() {
                 prenom: employe.prenom,
                 nom: employe.nom,
                 tel: employe.tel ?? '',
-                poste: employe.poste ?? '',
                 departement: employe.departement ?? '',
-                date_embauche: employe.date_embauche ?? '',
+                date_embauche: employe.date_embauche 
+                    ? employe.date_embauche.split('T')[0]
+                    : '',
                 salaire: employe.salaire ?? '',
-                actif: employe.actif ? 1 : 0,
             };
             this.modal = true;
         },
@@ -299,6 +334,27 @@ function employesApp() {
             this.deleteName = name;
             this.deleteModal = true;
         },
+
+        openQR(id) {
+            fetch(`/employes/${id}/qr`)
+                .then(res => res.json())
+                .then(data => {
+                    this.qr = data.qr;
+                    this.qrEmploye = data.employe;
+                    this.qrMatricule = data.matricule;
+                    this.qrModal = true;
+                })
+                .catch(err => {
+                    console.error('QR error:', err);
+                });
+        },
+
+        downloadQR() {
+            const link = document.createElement('a');
+            link.href = 'data:image/svg+xml;base64,' + this.qr;
+            link.download = this.qrMatricule + '.svg';
+            link.click();
+        }
     };
 }
 </script>

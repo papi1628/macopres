@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Employe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class EmployeController extends Controller
 {
@@ -29,27 +32,74 @@ class EmployeController extends Controller
 
     public function store(Request $request)
     {
+        
         $request->validate([
-            'matricule'   => 'required|unique:employes',
             'nom'         => 'required',
             'prenom'      => 'required',
             'tel'         => 'required',
-            'poste'       => 'required',
             'departement' => 'required',
+            'date_embauche' => 'nullable|date',
+            'salaire' => 'nullable|numeric',
         ]);
 
-        Employe::create([
-            'matricule'   => $request->matricule,
+        /*
+        |--------------------------------------------------------------------------
+        | GÉNÉRATION MATRICULE
+        |--------------------------------------------------------------------------
+        */
+
+        $prefixes = [
+            'administration' => 'ADM',
+            'salle de coupe'   => 'SDC',
+            'salle de montage'       => 'SDM',
+            'finition'             => 'FIN',
+        ];
+
+        $departement = strtolower($request->departement);
+
+        $prefix = $prefixes[$departement] ?? 'EMP';
+
+        $last = Employe::latest('id')->first();
+
+        $count = $last ? $last->id + 1 : 1;
+
+        $numero = str_pad($count, 4, '0', STR_PAD_LEFT);
+
+        $annee = now()->format('y');
+
+        $matricule = "{$prefix}-{$annee}-{$numero}";
+
+        $token = bin2hex(random_bytes(16));
+
+
+        $employe = Employe::create([
+            'matricule'   => $matricule,
             'nom'         => $request->nom,
             'prenom'      => $request->prenom,
             'tel'         => $request->tel,
-            'poste'       => $request->poste,
             'departement' => $request->departement,
+            'qr_code' => $token,
             'date_embauche' => $request->date_embauche,
             'salaire'     => $request->salaire,
-            'actif'       => $request->actif ?? true,
             'created_by'  => Auth::id(),
         ]);
+
+        if ($employe->departement === 'administration') {
+
+            $user = User::create([
+                'login' => $employe->tel,
+
+                'password' => Hash::make('pass'),
+
+                'role' => 'assistant',
+
+                'employe_id' => $employe->id,
+            ]);
+
+            $employe->update([
+                'user_id' => $user->id,
+            ]);
+        }
 
         return redirect()
             ->route('employes.index')
@@ -61,17 +111,20 @@ class EmployeController extends Controller
         $request->validate([
             'nom'         => 'required',
             'prenom'      => 'required',
+            'tel'         => 'required',
+            'departement' => 'required',
+            'date_embauche' => 'nullable|date',
+            'salaire' => 'nullable|numeric',
         ]);
+        
 
         $employe->update([
             'nom'             => $request->nom,
             'prenom'          => $request->prenom,
             'tel'             => $request->tel,
-            'poste'           => $request->poste,
             'departement'     => $request->departement,
             'date_embauche'   => $request->date_embauche,
             'salaire'         => $request->salaire,
-            'actif'           => $request->actif,
         ]);
 
         return redirect()
@@ -90,6 +143,22 @@ class EmployeController extends Controller
 
     public function qr(Employe $employe)
     {
-        return view('employes.qr', compact('employe'));
+        $data = json_encode([
+            'id' => $employe->id,
+            'matricule' => $employe->matricule,
+            'token' => hash_hmac('sha256', $employe->qr_code, env('APP_KEY')),
+            'timestamp' => now()->timestamp
+        ]);
+        $qr = base64_encode(
+            QrCode::format('svg')
+                ->size(250)
+                ->generate($data)
+        );
+
+        return response()->json([
+            'employe' => $employe->prenom . ' ' . $employe->nom,
+            'matricule' => $employe->matricule,
+            'qr' => $qr
+        ]);
     }
 }

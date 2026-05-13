@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Employe;
+
 
 class AssistantController extends Controller
 {
     // LISTE
     public function index()
     {
-        $assistants = User::where('role', 'assistant')->get();
+        $assistants = User::where('role', 'assistant')
+            ->with('employe')
+            ->latest()
+            ->paginate(10);
 
         return view('assistants.index', compact('assistants'));
     }
@@ -27,13 +33,49 @@ class AssistantController extends Controller
     {
         $request->validate([
             'login' => 'required|unique:users',
-            'password' => 'required|min:6',
+            
+            
+            'nom'         => 'required',
+            'prenom'      => 'required',
+            'tel'         => 'required',
+            
+            'date_embauche' => 'nullable|date',
+            'salaire' => 'nullable|numeric',
         ]);
 
-        User::create([
+        $user = User::create([
             'login' => $request->login,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make('pass'),
             'role' => 'assistant',
+        ]);
+
+        $last = Employe::latest('id')->first();
+
+        $count = $last ? $last->id + 1 : 1;
+
+        $numero = str_pad($count, 4, '0', STR_PAD_LEFT);
+
+        $annee = now()->format('y');
+
+        $matricule = "ADM-{$annee}-{$numero}";
+
+        $token = bin2hex(random_bytes(16));
+
+        $employe = Employe::create([
+            'user_id'     => $user->id,
+            'matricule'   => $matricule,
+            'nom'         => $request->nom,
+            'prenom'      => $request->prenom,
+            'tel'         => $request->tel,
+            'departement' => 'administration',
+            'qr_code' => $token,
+            'date_embauche' => $request->date_embauche,
+            'salaire'     => $request->salaire,
+            'created_by'  => Auth::id(),
+        ]);
+
+        $user->update([
+            'employe_id' => $employe->id,
         ]);
 
         return redirect('/assistants')
@@ -53,8 +95,26 @@ class AssistantController extends Controller
     {
         $assistant = User::findOrFail($id);
 
+
+        $request->validate([
+            'nom'         => 'required',
+            'prenom'      => 'required',
+            'tel'         => 'required',
+            'date_embauche' => 'nullable|date',
+            'salaire' => 'nullable|numeric',
+            'login'         => 'required',
+        ]);
+
         $assistant->update([
             'login' => $request->login,
+        ]);
+
+        $assistant->employe = Employe::update([
+            'nom'             => $request->nom,
+            'prenom'          => $request->prenom,
+            'tel'             => $request->tel,
+            'date_embauche'   => $request->date_embauche,
+            'salaire'         => $request->salaire,
         ]);
 
         return redirect('/assistants')
