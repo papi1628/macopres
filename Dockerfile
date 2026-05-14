@@ -26,8 +26,12 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node dependencies
-RUN npm install && npm run build
+# Install Node dependencies + build assets
+RUN npm install
+RUN npm run build
+RUN ls -la public/build
+RUN php artisan storage:link
+RUN php artisan optimize:clear
 
 # Laravel optimization
 RUN php artisan config:clear
