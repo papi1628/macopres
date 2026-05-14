@@ -6,7 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'MACOPRES') }} — {{ $title ?? 'Tableau de bord' }}</title>
-
+        
+        <link rel="shortcut icon" href="{{ asset('images/logo-macopres.svg') }}" type="image/x-icon">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
 
@@ -76,7 +77,12 @@
 
                     {{-- Logo --}}
                     <div class="w-[30px] h-[30px] rounded-lg flex items-center justify-center font-black text-white text-[14px] flex-shrink-0"
-                         style="background:#185FA5;">M</div>
+                         style="background:#185FA5;">
+                        <img 
+                            src="{{ asset('images/logo-macopres.svg') }}" 
+                            alt="Macopres"
+                        >
+                    </div>
 
                     {{-- Nom (caché quand collapsed sur desktop) --}}
                     <div class="flex-1 min-w-0 lg:block"
