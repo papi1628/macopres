@@ -48,7 +48,7 @@ return new class extends Migration
             */
             $table->decimal('heures_travaillees', 5, 2)->nullable(); // ex: 8.75
             $table->decimal('salaire_jour', 10, 2)->nullable();      // salaire journalier calculé
-            $table->boolean('retard')->default(false);               // arrivée après 8h15
+            $table->boolean('retard')->default(false);               // arrivée après 8h45
             $table->integer('minutes_retard')->default(0);           // nb minutes de retard
 
             /*

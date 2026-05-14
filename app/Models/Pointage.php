@@ -33,7 +33,7 @@ class Pointage extends Model
     */
     const HEURE_ARRIVEE_PREVUE  = '08:45:00'; // heure d'arrivée prévue
     const HEURE_DEPART_PREVUE   = '18:00:00'; // heure de départ prévue
-    const TOLERANCE_RETARD_MIN  = 15;          // tolérance retard en minutes
+    const TOLERANCE_RETARD_MIN  = 0;          // tolérance retard en minutes
     const HEURES_JOURNEE        = 9;           // heures de travail prévues/jour
     const JOURS_OUVRABLES_MOIS  = 26;          // pour calculer salaire journalier
 

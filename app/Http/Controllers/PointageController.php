@@ -13,16 +13,15 @@ class PointageController extends Controller
     |--------------------------------------------------------------------------
     | FEUILLE DE PRÉSENCE DU JOUR
     |--------------------------------------------------------------------------
-    | Affiche tous les employés actifs avec leur statut du jour
+    | Affiche tous les employés  avec leur statut du jour
     */
     public function index(Request $request)
     {
         $date = $request->get('date', today()->format('Y-m-d'));
         $date = Carbon::parse($date);
 
-        // Tous les employés actifs
-        $employes = Employe::where('actif', true)
-            ->orderBy('nom')
+        // Tous les employés
+        $employes = Employe::orderBy('nom')
             ->get();
 
         // Pointages du jour
@@ -39,7 +38,16 @@ class PointageController extends Controller
             'retards'  => $pointagesDuJour->where('statut', 'retard')->count(),
         ];
 
-        return view('pointages.index', compact('employes', 'pointagesDuJour', 'date', 'stats'));
+        $employesJson = $employes->map(fn($e) => [
+            'id'          => $e->id,
+            'prenom'      => $e->prenom,
+            'nom'         => $e->nom,
+            'matricule'   => $e->matricule,
+            'departement' => $e->departement,
+            'initiales'   => strtoupper(substr($e->prenom, 0, 1) . substr($e->nom, 0, 1)),
+        ])->values();
+
+        return view('pointages.index', compact('employes', 'pointagesDuJour', 'date', 'stats', 'employesJson'));
     }
 
     /*
@@ -127,7 +135,6 @@ class PointageController extends Controller
 
         // Trouver l'employé via son QR code
         $employe = Employe::where('qr_code', $request->qr_code)
-            ->where('actif', true)
             ->first();
 
         if (!$employe) {
@@ -238,7 +245,7 @@ class PointageController extends Controller
         }
 
         $pointages = $query->paginate(25)->withQueryString();
-        $employes  = Employe::where('actif', true)->orderBy('nom')->get();
+        $employes  = Employe::orderBy('nom')->get();
 
         return view('pointages.historique', compact('pointages', 'employes'));
     }
@@ -309,8 +316,7 @@ class PointageController extends Controller
         ];
 
         // Stats par employé
-        $employes = Employe::where('actif', true)
-            ->orderBy('nom')
+        $employes = Employe::orderBy('nom')
             ->get()
             ->map(function ($employe) use ($moisNum, $annee) {
                 $pts = Pointage::where('employe_id', $employe->id)

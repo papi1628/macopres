@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Models\Employe;
 use App\Models\Pointage;
 
-class DirecteurDashboardController extends Controller
+class AssistantDashboardController extends Controller
 {
     public function index()
     {

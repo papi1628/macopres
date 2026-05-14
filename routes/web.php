@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssistantDashboardController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
@@ -50,6 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/directeur', [DirecteurDashboardController::class, 'index'])
         ->name('dashboard.directeur');
 
+    Route::get('/dashboard/assistant', [AssistantDashboardController::class, 'index'])
+        ->name('dashboard.assistant');
     /*
     |--------------------------------------------------------------------------
     | EMPLOYÉS
@@ -134,6 +137,9 @@ Route::middleware('auth')->group(function () {
     // Supprimer un pointage (correction)
     Route::delete('/pointages/{pointage}', [PointageController::class, 'destroy'])
         ->name('pointages.destroy');
+
+    Route::get('/pointages/statistiques', [PointageController::class, 'statistiques'])
+    ->name('pointages.statistiques');
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT

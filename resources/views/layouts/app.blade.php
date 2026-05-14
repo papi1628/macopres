@@ -180,7 +180,7 @@
                         </span>
 
                         {{-- Bouton Scanner QR --}}
-                        <a href="#"
+                        <a href="{{ route('pointages.scan') }}"
                            class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold text-white transition-all hover:-translate-y-px whitespace-nowrap"
                            style="background:linear-gradient(135deg,#185FA5,#378ADD); box-shadow:0 4px 12px rgba(12,68,124,.3)">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
