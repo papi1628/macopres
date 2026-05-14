@@ -6,11 +6,15 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     libpq-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
     nodejs \
     npm
 
 # Install PostgreSQL extension
-RUN docker-php-ext-install pdo pdo_pgsql
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_pgsql
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
