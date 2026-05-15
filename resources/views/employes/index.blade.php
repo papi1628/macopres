@@ -78,8 +78,8 @@
                                 </button>
                                 @php
                                     $canManage =
-                                        Auth::user()->role === 'directeur'
-                                        || $employe->departement !== 'administration';
+                                          Auth::user()->role !== 'assistant'
+                                            || $employe->departement !== 'administration';
                                 @endphp
                                 @if($canManage)
                                     {{-- Modifier --}}
