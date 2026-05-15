@@ -42,6 +42,13 @@ class EmployeController extends Controller
             'salaire' => 'nullable|numeric',
         ]);
 
+        if (
+            Auth::user()->role === 'assistant' &&
+            strtolower($request->departement) === 'administration'
+        ) {
+            abort(403, 'Vous ne pouvez pas créer un assistant.');
+        }
+
         /*
         |--------------------------------------------------------------------------
         | GÉNÉRATION MATRICULE
@@ -116,6 +123,13 @@ class EmployeController extends Controller
             'date_embauche' => 'nullable|date',
             'salaire' => 'nullable|numeric',
         ]);
+
+        if (
+            Auth::user()->role === 'assistant' &&
+            strtolower($request->departement) === 'administration'
+        ) {
+            abort(403, 'Vous ne pouvez pas créer un assistant.');
+        }
         
 
         $employe->update([

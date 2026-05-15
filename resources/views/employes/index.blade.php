@@ -195,12 +195,15 @@
                             <option value="">-- Choisir --</option>
                             @php
                                 $departementsListe = [
-                                    'administration',
                                     'salle de coupe',
                                     'salle de montage',
                                     'finition'
                                 ];
-                            @endphp                            
+
+                                if (Auth::user()->role === 'directeur') {
+                                    array_unshift($departementsListe, 'administration');
+                                }
+                            @endphp                  
                             @foreach ($departementsListe as $dept)
                                 <option value="{{ $dept }}">{{ $dept }}</option>
                             @endforeach

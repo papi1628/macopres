@@ -14,6 +14,9 @@ class AssistantController extends Controller
 
     private function checkPermission()
     {
+        if (!Auth::check()) {
+            abort(403);
+        }
         if (Auth::user()->role === 'assistant') {
             abort(403, 'Accès refusé');
         }
@@ -119,7 +122,7 @@ class AssistantController extends Controller
             'tel'         => 'required',
             'date_embauche' => 'nullable|date',
             'salaire' => 'nullable|numeric',
-            'login'         => 'required',
+            'login' => 'required|unique:users,login,' . $assistant->id,
         ]);
 
         $assistant->update([
@@ -142,7 +145,7 @@ class AssistantController extends Controller
     public function destroy($id)
     {
         $this->checkPermission();
-        
+
         $assistant = User::findOrFail($id);
 
         $assistant->delete();
