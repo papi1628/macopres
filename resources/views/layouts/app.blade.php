@@ -7,7 +7,7 @@
 
         <title>{{ config('app.name', 'MACOPRES') }} — {{ $title ?? 'Tableau de bord' }}</title>
         
-        <link rel="shortcut icon" href="{{ asset('images/logo-macopres.svg') }}" type="image/svg+xml">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-macopres.svg') }}?v=1">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
 
