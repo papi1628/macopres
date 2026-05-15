@@ -128,7 +128,7 @@ class EmployeController extends Controller
             Auth::user()->role === 'assistant' &&
             strtolower($request->departement) === 'administration'
         ) {
-            abort(403, 'Vous ne pouvez pas créer un assistant.');
+            abort(403, 'Vous ne pouvez pas modifier un assistant.');
         }
         
 
@@ -148,6 +148,9 @@ class EmployeController extends Controller
 
     public function destroy(Employe $employe)
     {
+        if (Auth::user()->role === 'assistant') {
+            abort(403, 'Vous ne pouvez pas supprimer un assistant.');
+        }
         $employe->delete();
 
         return redirect()
