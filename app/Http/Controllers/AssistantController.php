@@ -11,9 +11,18 @@ use App\Models\Employe;
 
 class AssistantController extends Controller
 {
+
+    private function checkPermission()
+    {
+        if (Auth::user()->role === 'assistant') {
+            abort(403, 'Accès refusé');
+        }
+    }
     // LISTE
     public function index()
     {
+        $this->checkPermission();
+
         $assistants = User::where('role', 'assistant')
             ->with('employe')
             ->latest()
@@ -25,12 +34,16 @@ class AssistantController extends Controller
     // FORMULAIRE CREATE
     public function create()
     {
+        $this->checkPermission();
+
         return view('assistants.create');
     }
 
     // ENREGISTRER
     public function store(Request $request)
     {
+        $this->checkPermission();
+
         $request->validate([
             'login' => 'required|unique:users',
             
@@ -85,6 +98,8 @@ class AssistantController extends Controller
     // FORMULAIRE EDIT
     public function edit($id)
     {
+        $this->checkPermission();
+
         $assistant = User::findOrFail($id);
 
         return view('assistants.edit', compact('assistant'));
@@ -93,6 +108,8 @@ class AssistantController extends Controller
     // UPDATE
     public function update(Request $request, $id)
     {
+        $this->checkPermission();
+
         $assistant = User::findOrFail($id);
 
 
@@ -109,7 +126,7 @@ class AssistantController extends Controller
             'login' => $request->login,
         ]);
 
-        $assistant->employe = Employe::update([
+        $assistant->employe -> update([
             'nom'             => $request->nom,
             'prenom'          => $request->prenom,
             'tel'             => $request->tel,
@@ -124,6 +141,8 @@ class AssistantController extends Controller
     // DELETE
     public function destroy($id)
     {
+        $this->checkPermission();
+        
         $assistant = User::findOrFail($id);
 
         $assistant->delete();
