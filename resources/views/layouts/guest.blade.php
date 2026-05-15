@@ -7,6 +7,7 @@
 
         <title>{{ config('app.name', 'MACOPRES') }} — Connexion</title>
 
+        <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-macopres.svg') }}?v=1">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -38,7 +39,7 @@
                 background: rgba(255,255,255,.06);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
-                border: 1px solid rgba(255,255,255,.1);
+                border: 2px solid rgba(255,255,255,.1);
                 box-shadow: 0 32px 64px rgba(4,44,83,.4), inset 0 1px 0 rgba(255,255,255,.08);
             }
 
@@ -67,11 +68,11 @@
 
         {{-- Cercles décoratifs --}}
         <div class="fixed -top-52 -right-36 w-[600px] h-[600px] rounded-full pointer-events-none z-0"
-             style="border:1px solid rgba(55,138,221,.08)"></div>
+             style="border:2px solid rgba(55,138,221,.08)"></div>
         <div class="fixed -top-28 -right-12 w-[400px] h-[400px] rounded-full pointer-events-none z-0"
-             style="border:1px solid rgba(55,138,221,.12)"></div>
+             style="border:2px solid rgba(55,138,221,.12)"></div>
         <div class="fixed -bottom-96 -left-48 w-[800px] h-[800px] rounded-full pointer-events-none z-0"
-             style="border:1px solid rgba(55,138,221,.06)"></div>
+             style="border:2px solid rgba(55,138,221,.06)"></div>
 
         {{-- Contenu centré --}}
         <div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-10">

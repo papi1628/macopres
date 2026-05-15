@@ -1,12 +1,17 @@
 <x-guest-layout>
 
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
     <div class="w-full max-w-[420px] animate-fade-up">
 
         {{-- ── Brand ── --}}
         <div class="text-center mb-7">
             <div class="logo-glow inline-flex items-center justify-center w-16 h-16 rounded-[18px] text-3xl font-black text-white mb-4"
                  style="background: linear-gradient(135deg, #185FA5, #378ADD);">
-                M
+                <img 
+                    src="{{ asset('images/logo-macopres.svg') }}" 
+                    alt="Macopres"
+                >
             </div>
             <h1 class="text-[26px] font-extrabold text-white tracking-tight leading-none">MACOPRES</h1>
             <p class="text-[12px] text-blue-200 mt-1.5 font-normal">Système de gestion RH &amp; Pointage</p>
