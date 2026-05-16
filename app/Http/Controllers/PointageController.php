@@ -329,7 +329,6 @@ class PointageController extends Controller
                     ->get();
 
                 $joursPresents = $pts->whereIn('statut', ['present', 'retard'])->count();
-                $salaireJour   = $employe->salaire ? $employe->salaire / Pointage::JOURS_OUVRABLES_MOIS : 0;
 
                 return [
                     'employe'        => $employe,
@@ -337,7 +336,7 @@ class PointageController extends Controller
                     'jours_absents'  => $pts->where('statut', 'absent')->count(),
                     'retards'        => $pts->where('statut', 'retard')->count(),
                     'heures_total'   => round($pts->sum('heures_travaillees'), 2),
-                    'salaire_du'     => round($joursPresents * $salaireJour, 2),
+                    'salaire_du'     => round($pts->sum('salaire_jour'), 2), // ← somme des salaires réels
                     'salaire_base'   => $employe->salaire,
                 ];
             });
