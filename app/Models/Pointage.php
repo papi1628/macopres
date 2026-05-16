@@ -94,11 +94,9 @@ class Pointage extends Model
         $minutesTravaillees      = $arrivee->diffInMinutes($depart);
         $this->heures_travaillees = round($minutesTravaillees / 60, 2);
 
-        // Salaire journalier selon les heures réellement travaillées
+        // Salaire journalier
         if ($this->employe && $this->employe->salaire) {
-            $salaireJournalier    = $this->employe->salaire / self::JOURS_OUVRABLES_MOIS;
-            $tauxHoraire          = $salaireJournalier / self::HEURES_JOURNEE;
-            $this->salaire_jour   = round($tauxHoraire * $this->heures_travaillees, 2);
+            $this->salaire_jour   = $this->employe->salaire;
         }
     }
 
