@@ -228,9 +228,8 @@
                         <td class="px-4 py-3 text-right text-[13px] font-black" style="color:#0C447C">
                             {{ number_format($employes->sum('salaire_du'), 0, ',', ' ') }} F
                         </td>
-                        <td class="px-4 py-3 text-right text-[12px] text-slate-400">
-                            {{ number_format($employes->sum('salaire_base'), 0, ',', ' ') }} F
-                        </td>
+                        // Après — on n'affiche pas de total pour le salaire de base, ça n'a pas de sens
+                        <td class="px-4 py-3 text-right text-[12px] text-slate-400">–</td>
                         <td></td>
                     </tr>
                 </tfoot>

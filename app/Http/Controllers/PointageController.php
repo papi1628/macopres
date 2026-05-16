@@ -336,8 +336,8 @@ class PointageController extends Controller
                     'jours_absents'  => $pts->where('statut', 'absent')->count(),
                     'retards'        => $pts->where('statut', 'retard')->count(),
                     'heures_total'   => round($pts->sum('heures_travaillees'), 2),
-                    'salaire_du'     => round($pts->sum('salaire_jour'), 2), // ← somme des salaires réels
-                    'salaire_base'   => $employe->salaire,
+                    'salaire_du'     => round($pts->sum('salaire_jour'), 2), // ← somme réelle
+                    'salaire_base'   => $employe->salaire,                   // ← salaire journalier de référence
                 ];
             });
 
