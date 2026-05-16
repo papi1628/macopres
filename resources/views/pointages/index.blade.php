@@ -340,6 +340,17 @@
                     <p class="text-[10px] text-slate-400 mt-1">Heure limite sans retard : 08h45</p>
                 </div>
 
+                <!-- Demi-journée -->
+                <div class="flex items-center gap-2 p-3 rounded-xl" style="background:#FEF6E4">
+                    <input type="checkbox" name="demi_journee" id="demi_journee" value="1"
+                        class="w-4 h-4 rounded cursor-pointer"
+                        style="accent-color:#854F0B">
+                    <label for="demi_journee" class="text-[13px] font-semibold cursor-pointer"
+                        style="color:#854F0B">
+                        Demi-journée (salaire ÷ 2)
+                    </label>
+                </div>
+
                 <div class="flex gap-3 pt-2 border-t border-slate-100">
                     <button type="button" @click="pointerModal = false"
                             class="flex-1 h-10 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors">
@@ -387,6 +398,16 @@
                     <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Heure de départ *</label>
                     <input type="time" name="heure_depart" :value="currentTime"
                            class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                </div>
+
+                <div class="flex items-center gap-2 p-3 rounded-xl" style="background:#FEF6E4">
+                    <input type="checkbox" name="demi_journee" id="demi_journee_depart" value="1"
+                        class="w-4 h-4 rounded cursor-pointer"
+                        style="accent-color:#854F0B">
+                    <label for="demi_journee_depart" class="text-[13px] font-semibold cursor-pointer"
+                        style="color:#854F0B">
+                        Demi-journée (salaire ÷ 2)
+                    </label>
                 </div>
 
                 <div class="flex gap-3 pt-2 border-t border-slate-100">

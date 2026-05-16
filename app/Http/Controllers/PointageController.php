@@ -61,6 +61,7 @@ class PointageController extends Controller
             'employe_id'    => 'required|exists:employes,id',
             'date'          => 'required|date',
             'heure_arrivee' => 'required|date_format:H:i',
+            'demi_journee'  => 'nullable|boolean',
         ]);
 
         $employe = Employe::findOrFail($request->employe_id);
@@ -79,6 +80,7 @@ class PointageController extends Controller
             'employe_id'    => $employe->id,
             'date'          => $request->date,
             'heure_arrivee' => $request->heure_arrivee . ':00',
+            'demi_journee'  => $request->boolean('demi_journee'),
             'type'          => 'manuel',
             'created_by'    => auth()->id(),
         ]);
@@ -103,14 +105,16 @@ class PointageController extends Controller
     {
         $request->validate([
             'heure_depart' => 'required|date_format:H:i',
+            'demi_journee' => 'nullable|boolean',
         ]);
 
-        $pointage->heure_depart = $request->heure_depart . ':00';
+        $pointage->heure_depart  = $request->heure_depart . ':00';
+        $pointage->demi_journee  = $request->boolean('demi_journee');
         $pointage->load('employe');
-
-        // Calculer heures travaillées + salaire
         $pointage->calculerHeuresEtSalaire();
         $pointage->save();
+
+
 
         $employe = $pointage->employe;
 

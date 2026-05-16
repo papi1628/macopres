@@ -12,6 +12,7 @@ class Pointage extends Model
         'date',
         'heure_arrivee',
         'heure_depart',
+        'demi_journee',
         'statut',
         'type',
         'heures_travaillees',
@@ -24,6 +25,7 @@ class Pointage extends Model
     protected $casts = [
         'date'    => 'date',
         'retard'  => 'boolean',
+        'demi_journee' => 'boolean',
     ];
 
     /*
@@ -83,6 +85,7 @@ class Pointage extends Model
     /**
      * Calculer les heures travaillées et le salaire journalier au départ
      */
+
     public function calculerHeuresEtSalaire(): void
     {
         if (!$this->heure_arrivee || !$this->heure_depart) return;
@@ -90,13 +93,15 @@ class Pointage extends Model
         $arrivee = Carbon::parse($this->date->format('Y-m-d') . ' ' . $this->heure_arrivee);
         $depart  = Carbon::parse($this->date->format('Y-m-d') . ' ' . $this->heure_depart);
 
-        // Heures travaillées en décimal (ex: 8.75 pour 8h45)
-        $minutesTravaillees      = $arrivee->diffInMinutes($depart);
+        // Heures travaillées
+        $minutesTravaillees       = $arrivee->diffInMinutes($depart);
         $this->heures_travaillees = round($minutesTravaillees / 60, 2);
 
-        // Salaire journalier
-        if ($this->employe && $this->employe->salaire_jour) {
-            $this->salaire_jour   = $this->employe->salaire_jour;
+        // Salaire : pleine journée ou demi selon ce que le pointeur a choisi
+        if ($this->employe && $this->employe->salaire) {
+            $this->salaire_jour = $this->demi_journee
+                ? round($this->employe->salaire / 2, 2)
+                : $this->employe->salaire;
         }
     }
 
