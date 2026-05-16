@@ -131,7 +131,7 @@
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Département</th>
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Arrivée</th>
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Départ</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Durée</th>
+                        <!--<th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Durée</th>-->
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Statut</th>
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -191,9 +191,9 @@
                             </td>
 
                             {{-- Durée --}}
-                            <td class="px-4 py-3 text-[12px] text-slate-600">
+                            <!--<td class="px-4 py-3 text-[12px] text-slate-600">
                                 {{ $pointage ? $pointage->duree_formattee : '–' }}
-                            </td>
+                            </td>-->
 
                             {{-- Statut --}}
                             <td class="px-4 py-3">
