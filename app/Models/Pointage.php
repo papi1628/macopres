@@ -95,8 +95,8 @@ class Pointage extends Model
         $this->heures_travaillees = round($minutesTravaillees / 60, 2);
 
         // Salaire journalier
-        if ($this->employe && $this->employe->salaire) {
-            $this->salaire_jour   = $this->employe->salaire;
+        if ($this->employe && $this->employe->salaire_jour) {
+            $this->salaire_jour   = $this->employe->salaire_jour;
         }
     }
 
