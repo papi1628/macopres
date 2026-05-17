@@ -87,10 +87,10 @@
         </div>
         <div class="flex flex-wrap gap-x-6 gap-y-1 mt-3">
             @foreach([
-                ['Présents', $statsGlobales['total_presents'],  '#3B6D11'],
+                ['Jours', $statsGlobales['total_jours_travailles'],  '#3B6D11'],
                 ['Retards',  $statsGlobales['total_retards'],   '#854F0B'],
                 ['Absents',  $statsGlobales['total_absents'],   '#A32D2D'],
-                ['Total heures', $statsGlobales['total_heures'] . 'h', '#185FA5'],
+                /*['Total heures', $statsGlobales['total_heures'] . 'h', '#185FA5'],*/
             ] as [$label, $val, $color])
                 <div class="flex items-center gap-1.5">
                     <div class="w-2 h-2 rounded-full" style="background:{{ $color }}"></div>
