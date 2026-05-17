@@ -56,7 +56,7 @@
     {{-- ══════════════════════════════════════
          STATS KPI
     ══════════════════════════════════════ --}}
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #3B6D11">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Présences</p>
             <p class="text-[24px] font-black leading-none" style="color:#3B6D11">{{ $stats['jours_presents'] }}</p>

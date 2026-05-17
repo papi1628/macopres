@@ -64,7 +64,7 @@
             <p class="text-[22px] font-black leading-none" style="color:#185FA5">
                 {{ number_format($statsGlobales['total_salaires'], 0, ',', ' ') }}
             </p>
-            <p class="text-[10px] text-slate-400 mt-1">FCFA versés ce mois</p>
+            <p class="text-[10px] text-slate-400 mt-1">FCFA à versés ce mois</p>
         </div>
     </div>
 
@@ -124,10 +124,10 @@
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Présences</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Absences</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Retards</th>
-                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Heures</th>
-                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Taux</th>
+                        <!--<th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Heures</th>-->
+                        <!--<th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Taux</th>-->
                         <th class="text-right px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Salaire dû</th>
-                        <th class="text-right px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Salaire base</th>
+                        <th class="text-right px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Salaire/j</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Fiche</th>
                     </tr>
                 </thead>
@@ -171,10 +171,10 @@
                                     {{ $row['retards'] }}x
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-center text-[12px] text-slate-600 font-mono">
+                            <!--<td class="px-4 py-3 text-center text-[12px] text-slate-600 font-mono">
                                 {{ $row['heures_total'] }}h
-                            </td>
-                            <td class="px-4 py-3">
+                            </td>-->
+                            <!--<td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="flex-1 h-1.5 rounded-full overflow-hidden" style="background:#E6F1FB">
                                         <div class="h-full rounded-full"
@@ -186,7 +186,7 @@
                                         {{ $taux }}%
                                     </span>
                                 </div>
-                            </td>
+                            </td>-->
                             <td class="px-4 py-3 text-right">
                                 <span class="text-[13px] font-bold text-slate-800">
                                     {{ number_format($row['salaire_du'], 0, ',', ' ') }} F
@@ -212,19 +212,19 @@
                 <tfoot>
                     <tr style="background:#f0f4f8; border-top:2px solid #e2e8f0">
                         <td colspan="2" class="px-4 py-3 text-[11px] font-bold text-slate-700">TOTAL DU MOIS</td>
-                        <td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#3B6D11">
+                        <!--<td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#3B6D11">
                             {{ $employes->sum('jours_presents') }}j
-                        </td>
+                        </td>-->
                         <td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#A32D2D">
                             {{ $employes->sum('jours_absents') }}j
                         </td>
                         <td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#854F0B">
                             {{ $employes->sum('retards') }}x
                         </td>
-                        <td class="px-4 py-3 text-center text-[12px] font-bold text-slate-700">
+                        <!--<td class="px-4 py-3 text-center text-[12px] font-bold text-slate-700">
                             {{ $employes->sum('heures_total') }}h
                         </td>
-                        <td class="px-4 py-3"></td>
+                        <td class="px-4 py-3"></td>-->
                         <td class="px-4 py-3 text-right text-[13px] font-black" style="color:#0C447C">
                             {{ number_format($employes->sum('salaire_du'), 0, ',', ' ') }} F
                         </td>
