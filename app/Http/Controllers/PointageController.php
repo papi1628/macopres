@@ -138,7 +138,7 @@ class PointageController extends Controller
         ]);
 
         // Trouver l'employé via son QR code
-        
+
         $employe = Employe::where('qr_code', $request->qr_code)
             ->first();
 
@@ -318,6 +318,7 @@ class PointageController extends Controller
             'total_retards'     => $pointagesMois->where('statut', 'retard')->count(),
             'total_heures'      => round($pointagesMois->sum('heures_travaillees'), 2),
             'total_salaires'    => round($pointagesMois->sum('salaire_jour'), 2),
+            'total_jours_travailles' => $pointagesMois->pluck('date')->unique()->count(),
         ];
 
         // Stats par employé
