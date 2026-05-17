@@ -138,6 +138,7 @@ class PointageController extends Controller
         ]);
 
         // Trouver l'employé via son QR code
+        
         $employe = Employe::where('qr_code', $request->qr_code)
             ->first();
 

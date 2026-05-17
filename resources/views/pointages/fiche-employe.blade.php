@@ -72,13 +72,13 @@
             <p class="text-[24px] font-black leading-none" style="color:#854F0B">{{ $stats['jours_retard'] }}</p>
             <p class="text-[10px] text-slate-400 mt-1">jours</p>
         </div>
-        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #0C447C">
+        <!--<div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #0C447C">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Heures travaillées</p>
             <p class="text-[24px] font-black leading-none" style="color:#0C447C">{{ $stats['heures_total'] }}h</p>
             <p class="text-[10px] text-slate-400 mt-1">{{ $titre }}</p>
-        </div>
+        </div>-->
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 col-span-2 lg:col-span-1" style="border-left:3px solid #185FA5">
-            <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Salaire dû</p>
+            <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Salaire</p>
             <p class="text-[20px] font-black leading-none" style="color:#185FA5">
                 {{ number_format($stats['salaire_periode'], 0, ',', ' ') }}
             </p>
@@ -94,7 +94,7 @@
             <h3 class="text-[12px] font-semibold text-slate-800">Détail — {{ $titre }}</h3>
             @if($stats['salaire_mensuel'])
                 <span class="text-[10px] text-slate-400">
-                    Salaire mensuel : <strong class="text-slate-700">{{ number_format($stats['salaire_mensuel'], 0, ',', ' ') }} FCFA</strong>
+                    Salaire journalier : <strong class="text-slate-700">{{ number_format($stats['salaire_mensuel'], 0, ',', ' ') }} FCFA</strong>
                 </span>
             @endif
         </div>
@@ -107,7 +107,7 @@
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Jour</th>
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Arrivée</th>
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Départ</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Durée</th>
+                        <!--<th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Durée</th>-->
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Salaire/j</th>
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Statut</th>
                     </tr>
@@ -133,9 +133,9 @@
                             <td class="px-4 py-3 font-mono text-[12px] text-slate-700">
                                 {{ $pointage->heure_depart ? substr($pointage->heure_depart, 0, 5) : '–' }}
                             </td>
-                            <td class="px-4 py-3 text-[12px] text-slate-600">
+                            <!--<td class="px-4 py-3 text-[12px] text-slate-600">
                                 {{ $pointage->duree_formattee }}
-                            </td>
+                            </td>-->
                             <td class="px-4 py-3 text-[12px] font-semibold text-slate-700">
                                 {{ $pointage->salaire_jour ? number_format($pointage->salaire_jour, 0, ',', ' ') . ' F' : '–' }}
                             </td>
@@ -149,7 +149,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-12 text-center text-slate-400 text-sm">
+                            <td colspan="6" class="px-4 py-12 text-center text-slate-400 text-sm">
                                 Aucun pointage pour cette période
                             </td>
                         </tr>
@@ -161,7 +161,7 @@
                     <tfoot>
                         <tr style="background:#f8fafc; border-top:2px solid #e2e8f0">
                             <td colspan="4" class="px-4 py-3 text-[11px] font-bold text-slate-700">TOTAL</td>
-                            <td class="px-4 py-3 text-[12px] font-bold" style="color:#0C447C">{{ $stats['heures_total'] }}h</td>
+                            <!--<td class="px-4 py-3 text-[12px] font-bold" style="color:#0C447C">{{ $stats['heures_total'] }}h</td>-->
                             <td class="px-4 py-3 text-[12px] font-bold" style="color:#185FA5">
                                 {{ number_format($stats['salaire_periode'], 0, ',', ' ') }} F
                             </td>
