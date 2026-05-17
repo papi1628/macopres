@@ -212,6 +212,7 @@
                 <tfoot>
                     <tr style="background:#f0f4f8; border-top:2px solid #e2e8f0">
                         <td colspan="2" class="px-4 py-3 text-[11px] font-bold text-slate-700">TOTAL DU MOIS</td>
+                        <td class="px-4 py-3"></td>
                         <!--<td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#3B6D11">
                             {{ $employes->sum('jours_presents') }}j
                         </td>-->

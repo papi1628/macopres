@@ -67,10 +67,22 @@ class Pointage extends Model
     {
         if (!$this->heure_arrivee) return;
 
-        $arrivee       = Carbon::parse($this->date->format('Y-m-d') . ' ' . $this->heure_arrivee);
-        $arrivePrevue  = Carbon::parse($this->date->format('Y-m-d') . ' ' . self::HEURE_ARRIVEE_PREVUE);
-        $limiteRetard  = $arrivePrevue->copy()->addMinutes(self::TOLERANCE_RETARD_MIN);
+        $arrivee      = Carbon::parse($this->date->format('Y-m-d') . ' ' . $this->heure_arrivee);
+        $arrivePrevue = Carbon::parse($this->date->format('Y-m-d') . ' ' . self::HEURE_ARRIVEE_PREVUE);
+        $limiteRetard = $arrivePrevue->copy()->addMinutes(self::TOLERANCE_RETARD_MIN);
 
+        // 1. Calculer le retard
+        if ($arrivee->gt($limiteRetard)) {
+            $this->retard         = true;
+            $this->minutes_retard = $arrivee->diffInMinutes($arrivePrevue);
+            $this->statut         = 'retard';
+        } else {
+            $this->retard         = false;
+            $this->minutes_retard = 0;
+            $this->statut         = 'present';
+        }
+
+        // 2. Calculer le salaire dès l'arrivée
         if ($this->employe && $this->employe->salaire) {
             $this->salaire_jour = $this->demi_journee
                 ? round($this->employe->salaire / 2, 2)
