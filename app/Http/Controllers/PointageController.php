@@ -139,15 +139,37 @@ class PointageController extends Controller
 
         // Trouver l'employé via son QR code
 
-        $employe = Employe::where('qr_code', $request->qr_code)
-            ->first();
+        $data = json_decode($request->qr_code, true);
+
+        if (!$data || !isset($data['id'], $data['token'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR code invalide.',
+            ], 400);
+        }
+
+        $employe = Employe::find($data['id']);
 
         if (!$employe) {
             return response()->json([
                 'success' => false,
-                'message' => 'QR code invalide ou employé inactif.',
+                'message' => 'Employé introuvable.',
             ], 404);
         }
+
+        $expectedToken = hash_hmac(
+            'sha256',
+            $employe->qr_code,
+            env('APP_KEY')
+        );
+
+        if (!hash_equals($expectedToken, $data['token'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR code falsifié.',
+            ], 403);
+        }
+
 
         $maintenant = now();
         $date       = $maintenant->format('Y-m-d');
