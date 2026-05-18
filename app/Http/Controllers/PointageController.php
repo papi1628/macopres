@@ -305,35 +305,28 @@ class PointageController extends Controller
         $pointages = $query->orderBy('date', 'desc')->get();
 
         // Stats de la période
-
-        // Nombre de jours ouvrables de la période
-        $joursOuvrables = 0;
+        // Jours où l'entreprise a réellement travaillé
+        $joursEntreprise = Pointage::query();
 
         switch ($periode) {
 
             case 'semaine':
-                $debut = now()->startOfWeek();
-                $fin   = now()->endOfWeek();
+                $joursEntreprise->cetteSemaine();
                 break;
 
             case 'annee':
-                $debut = now()->startOfYear();
-                $fin   = now()->endOfYear();
+                $joursEntreprise->cetteAnnee();
                 break;
 
             default:
-                $debut = now()->startOfMonth();
-                $fin   = now()->endOfMonth();
+                $joursEntreprise->ceMois();
                 break;
         }
 
-        for ($jour = $debut->copy(); $jour->lte($fin); $jour->addDay()) {
-
-            // Exclure dimanche
-            if ($jour->dayOfWeek !== Carbon::SUNDAY) {
-                $joursOuvrables++;
-            }
-        }
+        $totalJoursTravail = $joursEntreprise
+            ->pluck('date')
+            ->unique()
+            ->count();
 
         $joursPresents = $pointages
             ->whereIn('statut', ['present', 'retard'])
@@ -344,7 +337,7 @@ class PointageController extends Controller
 
             'jours_absents'     => max(
                 0,
-                $joursOuvrables - $joursPresents
+                $totalJoursTravail - $joursPresents
             ),
 
             'jours_retard'      => $pointages->where('statut', 'retard')->count(),
