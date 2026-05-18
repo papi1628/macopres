@@ -375,16 +375,7 @@ class PointageController extends Controller
             ->whereYear('date', $annee)
             ->get();
 
-        // Calculer les jours ouvrables du mois (lundi → samedi)
-        $joursOuvrablesMois = 0;
-        $debut = Carbon::parse($annee . '-' . $moisNum . '-01')->startOfMonth();
-        $fin   = $debut->copy()->endOfMonth();
 
-        for ($jour = $debut->copy(); $jour->lte($fin); $jour->addDay()) {
-            if ($jour->dayOfWeek !== Carbon::SUNDAY) {
-                $joursOuvrablesMois++;
-            }
-        }
 
         $statsGlobales = [
             'total_pointages' => $pointagesMois->count(),
@@ -393,17 +384,18 @@ class PointageController extends Controller
             'total_retards'   => $pointagesMois->where('statut', 'retard')->count(),
             'total_heures'    => round($pointagesMois->sum('heures_travaillees'), 2),
             'total_salaires'  => round($pointagesMois->sum('salaire_jour'), 2),
-            'jours_ouvrables' => $joursOuvrablesMois,
             'total_jours_travailles' => $pointagesMois
                 ->pluck('date')
                 ->unique()
                 ->count(),
         ];
+        
+        $totalJoursTravail = $statsGlobales['total_jours_travailles'];
 
         // Stats par employé
         $employes = Employe::orderBy('nom')
             ->get()
-            ->map(function ($employe) use ($moisNum, $annee, $joursOuvrablesMois) {
+            ->map(function ($employe) use ($moisNum, $annee, $totalJoursTravail) {
                 $pts = Pointage::where('employe_id', $employe->id)
                     ->whereMonth('date', $moisNum)
                     ->whereYear('date', $annee)
@@ -414,7 +406,10 @@ class PointageController extends Controller
                 return [
                     'employe'        => $employe,
                     'jours_presents' => $joursPresents,
-                    'jours_absents'  => $joursOuvrablesMois - $joursPresents,
+                    'jours_absents'  => max(
+                        0,
+                        $totalJoursTravail - $joursPresents
+                    ),
                     'retards'        => $pts->where('statut', 'retard')->count(),
                     'heures_total'   => round($pts->sum('heures_travaillees'), 2),
                     'salaire_du'     => round($pts->sum('salaire_jour'), 2),
