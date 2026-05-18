@@ -305,12 +305,54 @@ class PointageController extends Controller
         $pointages = $query->orderBy('date', 'desc')->get();
 
         // Stats de la période
+
+        // Nombre de jours ouvrables de la période
+        $joursOuvrables = 0;
+
+        switch ($periode) {
+
+            case 'semaine':
+                $debut = now()->startOfWeek();
+                $fin   = now()->endOfWeek();
+                break;
+
+            case 'annee':
+                $debut = now()->startOfYear();
+                $fin   = now()->endOfYear();
+                break;
+
+            default:
+                $debut = now()->startOfMonth();
+                $fin   = now()->endOfMonth();
+                break;
+        }
+
+        for ($jour = $debut->copy(); $jour->lte($fin); $jour->addDay()) {
+
+            // Exclure dimanche
+            if ($jour->dayOfWeek !== Carbon::SUNDAY) {
+                $joursOuvrables++;
+            }
+        }
+
+        $joursPresents = $pointages
+            ->whereIn('statut', ['present', 'retard'])
+            ->count();
+
         $stats = [
-            'jours_presents'    => $pointages->whereIn('statut', ['present', 'retard'])->count(),
-            'jours_absents'     => $pointages->where('statut', 'absent')->count(),
+            'jours_presents'    => $joursPresents,
+
+            'jours_absents'     => max(
+                0,
+                $joursOuvrables - $joursPresents
+            ),
+
             'jours_retard'      => $pointages->where('statut', 'retard')->count(),
+
             'heures_total'      => round($pointages->sum('heures_travaillees'), 2),
+
             'salaire_periode'   => round($pointages->sum('salaire_jour'), 2),
+
             'salaire_mensuel'   => $employe->salaire,
         ];
 
