@@ -352,6 +352,10 @@ class PointageController extends Controller
             'total_heures'    => round($pointagesMois->sum('heures_travaillees'), 2),
             'total_salaires'  => round($pointagesMois->sum('salaire_jour'), 2),
             'jours_ouvrables' => $joursOuvrablesMois,
+            'total_jours_travailles' => $pointagesMois
+                ->pluck('date')
+                ->unique()
+                ->count(),
         ];
 
         // Stats par employé
