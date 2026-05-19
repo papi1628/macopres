@@ -137,9 +137,11 @@
                             <td class="px-4 py-3 font-mono text-[12px] text-slate-700">
                                 {{ $pointage->heure_depart ? substr($pointage->heure_depart, 0, 5) : '–' }}
                             </td>
-                            <!--<td class="px-4 py-3 text-[12px] text-slate-600">
-                                {{ $pointage->duree_formattee }}
-                            </td>-->
+                            {{--
+                                <td class="px-4 py-3 text-[12px] text-slate-600">
+                                    {{ $pointage->duree_formattee }}
+                                </td>
+                            --}}
                             <td class="px-4 py-3 text-[12px] font-semibold text-slate-700">
                                 {{ $pointage->salaire_jour ? number_format($pointage->salaire_jour, 0, ',', ' ') . ' F' : '–' }}
                             </td>
@@ -169,7 +171,7 @@
                     <tfoot>
                         <tr style="background:#f8fafc; border-top:2px solid #e2e8f0">
                             <td colspan="4" class="px-4 py-3 text-[11px] font-bold text-slate-700">TOTAL</td>
-                            <!--<td class="px-4 py-3 text-[12px] font-bold" style="color:#0C447C">{{ $stats['heures_total'] }}h</td>-->
+                            {{-- <td class="px-4 py-3 text-[12px] font-bold" style="color:#0C447C">{{ $stats['heures_total'] }}h</td> --}}
                             <td class="px-4 py-3 text-[12px] font-bold" style="color:#185FA5">
                                 {{ number_format($stats['salaire_periode'], 0, ',', ' ') }} F
                             </td>
