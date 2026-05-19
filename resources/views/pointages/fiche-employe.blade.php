@@ -119,7 +119,11 @@
                                 {{ $pointage->date ? $pointage->date->format('d/m/Y') : "-" }}
                             </td>
                             <td class="px-4 py-3 text-[12px] text-slate-500 capitalize">
-                                {{ $pointage->date ? $pointage->date->locale('fr')->isoFormat('dddd') : "-" }}
+                                @php
+                                    $date = $pointage->date ? \Carbon\Carbon::parse($pointage->date) : null;
+                                @endphp
+
+                                {{ $date ? $date->locale('fr')->isoFormat('dddd') : "-" }}
                             </td>
                             <td class="px-4 py-3 font-mono text-[12px] text-slate-700">
                                 {{ $pointage->heure_arrivee ? substr($pointage->heure_arrivee, 0, 5) : '–' }}
@@ -147,7 +151,7 @@
                                         style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
                                         {{ $badge['label'] }}
                                     </span>
-                                    
+
                                 @endif
                             </td>
                         </tr>

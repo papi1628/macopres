@@ -26,8 +26,7 @@ class Pointage extends Model
         'date'    => 'date',
         'retard'  => 'boolean',
         'demi_journee' => 'boolean',
-        'heure_arrivee' => 'datetime',
-        'heure_depart' => 'datetime',
+        
     ];
  
 
