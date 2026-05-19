@@ -116,10 +116,10 @@
                     @forelse($lignes as $pointage)
                         <tr class="hover:bg-slate-50/60 transition-colors">
                             <td class="px-4 py-3 font-mono text-[11px] font-bold" style="color:#0C447C">
-                                {{ $pointage->date->format('d/m/Y') }}
+                                {{ $pointage->date ? $pointage->date->format('d/m/Y') : "-" }}
                             </td>
                             <td class="px-4 py-3 text-[12px] text-slate-500 capitalize">
-                                {{ $pointage->date->locale('fr')->isoFormat('dddd') }}
+                                {{ $pointage->date ? $pointage->date->locale('fr')->isoFormat('dddd') : "-" }}
                             </td>
                             <td class="px-4 py-3 font-mono text-[12px] text-slate-700">
                                 {{ $pointage->heure_arrivee ? substr($pointage->heure_arrivee, 0, 5) : '–' }}
@@ -140,11 +140,15 @@
                                 {{ $pointage->salaire_jour ? number_format($pointage->salaire_jour, 0, ',', ' ') . ' F' : '–' }}
                             </td>
                             <td class="px-4 py-3">
-                                @php $badge = $pointage->badge_statut; @endphp
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                      style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
-                                    {{ $badge['label'] }}
-                                </span>
+                                @if($pointage->badge_statut)
+                                
+                                    @php $badge = $pointage->badge_statut; @endphp
+                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                        style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
+                                        {{ $badge['label'] }}
+                                    </span>
+                                    
+                                @endif
                             </td>
                         </tr>
                     @empty
