@@ -388,6 +388,7 @@ class PointageController extends Controller
         |--------------------------------------------------------------------------
         */
         $datesPresence = $pointages
+            ->whereIn('statut', ['present', 'retard'])
             ->pluck('date')
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();

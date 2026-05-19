@@ -157,7 +157,7 @@
                 </tbody>
 
                 {{-- Ligne total --}}
-                @if($pointages->count() > 0)
+                @if($lignes->count() > 0)
                     <tfoot>
                         <tr style="background:#f8fafc; border-top:2px solid #e2e8f0">
                             <td colspan="4" class="px-4 py-3 text-[11px] font-bold text-slate-700">TOTAL</td>
