@@ -113,7 +113,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
-                    @forelse($pointages as $pointage)
+                    @forelse($lignes as $pointage)
                         <tr class="hover:bg-slate-50/60 transition-colors">
                             <td class="px-4 py-3 font-mono text-[11px] font-bold" style="color:#0C447C">
                                 {{ $pointage->date->format('d/m/Y') }}

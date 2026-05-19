@@ -356,6 +356,82 @@ class PointageController extends Controller
             ->whereIn('statut', ['present', 'retard'])
             ->count();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Liste complète des jours de travail
+        | depuis le premier pointage de l'employé
+        |--------------------------------------------------------------------------
+        */
+        $joursTravailEntreprise = collect();
+
+        if ($premierPointage) {
+
+            $joursTravailEntreprise = Pointage::query()
+
+                // période sélectionnée
+                ->when($periode === 'semaine', fn($q) => $q->cetteSemaine())
+                ->when($periode === 'mois', fn($q) => $q->ceMois())
+                ->when($periode === 'annee', fn($q) => $q->cetteAnnee())
+
+                // depuis le premier pointage de l'employé
+                ->whereDate('date', '>=', $premierPointage->date)
+
+                ->pluck('date')
+                ->unique()
+                ->sort()
+                ->values();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dates où l'employé est présent
+        |--------------------------------------------------------------------------
+        */
+        $datesPresence = $pointages
+            ->pluck('date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Générer les absences
+        |--------------------------------------------------------------------------
+        */
+        $absences = collect();
+
+        foreach ($joursTravailEntreprise as $date) {
+
+            $dateFormat = Carbon::parse($date)->format('Y-m-d');
+
+            if (!in_array($dateFormat, $datesPresence)) {
+
+                $absences->push((object) [
+                    'date' => Carbon::parse($date),
+                    'heure_arrivee' => null,
+                    'heure_depart' => null,
+                    'salaire_jour' => 0,
+                    'statut' => 'absent',
+                    'retard' => false,
+                    'minutes_retard' => 0,
+                    'badge_statut' => [
+                        'label' => 'Absent',
+                        'bg' => '#FEE2E2',
+                        'color' => '#B91C1C',
+                    ],
+                ]);
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Fusion présences + absences
+        |--------------------------------------------------------------------------
+        */
+        $lignes = $pointages
+            ->concat($absences)
+            ->sortByDesc('date')
+            ->values();    
+
         $stats = [
             'jours_presents'    => $joursPresents,
 
@@ -373,7 +449,7 @@ class PointageController extends Controller
             'salaire_mensuel'   => $employe->salaire,
         ];
 
-        return view('pointages.fiche-employe', compact('employe', 'pointages', 'stats', 'periode', 'titre'));
+        return view('pointages.fiche-employe', compact('employe', 'pointages', 'lignes', 'stats', 'periode', 'titre'));
     }
 
     /*
