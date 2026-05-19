@@ -197,7 +197,7 @@
                     {{-- Département --}}
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Département</label>
-                        <select name="departement" x-model="form.departement"
+                        <select name="departement" x-model="form.departement" required
                                 class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
                             <option value="">-- Choisir --</option>
                             @php

@@ -386,29 +386,55 @@ class PointageController extends Controller
         $totalJoursTravail = $statsGlobales['total_jours_travailles'];
 
         // Stats par employé
-        $employes = Employe::orderBy('nom')
-            ->get()
-            ->map(function ($employe) use ($moisNum, $annee, $totalJoursTravail) {
-                $pts = Pointage::where('employe_id', $employe->id)
-                    ->whereMonth('date', $moisNum)
-                    ->whereYear('date', $annee)
-                    ->get();
+       $employes = Employe::orderBy('nom')
+    ->get()
+    ->map(function ($employe) use ($moisNum, $annee) {
 
-                $joursPresents = $pts->count();
+        $pts = Pointage::where('employe_id', $employe->id)
+            ->whereMonth('date', $moisNum)
+            ->whereYear('date', $annee)
+            ->get();
 
-                return [
-                    'employe'        => $employe,
-                    'jours_presents' => $joursPresents,
-                    'jours_absents'  => max(
-                        0,
-                        $totalJoursTravail - $joursPresents
-                    ),
-                    'retards'        => $pts->where('statut', 'retard')->count(),
-                    'heures_total'   => round($pts->sum('heures_travaillees'), 2),
-                    'salaire_du'     => round($pts->sum('salaire_jour'), 2),
-                    'salaire_base'   => $employe->salaire,
-                ];
-            });
+        $joursPresents = $pts
+            ->whereIn('statut', ['present', 'retard'])
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Jours travaillés par l’entreprise
+        | APRÈS création de l’employé
+        |--------------------------------------------------------------------------
+        */
+
+        $dateCreation = Carbon::parse($employe->created_at);
+
+        $joursEntrepriseEmploye = Pointage::query()
+            ->whereMonth('date', $moisNum)
+            ->whereYear('date', $annee)
+            ->whereDate('date', '>=', $dateCreation)
+            ->pluck('date')
+            ->unique()
+            ->count();
+
+        return [
+            'employe'        => $employe,
+
+            'jours_presents' => $joursPresents,
+
+            'jours_absents'  => max(
+                0,
+                $joursEntrepriseEmploye - $joursPresents
+            ),
+
+            'retards'        => $pts->where('statut', 'retard')->count(),
+
+            'heures_total'   => round($pts->sum('heures_travaillees'), 2),
+
+            'salaire_du'     => round($pts->sum('salaire_jour'), 2),
+
+            'salaire_base'   => $employe->salaire,
+        ];
+    });
 
         // Recalculer total absences globales
         $statsGlobales['total_absents'] = $employes->sum('jours_absents');
