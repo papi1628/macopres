@@ -12,11 +12,7 @@
         <div class="flex items-center justify-between">
 
             <div>
-                <h1 class="text-[18px] font-bold text-slate-800">
-                    Calendrier RH
-                </h1>
-
-                <p class="text-sm text-slate-400 mt-1">
+                <p class="text-lg text-slate-400 mt-1">
                     {{ $date->locale('fr')->translatedFormat('F Y') }}
                 </p>
             </div>
@@ -48,6 +44,14 @@
     {{-- CALENDRIER --}}
     <div class="grid grid-cols-7 gap-3">
 
+        {{-- BARRE DES JOURS --}}
+        <div class="grid grid-cols-7 gap-3">
+            @foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $jourNom)
+                <div class="text-center text-[11px] font-bold text-slate-400 uppercase">
+                    {{ $jourNom }}
+                </div>
+            @endforeach
+        </div>
         @foreach($jours as $jour)
 
             <div class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md
@@ -87,7 +91,7 @@
                     @endforeach
 
                     {{-- WEEK-END (dimanche seulement) --}}
-                    @if($jour['weekend'] && empty($jour['evenements']))
+                    @if($jour['weekend'])
                         <span class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600">
                             Week-end
                         </span>
