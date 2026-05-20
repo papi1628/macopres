@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\PointageController;
 use App\Http\Controllers\DirecteurDashboardController;
+use App\Http\Controllers\CalendrierController;
 
 /*
 |--------------------------------------------------------------------------
@@ -181,6 +182,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/roles', function () {
             return view('roles.index');
         })->name('roles.index');
+
+        /*
+        |--------------------------------------------------------------------------
+        | CALENDRIER
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/calendrier', [CalendrierController::class, 'index'])
+            ->name('calendrier.index');
 
     });
 

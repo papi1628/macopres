@@ -31,7 +31,11 @@ class DirecteurDashboardController extends Controller
             ->get();
 
         $presents = $pointagesAujourdhui
-            ->whereIn('statut', ['present', 'retard'])
+            ->whereIn('statut', [
+    'present',
+    'retard',
+    'ferie_paye',
+])
             ->count();
 
         $retards = $pointagesAujourdhui
@@ -89,7 +93,11 @@ class DirecteurDashboardController extends Controller
                 ->count();
 
             $presents = Pointage::whereDate('date', $today)
-                ->whereIn('statut', ['present', 'retard'])
+                ->whereIn('statut', [
+    'present',
+    'retard',
+    'ferie_paye',
+])
                 ->whereHas('employe', function ($query) use ($dept) {
                     $query->where('departement', $dept);
                 })

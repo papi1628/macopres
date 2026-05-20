@@ -33,7 +33,11 @@ class PointageController extends Controller
         // Stats du jour
         $stats = [
             'total'    => $employes->count(),
-            'presents' => $pointagesDuJour->whereIn('statut', ['present', 'retard'])->count(),
+            'presents' => $pointagesDuJour->whereIn('statut', [
+    'present',
+    'retard',
+    'ferie_paye',
+])->count(),
             'absents'  => $employes->count() - $pointagesDuJour->count(),
             'retards'  => $pointagesDuJour->where('statut', 'retard')->count(),
         ];
@@ -353,7 +357,11 @@ class PointageController extends Controller
         }
 
         $joursPresents = $pointages
-            ->whereIn('statut', ['present', 'retard'])
+            ->whereIn('statut', [
+    'present',
+    'retard',
+    'ferie_paye',
+])
             ->count();
 
         /*
@@ -388,7 +396,11 @@ class PointageController extends Controller
         |--------------------------------------------------------------------------
         */
         $datesPresence = $pointages
-            ->whereIn('statut', ['present', 'retard'])
+            ->whereIn('statut', [
+    'present',
+    'retard',
+    'ferie_paye',
+])
             ->pluck('date')
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
@@ -473,7 +485,11 @@ class PointageController extends Controller
 
         $statsGlobales = [
             'total_pointages' => $pointagesMois->count(),
-            'total_presents'  => $pointagesMois->whereIn('statut', ['present', 'retard'])->count(),
+            'total_presents'  => $pointagesMois->whereIn('statut', [
+    'present',
+    'retard',
+    'ferie_paye',
+])->count(),
             'total_absents'   => 0, // recalculé après
             'total_retards'   => $pointagesMois->where('statut', 'retard')->count(),
             'total_heures'    => round($pointagesMois->sum('heures_travaillees'), 2),
