@@ -58,8 +58,21 @@
 
         @foreach($jours as $jour)
 
-            <div class="min-h-[120px] rounded-2xl border border-slate-100 bg-white p-3 shadow-sm
-                {{ $jour['weekend'] ? 'bg-slate-50' : '' }}">
+            <div class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md
+
+                @if(!$jour['dans_mois'])
+                    bg-slate-50 border-slate-100 opacity-40
+
+                @elseif($jour['ferie'])
+                    bg-blue-50 border-blue-200
+
+                @elseif($jour['weekend'])
+                    bg-slate-100 border-slate-200
+
+                @else
+                    bg-white border-slate-100
+                @endif
+                ">
 
                 <div class="flex items-center justify-between">
 
@@ -67,7 +80,19 @@
                         {{ $jour['date']->day }}
                     </span>
 
-                    @if($jour['weekend'])
+                    @if($jour['ferie'])
+
+                        <div class="mt-2">
+
+                            <span class="text-[10px] px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">
+                                {{ $jour['ferie']->nom }}
+                            </span>
+
+                        </div>
+
+                    @endif
+
+                    @if($jour['weekend'] && !$jour['ferie'])
 
                         <span class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600">
                             Repos
