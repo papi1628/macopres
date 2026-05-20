@@ -41,84 +41,157 @@
 
     </div>
 
-    {{-- CALENDRIER --}}
-<div class="space-y-3">
+    <div class="flex items-center gap-2">
 
-    {{-- BARRE DES JOURS --}}
+        <button
+            onclick="openCreateModal()"
+            class="h-10 px-4 rounded-xl text-white text-sm font-semibold shadow-sm"
+            style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+            + Ajouter un événement
+        </button>
+
+    </div>
+
+    {{-- CALENDRIER --}}
     <div class="grid grid-cols-7 gap-3">
 
+        {{-- JOURS --}}
         @foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $jourNom)
 
-            <div class="text-center text-[11px] font-bold text-slate-400 uppercase">
+            <div class="text-center text-xs font-bold text-slate-400 uppercase py-2">
                 {{ $jourNom }}
             </div>
 
         @endforeach
 
-    </div>
+        @foreach($jours as $jour)
 
-    {{-- CASES DU CALENDRIER --}}
-        <div class="grid grid-cols-7 gap-3">
+            @php
+                $isToday = $jour['date']->isToday();
+            @endphp
 
-            @foreach($jours as $jour)
+            <button
+                type="button"
+                onclick="openEventModal('{{ $jour['date']->format('Y-m-d') }}')"
 
-                <div class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md
+                class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md text-left relative
 
-                    @if(!$jour['dans_mois'])
-                        bg-slate-50 border-slate-100 opacity-40
+                @if(!$jour['dans_mois'])
+                    bg-slate-50 border-slate-100 opacity-40
 
-                    @elseif($jour['weekend'])
-                        bg-slate-100 border-slate-200
+                @elseif($isToday)
+                    border-[#185FA5] ring-2 ring-blue-100 bg-blue-50
 
-                    @else
-                        bg-white border-slate-100
-                    @endif
-                ">
+                @elseif($jour['weekend'])
+                    bg-slate-100 border-slate-200
 
-                    {{-- JOUR --}}
-                    <div class="flex items-start justify-between">
+                @else
+                    bg-white border-slate-100
+                @endif
+            ">
 
-                        <span class="text-sm font-bold text-slate-700">
-                            {{ $jour['date']->day }}
-                        </span>
+                {{-- AUJOURD’HUI --}}
+                @if($isToday)
+                    <span class="absolute top-2 right-2 text-[9px] px-2 py-0.5 rounded-full bg-[#185FA5] text-white font-bold">
+                        Aujourd’hui
+                    </span>
+                @endif
 
-                    </div>
+                {{-- JOUR --}}
+                <div class="flex items-start justify-between">
 
-                    {{-- ÉVÉNEMENTS --}}
-                    <div class="mt-2 space-y-1">
-
-                        @foreach($jour['evenements'] ?? [] as $event)
-
-                            <div
-                                class="text-[10px] px-2 py-1 rounded-full font-semibold inline-block"
-                                style="background: {{ $event->badge['bg'] }};
-                                    color: {{ $event->badge['color'] }}">
-
-                                {{ $event->titre }}
-
-                            </div>
-
-                        @endforeach
-
-                        {{-- WEEK-END --}}
-                        @if($jour['weekend'])
-
-                            <div class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600 inline-block">
-                                Week-end
-                            </div>
-
-                        @endif
-
-                    </div>
+                    <span class="text-sm font-bold text-slate-700">
+                        {{ $jour['date']->day }}
+                    </span>
 
                 </div>
 
-            @endforeach
+                {{-- EVENEMENTS --}}
+                <div class="mt-2 flex flex-col gap-1">
+
+                    @foreach($jour['evenements'] ?? [] as $event)
+
+                        <div class="text-[10px] px-2 py-1 rounded-full font-semibold truncate"
+                            style="background: {{ $event->badge['bg'] }};
+                                color: {{ $event->badge['color'] }}">
+
+                            {{ $event->titre }}
+
+                        </div>
+
+                    @endforeach
+
+                    {{-- WEEK-END --}}
+                    @if($jour['weekend'])
+
+                        <div class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600 inline-block w-fit">
+                            Week-end
+                        </div>
+
+                    @endif
+
+                </div>
+
+            </button>
+
+        @endforeach
+
+    </div>
+
+</div>
+
+{{-- MODAL --}}
+<div id="eventModal"
+     class="hidden fixed inset-0 z-50 bg-black/40 items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl w-full max-w-lg p-5 shadow-xl">
+
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-slate-800">
+                Événements du jour
+            </h2>
+
+            <button onclick="closeEventModal()" class="text-slate-400">
+                ✕
+            </button>
+        </div>
+
+        <div id="modalContent">
+
+            {{-- contenu dynamique AJAX plus tard --}}
 
         </div>
 
     </div>
 
 </div>
+
+<script>
+
+function openEventModal(date)
+{
+    document.getElementById('eventModal').classList.remove('hidden');
+
+    document.getElementById('eventModal').classList.add('flex');
+
+    document.getElementById('modalContent').innerHTML =
+        `<p class="text-sm text-slate-500">
+            Date : ${date}
+        </p>`;
+}
+
+function closeEventModal()
+{
+    document.getElementById('eventModal').classList.add('hidden');
+
+    document.getElementById('eventModal').classList.remove('flex');
+}
+
+function openCreateModal()
+{
+    openEventModal('Nouvel événement');
+}
+
+</script>
 
 </x-app-layout>
