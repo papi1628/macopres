@@ -144,23 +144,109 @@
 <div id="eventModal"
      class="hidden fixed inset-0 z-50 bg-black/40 items-center justify-center p-4">
 
-    <div class="bg-white rounded-2xl w-full max-w-lg p-5 shadow-xl">
+    <div class="bg-white rounded-2xl w-full max-w-xl p-5 shadow-xl">
 
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold text-slate-800">
-                Événements du jour
-            </h2>
+        <div class="flex items-center justify-between mb-5">
 
-            <button onclick="closeEventModal()" class="text-slate-400">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800">
+                    Gestion des événements
+                </h2>
+
+                <p id="modalDate"
+                   class="text-sm text-slate-400 mt-1">
+                </p>
+            </div>
+
+            <button onclick="closeEventModal()"
+                    class="w-9 h-9 rounded-xl hover:bg-slate-100 text-slate-500">
                 ✕
             </button>
-        </div>
-
-        <div id="modalContent">
-
-            {{-- contenu dynamique AJAX plus tard --}}
 
         </div>
+
+        {{-- EVENEMENTS --}}
+        <div id="eventsList"
+             class="space-y-2 mb-5">
+        </div>
+
+        {{-- FORMULAIRE --}}
+        <form method="POST"
+              action="{{ route('calendrier.store') }}"
+              class="space-y-4">
+
+            @csrf
+
+            <input type="hidden"
+                   name="date"
+                   id="eventDateInput">
+
+            <div>
+                <label class="text-xs font-semibold text-slate-500 uppercase">
+                    Type
+                </label>
+
+                <select name="type"
+                        class="w-full mt-1 rounded-xl border-slate-200 text-sm">
+
+                    <option value="ferie">Jour férié</option>
+                    <option value="repos">Repos</option>
+                    <option value="evenement">Événement</option>
+
+                </select>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-slate-500 uppercase">
+                    Titre
+                </label>
+
+                <input type="text"
+                       name="titre"
+                       required
+                       class="w-full mt-1 rounded-xl border-slate-200 text-sm">
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-slate-500 uppercase">
+                    Description
+                </label>
+
+                <textarea name="description"
+                          rows="3"
+                          class="w-full mt-1 rounded-xl border-slate-200 text-sm"></textarea>
+            </div>
+
+            <label class="flex items-center gap-2">
+
+                <input type="checkbox"
+                       name="est_paye"
+                       value="1"
+                       class="rounded border-slate-300">
+
+                <span class="text-sm text-slate-600">
+                    Journée payée
+                </span>
+
+            </label>
+
+            <div class="flex justify-end gap-2 pt-2">
+
+                <button type="button"
+                        onclick="closeEventModal()"
+                        class="h-10 px-4 rounded-xl border border-slate-200 text-sm">
+                    Annuler
+                </button>
+
+                <button type="submit"
+                        class="h-10 px-4 rounded-xl text-white text-sm font-semibold"
+                        style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                    Enregistrer
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 
@@ -168,28 +254,81 @@
 
 <script>
 
-function openEventModal(date)
+async function openEventModal(date)
 {
-    document.getElementById('eventModal').classList.remove('hidden');
+    const modal = document.getElementById('eventModal');
 
-    document.getElementById('eventModal').classList.add('flex');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 
-    document.getElementById('modalContent').innerHTML =
-        `<p class="text-sm text-slate-500">
-            Date : ${date}
-        </p>`;
+    document.getElementById('eventDateInput').value = date;
+
+    const response = await fetch(`/calendrier/${date}`);
+
+    const data = await response.json();
+
+    document.getElementById('modalDate').innerText =
+        data.date;
+
+    let html = '';
+
+    if (data.evenements.length === 0) {
+
+        html = `
+            <div class="text-sm text-slate-400 bg-slate-50 rounded-xl p-3">
+                Aucun événement
+            </div>
+        `;
+
+    } else {
+
+        data.evenements.forEach(event => {
+
+            html += `
+                <div class="rounded-xl border border-slate-100 p-3">
+
+                    <div class="flex items-center justify-between">
+
+                        <div>
+                            <p class="text-sm font-semibold text-slate-700">
+                                ${event.titre}
+                            </p>
+
+                            <p class="text-xs text-slate-400 mt-1">
+                                ${event.type}
+                            </p>
+                        </div>
+
+                        ${event.est_paye
+                            ? `<span class="text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">
+                                    Payé
+                               </span>`
+                            : ''
+                        }
+
+                    </div>
+
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('eventsList').innerHTML = html;
 }
 
 function closeEventModal()
 {
-    document.getElementById('eventModal').classList.add('hidden');
+    const modal = document.getElementById('eventModal');
 
-    document.getElementById('eventModal').classList.remove('flex');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 function openCreateModal()
 {
-    openEventModal('Nouvel événement');
+    openEventModal(
+        '{{ now()->format('Y-m-d') }}'
+    );
 }
 
 </script>

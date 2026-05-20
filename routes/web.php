@@ -192,6 +192,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/calendrier', [CalendrierController::class, 'index'])
             ->name('calendrier.index');
 
+        Route::get('/calendrier', [CalendrierController::class, 'index'])
+            ->name('calendrier.index');
+
+        Route::get('/calendrier/{date}', [CalendrierController::class, 'show'])
+            ->name('calendrier.show');
+
+        Route::post('/calendrier/evenements', [CalendrierController::class, 'store'])
+            ->name('calendrier.store');
+
     });
 
 });

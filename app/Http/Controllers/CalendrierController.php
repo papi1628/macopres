@@ -56,4 +56,39 @@ class CalendrierController extends Controller
             'date' => $date,
         ]);
     }
+
+    public function show($date)
+    {
+        $date = Carbon::parse($date);
+
+        $evenements = Evenement::whereDate('date', $date)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'date' => $date->format('d/m/Y'),
+            'evenements' => $evenements,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'date' => ['required', 'date'],
+            'type' => ['required'],
+            'titre' => ['required', 'max:255'],
+            'description' => ['nullable'],
+        ]);
+
+        Evenement::create([
+            'date' => $request->date,
+            'type' => $request->type,
+            'titre' => $request->titre,
+            'description' => $request->description,
+            'est_paye' => $request->boolean('est_paye'),
+            'created_by' => auth()->id(),
+        ]);
+
+        return back()->with('success', 'Événement ajouté.');
+    }
 }
