@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Ferie;
+use App\Models\Evenement;
 
 class CalendrierController extends Controller
 {
@@ -18,32 +18,36 @@ class CalendrierController extends Controller
         $debutMois = $date->copy()->startOfMonth();
         $finMois   = $date->copy()->endOfMonth();
 
-        $jours = [];
-
-        // Début et fin du vrai calendrier
+        // Calendrier complet (grille propre)
         $debutCalendrier = $debutMois->copy()->startOfWeek(Carbon::MONDAY);
         $finCalendrier   = $finMois->copy()->endOfWeek(Carbon::SUNDAY);
 
-        // Fériés du calendrier affiché
-        $feries = Ferie::whereBetween('date', [$debutCalendrier, $finCalendrier])
+        // 🔥 ON REMPLACE FERIÉS PAR ÉVÉNEMENTS
+        $evenements = Evenement::whereBetween('date', [
+                $debutCalendrier,
+                $finCalendrier
+            ])
             ->get()
-            ->keyBy(fn($f) => $f->date->format('Y-m-d'));
+            ->groupBy(fn($e) => $e->date->format('Y-m-d'));
 
-        // Génération des jours
+        $jours = [];
+
         for ($jour = $debutCalendrier->copy(); $jour <= $finCalendrier; $jour->addDay()) {
 
             $dateKey = $jour->format('Y-m-d');
 
-            $ferie = $feries[$dateKey] ?? null;
+            $eventsDuJour = $evenements[$dateKey] ?? collect();
 
             $jours[] = [
                 'date' => $jour->copy(),
 
                 'dans_mois' => $jour->month === $date->month,
 
-                'weekend' => $jour->isWeekend(),
+                // samedi + dimanche = week-end
+                'weekend' => $jour->isSunday(),
 
-                'ferie' => $ferie,
+                // événements du jour (peut être plusieurs)
+                'evenements' => $eventsDuJour,
             ];
         }
 

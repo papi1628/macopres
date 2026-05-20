@@ -11,20 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('feries', function (Blueprint $table) {
-
+        Schema::create('evenements', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nom');
+            $table->date('date');
 
-            $table->date('date')->unique();
+            $table->enum('type', [
+                'ferie',
+                'repos',
+                'evenement'
+            ]);
 
+            $table->string('titre');
             $table->text('description')->nullable();
 
-            $table->foreignId('created_by')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
+            $table->boolean('est_paye')->default(false);
+
+            $table->foreignId('created_by')->nullable()->constrained('users');
 
             $table->timestamps();
         });
@@ -35,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('feries');
+        Schema::dropIfExists('evenements');
     }
 };

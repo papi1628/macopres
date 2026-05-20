@@ -48,14 +48,6 @@
     {{-- CALENDRIER --}}
     <div class="grid grid-cols-7 gap-3">
 
-        @foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $jourNom)
-
-            <div class="text-center text-xs font-bold text-slate-400 uppercase">
-                {{ $jourNom }}
-            </div>
-
-        @endforeach
-
         @foreach($jours as $jour)
 
             <div class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md
@@ -63,41 +55,42 @@
                 @if(!$jour['dans_mois'])
                     bg-slate-50 border-slate-100 opacity-40
 
-                @elseif($jour['ferie'])
-                    bg-blue-50 border-blue-200
-
                 @elseif($jour['weekend'])
                     bg-slate-100 border-slate-200
 
                 @else
                     bg-white border-slate-100
                 @endif
-                ">
+            ">
 
-                <div class="flex items-center justify-between">
+                {{-- JOUR --}}
+                <div class="flex items-start justify-between">
 
                     <span class="text-sm font-bold text-slate-700">
                         {{ $jour['date']->day }}
                     </span>
 
-                    @if($jour['ferie'])
+                </div>
 
-                        <div class="mt-2">
+                {{-- ÉVÉNEMENTS --}}
+                <div class="mt-2 space-y-1">
 
-                            <span class="text-[10px] px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">
-                                {{ $jour['ferie']->nom }}
-                            </span>
+                    @foreach($jour['evenements'] ?? [] as $event)
+
+                        <div class="text-[10px] px-2 py-1 rounded-full font-semibold inline-block"
+                            style="background: {{ $event->badge['bg'] }}; color: {{ $event->badge['color'] }}">
+
+                            {{ $event->titre }}
 
                         </div>
 
-                    @endif
+                    @endforeach
 
-                    @if($jour['weekend'] && !$jour['ferie'])
-
+                    {{-- WEEK-END (dimanche seulement) --}}
+                    @if($jour['weekend'] && empty($jour['evenements']))
                         <span class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600">
-                            Repos
+                            Week-end
                         </span>
-
                     @endif
 
                 </div>
