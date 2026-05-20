@@ -49,8 +49,4 @@ class User extends Authenticatable
         return $this->belongsTo(Employe::class);
     }
 
-    public function feries()
-    {
-        return $this->hasMany(Ferie::class, 'created_by');
-    }
 }

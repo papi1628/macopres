@@ -42,66 +42,80 @@
     </div>
 
     {{-- CALENDRIER --}}
+<div class="space-y-3">
+
+    {{-- BARRE DES JOURS --}}
     <div class="grid grid-cols-7 gap-3">
 
-        {{-- BARRE DES JOURS --}}
-        <div class="grid grid-cols-7 gap-3">
-            @foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $jourNom)
-                <div class="text-center text-[11px] font-bold text-slate-400 uppercase">
-                    {{ $jourNom }}
-                </div>
-            @endforeach
-        </div>
-        @foreach($jours as $jour)
+        @foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $jourNom)
 
-            <div class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md
-
-                @if(!$jour['dans_mois'])
-                    bg-slate-50 border-slate-100 opacity-40
-
-                @elseif($jour['weekend'])
-                    bg-slate-100 border-slate-200
-
-                @else
-                    bg-white border-slate-100
-                @endif
-            ">
-
-                {{-- JOUR --}}
-                <div class="flex items-start justify-between">
-
-                    <span class="text-sm font-bold text-slate-700">
-                        {{ $jour['date']->day }}
-                    </span>
-
-                </div>
-
-                {{-- ÉVÉNEMENTS --}}
-                <div class="mt-2 space-y-1">
-
-                    @foreach($jour['evenements'] ?? [] as $event)
-
-                        <div class="text-[10px] px-2 py-1 rounded-full font-semibold inline-block"
-                            style="background: {{ $event->badge['bg'] }}; color: {{ $event->badge['color'] }}">
-
-                            {{ $event->titre }}
-
-                        </div>
-
-                    @endforeach
-
-                    {{-- WEEK-END (dimanche seulement) --}}
-                    @if($jour['weekend'])
-                        <span class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600">
-                            Week-end
-                        </span>
-                    @endif
-
-                </div>
-
+            <div class="text-center text-[11px] font-bold text-slate-400 uppercase">
+                {{ $jourNom }}
             </div>
 
         @endforeach
+
+    </div>
+
+    {{-- CASES DU CALENDRIER --}}
+        <div class="grid grid-cols-7 gap-3">
+
+            @foreach($jours as $jour)
+
+                <div class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md
+
+                    @if(!$jour['dans_mois'])
+                        bg-slate-50 border-slate-100 opacity-40
+
+                    @elseif($jour['weekend'])
+                        bg-slate-100 border-slate-200
+
+                    @else
+                        bg-white border-slate-100
+                    @endif
+                ">
+
+                    {{-- JOUR --}}
+                    <div class="flex items-start justify-between">
+
+                        <span class="text-sm font-bold text-slate-700">
+                            {{ $jour['date']->day }}
+                        </span>
+
+                    </div>
+
+                    {{-- ÉVÉNEMENTS --}}
+                    <div class="mt-2 space-y-1">
+
+                        @foreach($jour['evenements'] ?? [] as $event)
+
+                            <div
+                                class="text-[10px] px-2 py-1 rounded-full font-semibold inline-block"
+                                style="background: {{ $event->badge['bg'] }};
+                                    color: {{ $event->badge['color'] }}">
+
+                                {{ $event->titre }}
+
+                            </div>
+
+                        @endforeach
+
+                        {{-- WEEK-END --}}
+                        @if($jour['weekend'])
+
+                            <div class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600 inline-block">
+                                Week-end
+                            </div>
+
+                        @endif
+
+                    </div>
+
+                </div>
+
+            @endforeach
+
+        </div>
 
     </div>
 
