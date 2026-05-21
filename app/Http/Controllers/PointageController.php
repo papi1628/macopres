@@ -694,70 +694,65 @@ class PointageController extends Controller
         return back()->with('success', "Pointage de {$employe->prenom} {$employe->nom} supprimé.");
     }
 
-    public function derniersPointages(Employe $employe)
+   public function derniersPointages(Employe $employe, Request $request)
     {
         $jours = collect();
 
-        // Les 5 derniers jours (hors futur)
-        for ($i = 0; $i < 5; $i++) {
+        $baseDate = $request->date
+            ? Carbon::parse($request->date)
+            : now();
 
-            $date = now()->subDays($i);
+        // 5 jours AVANT la date choisie (on exclut le jour même)
+        for ($i = 1; $i <= 5; $i++) {
+
+            $date = $baseDate->copy()->subDays($i);
             $dateStr = $date->format('Y-m-d');
 
             // Dimanche
             if ($date->isSunday()) {
-
                 $jours->push([
                     'date'   => $dateStr,
                     'statut' => 'weekend',
                 ]);
-
                 continue;
             }
 
-            // Chercher pointage réel
+            // Pointage existant
             $pointage = Pointage::where('employe_id', $employe->id)
                 ->whereDate('date', $dateStr)
                 ->first();
 
-            // Si pointage existe
             if ($pointage) {
-
                 $jours->push([
-                    'id'      => $pointage->id,
-                    'date'    => $dateStr,
-                    'statut'  => $pointage->statut,
+                    'id'     => $pointage->id,
+                    'date'   => $dateStr,
+                    'statut' => $pointage->statut,
                 ]);
-
                 continue;
             }
 
-            // Vérifier férié payé global
+            // Férié payé
             $ferie = \App\Models\Evenement::whereDate('date', $dateStr)
                 ->where('type', 'ferie')
                 ->where('est_paye', true)
                 ->first();
 
             if ($ferie) {
-
                 $jours->push([
-                    'date'             => $dateStr,
-                    'statut'           => 'ferie_global',
-                    'evenement_titre'  => $ferie->titre,
+                    'date'            => $dateStr,
+                    'statut'          => 'ferie_global',
+                    'evenement_titre' => $ferie->titre,
                 ]);
-
                 continue;
             }
 
-            // Sinon absent
+            // absent
             $jours->push([
                 'date'   => $dateStr,
                 'statut' => 'absent',
             ]);
         }
 
-        return response()->json(
-            $jours->values()
-        );
+        return response()->json($jours->values());
     }
 }

@@ -510,7 +510,7 @@ function pointageApp() {
 
             if (id) {
                 try {
-                    const r = await fetch(`/employes/${id}/derniers-pointages`);
+                    const r = await fetch(`/employes/${id}/derniers-pointages?date=${this.fpDate}`);
                     this.fpDerniersPointages = await r.json();
                 } catch(e) {
                     console.error('Erreur chargement pointages', e);
