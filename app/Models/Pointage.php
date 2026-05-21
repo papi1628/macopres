@@ -28,7 +28,6 @@ class Pointage extends Model
         'retard'  => 'boolean',
         'demi_journee' => 'boolean',
         'est_ferie_paye' => 'boolean',
-        
     ];
  
 

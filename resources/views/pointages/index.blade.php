@@ -188,7 +188,7 @@
                             <td class="px-4 py-3 font-mono text-[12px] text-slate-700">
                                 @if($pointage && $pointage->heure_depart)
                                     {{ substr($pointage->heure_depart, 0, 5) }}
-                                @elseif($pointage)
+                                @elseif($pointage && !$pointage->est_ferie_paye)
                                     <button @click="openDepart({{ $pointage->id }}, '{{ $employe->prenom }} {{ $employe->nom }}')"
                                             class="text-[10px] font-semibold px-2 py-1 rounded-lg transition-colors hover:opacity-80"
                                             style="background:#E6F1FB; color:#0C447C">
@@ -212,6 +212,13 @@
                                           style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
                                         {{ $badge['label'] }}
                                     </span>
+                                    @if ($pointage->est_ferie_paye)
+                                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                              style="background:#DBEAFE; color:#1D4ED8">
+                                            Férié Payé
+                                        </span>
+                                    
+                                    @endif
                                 @else
                                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                                           style="background:#FCEBEB; color:#A32D2D">Absent</span>

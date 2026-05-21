@@ -70,10 +70,10 @@
                                     </span>
                                 </template>
 
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                {{-- <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                                     :style="getBadgeStyle(p.statut)"
                                     x-text="getStatutLabel(p.statut)">
-                                </span>
+                                </span> --}}
 
                             </div>
                         </div>
