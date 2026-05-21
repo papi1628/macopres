@@ -15,6 +15,7 @@ class Pointage extends Model
         'demi_journee',
         'statut',
         'type',
+        'est_ferie_paye',
         'heures_travaillees',
         'salaire_jour',
         'retard',
@@ -26,6 +27,7 @@ class Pointage extends Model
         'date'    => 'date',
         'retard'  => 'boolean',
         'demi_journee' => 'boolean',
+        'est_ferie_paye' => 'boolean',
         
     ];
  

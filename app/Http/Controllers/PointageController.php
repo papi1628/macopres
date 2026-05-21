@@ -662,17 +662,18 @@ class PointageController extends Controller
             );
         }
 
+
         Pointage::create([
-            'employe_id'   => $employe->id,
-            'date'         => $request->date,
-            'statut'       => 'ferie_paye',
-            'type'         => 'manuel',
+            'employe_id'      => $employe->id,
+            'date'            => $request->date,
+            'statut'          => 'absent', 
+            'type'            => 'manuel',
 
-            // salaire journalier
-            'salaire_jour' => round($employe->salaire / 30, 2),
+            'est_ferie_paye'  => true,
 
-            'retard'       => false,
-            'created_by'   => auth()->id(),
+            'salaire_jour'    => round($employe->salaire / 30, 2),
+            'retard'          => false,
+            'created_by'      => auth()->id(),
         ]);
 
         return back()->with(
