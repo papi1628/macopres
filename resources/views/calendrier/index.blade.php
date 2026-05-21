@@ -55,7 +55,7 @@
                 {{-- Sélecteur mois/année --}}
                 <form method="GET" action="{{ route('calendrier.index') }}" class="flex items-center gap-2">
                     <select name="mois" onchange="this.form.submit()"
-                            class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
+                            class="h-9 border border-slate-200 rounded-xl px-3 pr-8 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
                         @foreach(range(1,12) as $m)
                             <option value="{{ $m }}" {{ $m == $date->month ? 'selected' : '' }}>
                                 {{ \Carbon\Carbon::create(null, $m)->locale('fr')->translatedFormat('F') }}
@@ -63,7 +63,7 @@
                         @endforeach
                     </select>
                     <select name="annee" onchange="this.form.submit()"
-                            class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
+                            class="h-9 border border-slate-200 rounded-xl px-3 pr-8 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
                         @foreach(range(now()->year - 2, now()->year + 2) as $y)
                             <option value="{{ $y }}" {{ $y == $date->year ? 'selected' : '' }}>{{ $y }}</option>
                         @endforeach
@@ -79,7 +79,7 @@
                         </svg>
                     </a>
                     <a href="{{ route('calendrier.index', ['mois' => now()->month, 'annee' => now()->year]) }}"
-                       class="h-9 px-3 rounded-xl text-[12px] font-semibold text-white transition-all hover:-translate-y-px"
+                       class="flex items-center h-9 px-3 rounded-xl text-[12px] font-semibold text-white transition-all hover:-translate-y-px"
                        style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                         Aujourd'hui
                     </a>
@@ -199,7 +199,7 @@
                         @if($isDimanche && $jour['evenements']->count() === 0)
                             <div class="text-[9px] px-1.5 py-0.5 rounded-md font-medium"
                                  style="background:#F1F5F9; color:#94A3B8">
-                                Repos
+                                Week-end
                             </div>
                         @endif
                     </div>
