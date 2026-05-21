@@ -26,7 +26,7 @@
     </div>
 @endif
 @if($jourFerie)
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold border"
+    <div class="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl text-sm font-semibold border"
          style="background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE">
         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"/>
@@ -543,6 +543,8 @@ function pointageApp() {
                 retard:     'background:#FEF6E4; color:#92400E',
                 absent:     'background:#FCEBEB; color:#A32D2D',
                 ferie_paye: 'background:#DBEAFE; color:#1D4ED8',
+                weekend: 'background:#F1F5F9; color:#64748B',
+                ferie_global: 'background:#DBEAFE; color:#1D4ED8',
             };
             return styles[statut] ?? 'background:#F1F5F9; color:#64748B';
         },
@@ -553,6 +555,8 @@ function pointageApp() {
                 retard:     'Retard',
                 absent:     'Absent',
                 ferie_paye: 'Férié Payé',
+                weekend: 'Week-end',
+                ferie_global: 'Férié',
             };
             return labels[statut] ?? statut;
         },

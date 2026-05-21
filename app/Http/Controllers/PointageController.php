@@ -48,7 +48,11 @@ class PointageController extends Controller
             'nom'         => $e->nom,
             'matricule'   => $e->matricule,
             'departement' => $e->departement,
-            'initiales'   => strtoupper(substr($e->prenom, 0, 1) . substr($e->nom, 0, 1)),
+            'salaire'     => $e->salaire,
+            'initiales'   => strtoupper(
+                substr($e->prenom, 0, 1) .
+                substr($e->nom, 0, 1)
+            ),
         ])->values();
 
         // Vérifier si la date est un jour férié payé
@@ -546,10 +550,10 @@ class PointageController extends Controller
         $statsGlobales = [
             'total_pointages' => $pointagesMois->count(),
             'total_presents'  => $pointagesMois->whereIn('statut', [
-    'present',
-    'retard',
-    'ferie_paye',
-])->count(),
+            'present',
+            'retard',
+            'ferie_paye',
+        ])->count(),
             'total_absents'   => 0, // recalculé après
             'total_retards'   => $pointagesMois->where('statut', 'retard')->count(),
             'total_heures'    => round($pointagesMois->sum('heures_travaillees'), 2),
@@ -631,27 +635,51 @@ class PointageController extends Controller
 
         $employe = Employe::findOrFail($request->employe_id);
 
+        // Interdire dimanche
+        if (Carbon::parse($request->date)->isSunday()) {
+            return back()->with(
+                'error',
+                'Impossible d’attribuer un férié payé un dimanche.'
+            );
+        }
+
         $existant = Pointage::where('employe_id', $employe->id)
             ->whereDate('date', $request->date)
             ->first();
 
         if ($existant) {
-            return back()->with('error', "{$employe->prenom} {$employe->nom} est déjà pointé pour cette date.");
+
+            if ($existant->statut === 'ferie_paye') {
+                return back()->with(
+                    'error',
+                    "{$employe->prenom} {$employe->nom} possède déjà un férié payé."
+                );
+            }
+
+            return back()->with(
+                'error',
+                "{$employe->prenom} {$employe->nom} est déjà pointé pour cette date."
+            );
         }
 
         Pointage::create([
-            'employe_id'  => $employe->id,
-            'date'        => $request->date,
-            'statut'      => 'ferie_paye',
-            'type'        => 'manuel',
-            'salaire_jour'=> $employe->salaire,
-            'retard'      => false,
-            'created_by'  => auth()->id(),
+            'employe_id'   => $employe->id,
+            'date'         => $request->date,
+            'statut'       => 'ferie_paye',
+            'type'         => 'manuel',
+
+            // salaire journalier
+            'salaire_jour' => round($employe->salaire / 30, 2),
+
+            'retard'       => false,
+            'created_by'   => auth()->id(),
         ]);
 
-        return back()->with('success', "✓ {$employe->prenom} {$employe->nom} — Férié Payé enregistré.");
+        return back()->with(
+            'success',
+            "✓ {$employe->prenom} {$employe->nom} — Férié Payé enregistré."
+        );
     }
-
     /*
     |--------------------------------------------------------------------------
     | SUPPRIMER UN POINTAGE (correction)
@@ -663,5 +691,72 @@ class PointageController extends Controller
         $pointage->delete();
 
         return back()->with('success', "Pointage de {$employe->prenom} {$employe->nom} supprimé.");
+    }
+
+    public function derniersPointages(Employe $employe)
+    {
+        $jours = collect();
+
+        // Les 5 derniers jours (hors futur)
+        for ($i = 0; $i < 5; $i++) {
+
+            $date = now()->subDays($i);
+            $dateStr = $date->format('Y-m-d');
+
+            // Dimanche
+            if ($date->isSunday()) {
+
+                $jours->push([
+                    'date'   => $dateStr,
+                    'statut' => 'weekend',
+                ]);
+
+                continue;
+            }
+
+            // Chercher pointage réel
+            $pointage = Pointage::where('employe_id', $employe->id)
+                ->whereDate('date', $dateStr)
+                ->first();
+
+            // Si pointage existe
+            if ($pointage) {
+
+                $jours->push([
+                    'id'      => $pointage->id,
+                    'date'    => $dateStr,
+                    'statut'  => $pointage->statut,
+                ]);
+
+                continue;
+            }
+
+            // Vérifier férié payé global
+            $ferie = \App\Models\Evenement::whereDate('date', $dateStr)
+                ->where('type', 'ferie')
+                ->where('est_paye', true)
+                ->first();
+
+            if ($ferie) {
+
+                $jours->push([
+                    'date'             => $dateStr,
+                    'statut'           => 'ferie_global',
+                    'evenement_titre'  => $ferie->titre,
+                ]);
+
+                continue;
+            }
+
+            // Sinon absent
+            $jours->push([
+                'date'   => $dateStr,
+                'statut' => 'absent',
+            ]);
+        }
+
+        return response()->json(
+            $jours->values()
+        );
     }
 }

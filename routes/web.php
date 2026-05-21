@@ -77,6 +77,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/employes/{employe}/qr', [EmployeController::class, 'qr'])
         ->name('employes.qr');
 
+    Route::get('/employes/{employe}/derniers-pointages', [PointageController::class, 'derniersPointages'])
+        ->name('employes.derniers-pointages');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -145,6 +148,39 @@ Route::middleware('auth')->group(function () {
     // Route Férié Payé
     Route::post('/pointages/pointer-fp', [PointageController::class, 'pointerFP'])
     ->name('pointages.pointer-fp');
+
+    /*
+    |--------------------------------------------------------------------------
+    | CALENDRIER
+    |--------------------------------------------------------------------------
+    */
+
+    /*Route::get('/calendrier', [CalendrierController::class, 'index'])
+        ->name('calendrier.index');
+
+    Route::get('/calendrier', [CalendrierController::class, 'index'])
+        ->name('calendrier.index');
+
+    Route::get('/calendrier/{date}', [CalendrierController::class, 'show'])
+        ->name('calendrier.show');
+
+    Route::post('/calendrier/evenements', [CalendrierController::class, 'store'])
+        ->name('calendrier.store');*/
+
+    Route::get('/calendrier', [CalendrierController::class, 'index'])
+        ->name('calendrier.index');
+
+    Route::post('/calendrier', [CalendrierController::class, 'store'])
+        ->name('calendrier.store');
+
+    Route::put('/calendrier/{calendrier}', [CalendrierController::class, 'update'])
+        ->name('calendrier.update');
+
+    Route::delete('/calendrier/{calendrier}', [CalendrierController::class, 'destroy'])
+        ->name('calendrier.destroy');
+
+    Route::get('/calendrier/ferie/{date}', [CalendrierController::class, 'jourFerie'])
+        ->name('calendrier.ferie');
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT
@@ -186,40 +222,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/roles', function () {
             return view('roles.index');
         })->name('roles.index');
-
-        /*
-        |--------------------------------------------------------------------------
-        | CALENDRIER
-        |--------------------------------------------------------------------------
-        */
-
-        /*Route::get('/calendrier', [CalendrierController::class, 'index'])
-            ->name('calendrier.index');
-
-        Route::get('/calendrier', [CalendrierController::class, 'index'])
-            ->name('calendrier.index');
-
-        Route::get('/calendrier/{date}', [CalendrierController::class, 'show'])
-            ->name('calendrier.show');
-
-        Route::post('/calendrier/evenements', [CalendrierController::class, 'store'])
-            ->name('calendrier.store');*/
-
-        Route::get('/calendrier', [CalendrierController::class, 'index'])
-        ->name('calendrier.index');
-
-        Route::post('/calendrier', [CalendrierController::class, 'store'])
-        ->name('calendrier.store');
-
-        Route::put('/calendrier/{calendrier}', [CalendrierController::class, 'update'])
-        ->name('calendrier.update');
-
-        Route::delete('/calendrier/{calendrier}', [CalendrierController::class, 'destroy'])
-        ->name('calendrier.destroy');
-
-        Route::get('/calendrier/ferie/{date}', [CalendrierController::class, 'jourFerie'])
-        ->name('calendrier.ferie');
-
         
     });
 
