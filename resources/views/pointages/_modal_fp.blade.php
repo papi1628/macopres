@@ -62,18 +62,22 @@
                                 <span class="text-[12px] text-slate-600 capitalize" x-text="formatDate(p.date)"></span>
                             </div>
                             <div class="flex items-center gap-2">
-                                
-                                <template x-if="p.evenement_titre">
+
+                                <!-- FÉRIÉ -->
+                                <template x-if="p.statut === 'ferie' && p.evenement_titre">
                                     <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold"
                                         style="background:#DBEAFE;color:#1D4ED8"
                                         x-text="p.evenement_titre">
                                     </span>
                                 </template>
 
-                                <span x-if="p.statut !== 'ferie_paye'" class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                    :style="getBadgeStyle(p.statut)"
-                                    x-text="getStatutLabel(p.statut)">
-                                </span> 
+                                <!-- NORMAL -->
+                                <template x-if="p.statut !== 'ferie'">
+                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                        :style="getBadgeStyle(p.statut)"
+                                        x-text="getStatutLabel(p.statut)">
+                                    </span>
+                                </template>
 
                             </div>
                         </div>
