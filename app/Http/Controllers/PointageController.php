@@ -34,10 +34,10 @@ class PointageController extends Controller
         $stats = [
             'total'    => $employes->count(),
             'presents' => $pointagesDuJour->whereIn('statut', [
-    'present',
-    'retard',
-    'ferie_paye',
-])->count(),
+            'present',
+            'retard',
+            'ferie_paye',
+        ])->count(),
             'absents'  => $employes->count() - $pointagesDuJour->count(),
             'retards'  => $pointagesDuJour->where('statut', 'retard')->count(),
         ];
@@ -51,7 +51,13 @@ class PointageController extends Controller
             'initiales'   => strtoupper(substr($e->prenom, 0, 1) . substr($e->nom, 0, 1)),
         ])->values();
 
-        return view('pointages.index', compact('employes', 'pointagesDuJour', 'date', 'stats', 'employesJson'));
+        // Vérifier si la date est un jour férié payé
+        $jourFerie = \App\Models\Evenement::whereDate('date', $date)
+            ->where('type', 'ferie')
+            ->where('est_paye', true)
+            ->first();
+
+        return view('pointages.index', compact('employes', 'pointagesDuJour', 'date', 'stats', 'employesJson', 'jourFerie'));
     }
 
     /*
