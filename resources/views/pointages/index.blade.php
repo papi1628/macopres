@@ -25,6 +25,15 @@
         {{ session('error') }}
     </div>
 @endif
+@if($jourFerie)
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold border"
+         style="background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"/>
+        </svg>
+        🎉 Jour Férié Payé — <strong>{{ $jourFerie->titre }}</strong>. En pointant un employé, vous pouvez lui accorder le férié payé.
+    </div>
+@endif
 
 <div x-data="pointageApp()" class="space-y-5">
 
@@ -428,8 +437,8 @@
 </div>
 
 <script>
-// Données employés pour la recherche
-const EMPLOYES = @json($employesJson);
+const EMPLOYES   = @json($employesJson);
+const JOUR_FERIE = @json($jourFerie ? ['titre' => $jourFerie->titre] : null);
 
 function pointageApp() {
     return {
@@ -444,23 +453,67 @@ function pointageApp() {
         departPointageId: null,
         departNom: '',
 
-        openPointer() {
-            this.currentTime = new Date().toTimeString().slice(0,5);
-            this.pointerModal = true;
+        // Données modal FP
+        fpModal: false,
+        fpEmployeId: null,
+        fpEmployeNom: '',
+        fpEmployeInitiales: '',
+        fpSalaireFormate: '',
+        fpDate: '',
+        fpEvenementTitre: '',
+        fpDerniersPointages: [],
+
+        // Bouton vert dans le tableau OU bouton "Pointer un employé"
+        async pointerRapide(id, nom) {
+            if (JOUR_FERIE) {
+                await this.ouvrirModalFP(id, nom);
+            } else {
+                const emp = EMPLOYES.find(e => e.id === id);
+                this.selectedEmploye = emp;
+                this.employeSearch   = nom;
+                this.currentTime     = new Date().toTimeString().slice(0, 5);
+                this.pointerModal    = true;
+            }
         },
 
-        pointerRapide(id, nom) {
-            this.selectedEmploye = EMPLOYES.find(e => e.id === id);
-            this.employeSearch = nom;
-            this.currentTime = new Date().toTimeString().slice(0,5);
-            this.pointerModal = true;
+        // Bouton "Pointer un employé" dans la toolbar
+        async openPointer() {
+            if (JOUR_FERIE) {
+                await this.ouvrirModalFP(null, '');
+            } else {
+                this.currentTime  = new Date().toTimeString().slice(0, 5);
+                this.pointerModal = true;
+            }
+        },
+
+        // Ouvre le modal FP avec historique
+        async ouvrirModalFP(id, nom) {
+            const emp = id ? EMPLOYES.find(e => e.id === id) : null;
+            this.fpEmployeId        = id;
+            this.fpEmployeNom       = nom;
+            this.fpEmployeInitiales = emp?.initiales ?? '';
+            this.fpSalaireFormate   = emp?.salaire ? Number(emp.salaire).toLocaleString('fr-FR') + ' F' : '–';
+            this.fpDate             = '{{ $date->format('Y-m-d') }}';
+            this.fpEvenementTitre   = JOUR_FERIE?.titre ?? '';
+            this.fpDerniersPointages = [];
+
+            if (id) {
+                try {
+                    const r = await fetch(`/employes/${id}/derniers-pointages`);
+                    this.fpDerniersPointages = await r.json();
+                } catch(e) {
+                    console.error('Erreur chargement pointages', e);
+                }
+            }
+
+            this.fpModal = true;
         },
 
         openDepart(pointageId, nom) {
             this.departPointageId = pointageId;
-            this.departNom = nom;
-            this.currentTime = new Date().toTimeString().slice(0,5);
-            this.departModal = true;
+            this.departNom        = nom;
+            this.currentTime      = new Date().toTimeString().slice(0, 5);
+            this.departModal      = true;
         },
 
         filterEmployes() {
@@ -473,46 +526,35 @@ function pointageApp() {
 
         selectEmploye(emp) {
             this.selectedEmploye = emp;
-            this.employeSearch = emp.prenom + ' ' + emp.nom;
-            this.resultats = [];
+            this.employeSearch   = emp.prenom + ' ' + emp.nom;
+            this.resultats       = [];
         },
-        // Dans les données
-        fpModal: false,
-        fpEmployeId: null,
-        fpEmployeNom: '',
-        fpEmployeInitiales: '',
-        fpSalaireFormate: '',
-        fpDate: '',
-        fpEvenementTitre: '',
-        fpDerniersPointages: [],
 
-        // Méthode à appeler au clic sur "Pointer" quand la date est un férié
-        async pointerRapide(id, nom) {
-            // Vérifier si la date est un jour férié payé
-            const res = await fetch(`/calendrier/ferie/{{ $date->format('Y-m-d') }}`);
-            const data = await res.json();
+        // Helpers pour le modal FP
+        formatDate(dateStr) {
+            return new Date(dateStr + 'T00:00:00').toLocaleDateString('fr-FR', {
+                weekday: 'short', day: 'numeric', month: 'short'
+            });
+        },
 
-            if (data.est_ferie) {
-                // Ouvrir modal FP
-                const emp = EMPLOYES.find(e => e.id === id);
-                this.fpEmployeId = id;
-                this.fpEmployeNom = nom;
-                this.fpEmployeInitiales = emp?.initiales ?? '';
-                this.fpDate = '{{ $date->format('Y-m-d') }}';
-                this.fpEvenementTitre = data.evenement.titre;
-                this.fpSalaireFormate = emp?.salaire ?? '–';
+        getBadgeStyle(statut) {
+            const styles = {
+                present:    'background:#EAF3DE; color:#3B6D11',
+                retard:     'background:#FEF6E4; color:#92400E',
+                absent:     'background:#FCEBEB; color:#A32D2D',
+                ferie_paye: 'background:#DBEAFE; color:#1D4ED8',
+            };
+            return styles[statut] ?? 'background:#F1F5F9; color:#64748B';
+        },
 
-                // Charger les 5 derniers pointages
-                const r2 = await fetch(`/employes/${id}/derniers-pointages`);
-                this.fpDerniersPointages = await r2.json();
-                this.fpModal = true;
-            } else {
-                // Comportement normal
-                this.selectedEmploye = EMPLOYES.find(e => e.id === id);
-                this.employeSearch = nom;
-                this.currentTime = new Date().toTimeString().slice(0,5);
-                this.pointerModal = true;
-            }
+        getStatutLabel(statut) {
+            const labels = {
+                present:    'Présent',
+                retard:     'Retard',
+                absent:     'Absent',
+                ferie_paye: 'Férié Payé',
+            };
+            return labels[statut] ?? statut;
         },
     };
 }

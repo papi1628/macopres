@@ -149,11 +149,12 @@ class Pointage extends Model
     public function getBadgeStatutAttribute(): array
     {
         return match($this->statut) {
-            'present' => ['label' => 'Présent',  'bg' => '#EAF3DE', 'color' => '#3B6D11'],
-            'retard'  => ['label' => 'Retard',   'bg' => '#FEF6E4', 'color' => '#92400E'],
-            'absent'  => ['label' => 'Absent',   'bg' => '#FCEBEB', 'color' => '#A32D2D'],
-            'ferie_paye' => ['label' => 'Férié payé','bg' => '#DBEAFE','color' => '#1D4ED8'],
-            default   => ['label' => 'Inconnu',  'bg' => '#F1F5F9', 'color' => '#64748B'],
+            'present'     => ['label' => 'Présent',    'bg' => '#EAF3DE', 'color' => '#3B6D11'],
+            'retard'      => ['label' => 'Retard',     'bg' => '#FEF6E4', 'color' => '#92400E'],
+            'absent'      => ['label' => 'Absent',     'bg' => '#FCEBEB', 'color' => '#A32D2D'],
+            'ferie_paye'  => ['label' => 'Férié Payé', 'bg' => '#DBEAFE', 'color' => '#1D4ED8'],
+            'dimanche'    => ['label' => 'Week-end',   'bg' => '#F1F5F9', 'color' => '#64748B'],
+            default       => ['label' => 'Inconnu',    'bg' => '#F1F5F9', 'color' => '#64748B'],
         };
     }
 

@@ -358,10 +358,10 @@ class PointageController extends Controller
 
         $joursPresents = $pointages
             ->whereIn('statut', [
-    'present',
-    'retard',
-    'ferie_paye',
-])
+                'present',
+                'retard',
+                'ferie_paye',
+            ])
             ->count();
 
         /*
@@ -397,10 +397,10 @@ class PointageController extends Controller
         */
         $datesPresence = $pointages
             ->whereIn('statut', [
-    'present',
-    'retard',
-    'ferie_paye',
-])
+                'present',
+                'retard',
+                'ferie_paye',
+            ])
             ->pluck('date')
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
@@ -410,29 +410,83 @@ class PointageController extends Controller
         | Générer les absences
         |--------------------------------------------------------------------------
         */
+        // Générer toutes les lignes manquantes (absences + dimanches + fériés)
         $absences = collect();
 
-        foreach ($joursTravailEntreprise as $date) {
+        // Récupérer les événements fériés de la période
+        $feriesPayes = \App\Models\Evenement::query()
+            ->where('type', 'ferie')
+            ->where('est_paye', true)
+            ->when($periode === 'semaine', fn($q) => $q->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($periode === 'mois',    fn($q) => $q->whereMonth('date', now()->month)->whereYear('date', now()->year))
+            ->when($periode === 'annee',   fn($q) => $q->whereYear('date', now()->year))
+            ->get()
+            ->keyBy(fn($e) => $e->date->format('Y-m-d'));
 
-            $dateFormat = Carbon::parse($date)->format('Y-m-d');
+        // Générer les jours de la période
+        $debutPeriode = match($periode) {
+            'semaine' => now()->startOfWeek(),
+            'annee'   => now()->startOfYear(),
+            default   => now()->startOfMonth(),
+        };
+        $finPeriode = match($periode) {
+            'semaine' => now()->endOfWeek(),
+            'annee'   => now()->endOfYear(),
+            default   => now()->endOfMonth(),
+        };
 
-            if (!in_array($dateFormat, $datesPresence)) {
+        $datesPresence = $pointages
+            ->pluck('date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
 
-                $absences->push((object) [
-                    'date' => Carbon::parse($date),
+        for ($jour = $debutPeriode->copy(); $jour->lte($finPeriode) && $jour->lte(today()); $jour->addDay()) {
+            $dateStr = $jour->format('Y-m-d');
+
+            // Dimanche → week-end
+            if ($jour->isSunday()) {
+                $absences->push((object)[
+                    'date'          => $jour->copy(),
                     'heure_arrivee' => null,
-                    'heure_depart' => null,
-                    'salaire_jour' => 0,
-                    'statut' => 'absent',
-                    'retard' => false,
-                    'minutes_retard' => 0,
-                    'badge_statut' => [
-                        'label' => 'Absent',
-                        'bg' => '#FEE2E2',
-                        'color' => '#B91C1C',
-                    ],
+                    'heure_depart'  => null,
+                    'salaire_jour'  => 0,
+                    'statut'        => 'dimanche',
+                    'retard'        => false,
+                    'minutes_retard'=> 0,
+                    'badge_statut'  => ['label' => 'Week-end', 'bg' => '#F1F5F9', 'color' => '#64748B'],
                 ]);
+                continue;
             }
+
+            // Déjà pointé → skip
+            if (in_array($dateStr, $datesPresence)) continue;
+
+            // Férié payé décréé mais pas encore pointé → afficher comme férié
+            if (isset($feriesPayes[$dateStr])) {
+                $absences->push((object)[
+                    'date'          => $jour->copy(),
+                    'heure_arrivee' => null,
+                    'heure_depart'  => null,
+                    'salaire_jour'  => 0,
+                    'statut'        => 'ferie_non_pointe',
+                    'retard'        => false,
+                    'minutes_retard'=> 0,
+                    'badge_statut'  => ['label' => '🎉 ' . $feriesPayes[$dateStr]->titre, 'bg' => '#DBEAFE', 'color' => '#1D4ED8'],
+                ]);
+                continue;
+            }
+
+            // Sinon → absent
+            $absences->push((object)[
+                'date'          => $jour->copy(),
+                'heure_arrivee' => null,
+                'heure_depart'  => null,
+                'salaire_jour'  => 0,
+                'statut'        => 'absent',
+                'retard'        => false,
+                'minutes_retard'=> 0,
+                'badge_statut'  => ['label' => 'Absent', 'bg' => '#FCEBEB', 'color' => '#A32D2D'],
+            ]);
         }
 
         /*
