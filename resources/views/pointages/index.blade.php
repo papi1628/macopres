@@ -207,17 +207,21 @@
                             {{-- Statut --}}
                             <td class="px-4 py-3">
                                 @if($pointage)
-                                    @php $badge = $pointage->badge_statut; @endphp
-                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                          style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
-                                        {{ $badge['label'] }}
-                                    </span>
-                                    @if ($pointage->est_ferie_paye)
+                                    @php 
+                                        $badge = $pointage->badge_statut; 
+                                        $fp = $pointage->est_ferie_paye;
+                                    @endphp
+                                    
+                                    @if ($fp)
                                         <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                                               style="background:#DBEAFE; color:#1D4ED8">
                                             Férié Payé
                                         </span>
-                                    
+                                    @elseif (!$fp)
+                                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                            style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
+                                            {{ $badge['label'] }}
+                                        </span>
                                     @endif
                                 @else
                                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
