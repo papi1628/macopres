@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Pointage;
 
 class EmployeController extends Controller
 {
@@ -177,5 +178,19 @@ class EmployeController extends Controller
             'matricule' => $employe->matricule,
             'qr' => $qr
         ]);
+    }
+
+    public function derniersPointages(Employe $employe)
+    {
+        $pointages = Pointage::where('employe_id', $employe->id)
+            ->orderBy('date', 'desc')
+            ->take(5)
+            ->get(['date', 'statut'])
+            ->map(fn($p) => [
+                'date'   => $p->date->format('Y-m-d'),
+                'statut' => $p->statut,
+            ]);
+
+        return response()->json($pointages);
     }
 }

@@ -1,336 +1,493 @@
 <x-app-layout>
+<x-slot name="title">Calendrier RH</x-slot>
 
-<x-slot name="title">
-    Calendrier RH
-</x-slot>
-
-<div class="space-y-5">
-
-    {{-- HEADER --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-
-        <div class="flex items-center justify-between">
-
-            <div>
-                <p class="text-lg text-slate-400 mt-1">
-                    {{ $date->locale('fr')->translatedFormat('F Y') }}
-                </p>
-            </div>
-
-            <div class="flex gap-2">
-
-                <a href="{{ route('calendrier.index', [
-                    'mois' => $date->copy()->subMonth()->month,
-                    'annee' => $date->copy()->subMonth()->year
-                ]) }}"
-                class="h-10 px-4 rounded-xl border border-slate-200 text-sm flex items-center">
-                    ←
-                </a>
-
-                <a href="{{ route('calendrier.index', [
-                    'mois' => $date->copy()->addMonth()->month,
-                    'annee' => $date->copy()->addMonth()->year
-                ]) }}"
-                class="h-10 px-4 rounded-xl border border-slate-200 text-sm flex items-center">
-                    →
-                </a>
-
-            </div>
-
-        </div>
-
+@if (session('success'))
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3500)"
+         x-transition:leave="transition ease-in duration-300" x-transition:leave-end="opacity-0 -translate-y-2"
+         class="mb-4 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border"
+         style="background:#EAF3DE; color:#3B6D11; border-color:#C3E6A0">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+        </svg>
+        {{ session('success') }}
     </div>
+@endif
 
-    <div class="flex items-center gap-2">
-
-        <button
-            onclick="openCreateModal()"
-            class="h-10 px-4 rounded-xl text-white text-sm font-semibold shadow-sm"
-            style="background:linear-gradient(135deg,#185FA5,#378ADD)">
-            + Ajouter un événement
-        </button>
-
+@if (session('error'))
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+         x-transition:leave="transition ease-in duration-300" x-transition:leave-end="opacity-0 -translate-y-2"
+         class="mb-4 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border"
+         style="background:#FCEBEB; color:#A32D2D; border-color:#F5C0C0">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        {{ session('error') }}
     </div>
+@endif
 
-    {{-- CALENDRIER --}}
-    <div class="grid grid-cols-7 gap-3">
+<div x-data="calendrierApp()" class="space-y-4">
 
-        {{-- JOURS --}}
-        @foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $jourNom)
+    {{-- ══════════════════════════════════════
+         HEADER NAVIGATION
+    ══════════════════════════════════════ --}}
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
 
-            <div class="text-center text-xs font-bold text-slate-400 uppercase py-2">
-                {{ $jourNom }}
+            {{-- Titre mois/année --}}
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                     style="background:linear-gradient(135deg,#0C447C,#185FA5)">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-[16px] font-black text-slate-800 leading-tight capitalize">
+                        {{ $date->locale('fr')->translatedFormat('F Y') }}
+                    </h2>
+                    <p class="text-[10px] text-slate-400">Calendrier RH — MACOPRES</p>
+                </div>
             </div>
 
-        @endforeach
+            {{-- Navigation --}}
+            <div class="flex items-center gap-2 flex-wrap">
 
-        @foreach($jours as $jour)
+                {{-- Sélecteur mois/année --}}
+                <form method="GET" action="{{ route('calendrier.index') }}" class="flex items-center gap-2">
+                    <select name="mois" onchange="this.form.submit()"
+                            class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
+                        @foreach(range(1,12) as $m)
+                            <option value="{{ $m }}" {{ $m == $date->month ? 'selected' : '' }}>
+                                {{ \Carbon\Carbon::create(null, $m)->locale('fr')->translatedFormat('F') }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <select name="annee" onchange="this.form.submit()"
+                            class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
+                        @foreach(range(now()->year - 2, now()->year + 2) as $y)
+                            <option value="{{ $y }}" {{ $y == $date->year ? 'selected' : '' }}>{{ $y }}</option>
+                        @endforeach
+                    </select>
+                </form>
 
-            @php
-                $isToday = $jour['date']->isToday();
-            @endphp
-
-            <button
-                type="button"
-                onclick="openEventModal('{{ $jour['date']->format('Y-m-d') }}')"
-
-                class="min-h-[120px] rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md text-left relative
-
-                @if(!$jour['dans_mois'])
-                    bg-slate-50 border-slate-100 opacity-40
-
-                @elseif($isToday)
-                    border-[#185FA5] ring-2 ring-blue-100 bg-blue-50
-
-                @elseif($jour['weekend'])
-                    bg-slate-100 border-slate-200
-
-                @else
-                    bg-white border-slate-100
-                @endif
-            ">
-
-                {{-- AUJOURD’HUI --}}
-                @if($isToday)
-                    <span class="absolute top-2 right-2 text-[9px] px-2 py-0.5 rounded-full bg-[#185FA5] text-white font-bold">
-                        Aujourd’hui
-                    </span>
-                @endif
-
-                {{-- JOUR --}}
-                <div class="flex items-start justify-between">
-
-                    <span class="text-sm font-bold text-slate-700">
-                        {{ $jour['date']->day }}
-                    </span>
-
+                {{-- Flèches --}}
+                <div class="flex items-center gap-1">
+                    <a href="{{ route('calendrier.index', ['mois' => $date->copy()->subMonth()->month, 'annee' => $date->copy()->subMonth()->year]) }}"
+                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-slate-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </a>
+                    <a href="{{ route('calendrier.index', ['mois' => now()->month, 'annee' => now()->year]) }}"
+                       class="h-9 px-3 rounded-xl text-[12px] font-semibold text-white transition-all hover:-translate-y-px"
+                       style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                        Aujourd'hui
+                    </a>
+                    <a href="{{ route('calendrier.index', ['mois' => $date->copy()->addMonth()->month, 'annee' => $date->copy()->addMonth()->year]) }}"
+                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-slate-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
                 </div>
 
-                {{-- EVENEMENTS --}}
-                <div class="mt-2 flex flex-col gap-1">
+                {{-- Bouton ajouter --}}
+                @if(Auth::user()->role === 'directeur')
+                <button @click="openCreate('{{ now()->format('Y-m-d') }}')"
+                        class="flex items-center gap-2 h-9 px-4 rounded-xl text-[12px] font-semibold text-white transition-all hover:-translate-y-px"
+                        style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                    </svg>
+                    Ajouter un événement
+                </button>
+                @endif
+            </div>
+        </div>
 
-                    @foreach($jour['evenements'] ?? [] as $event)
-
-                        <div class="text-[10px] px-2 py-1 rounded-full font-semibold truncate"
-                            style="background: {{ $event->badge['bg'] }};
-                                color: {{ $event->badge['color'] }}">
-
-                            {{ $event->titre }}
-
-                        </div>
-
-                    @endforeach
-
-                    {{-- WEEK-END --}}
-                    @if($jour['weekend'])
-
-                        <div class="text-[9px] px-2 py-1 rounded-full bg-slate-200 text-slate-600 inline-block w-fit">
-                            Week-end
-                        </div>
-
-                    @endif
-
+        {{-- Légende --}}
+        <div class="flex flex-wrap gap-4 mt-4 pt-3 border-t border-slate-100">
+            @foreach([
+                ['Férié payé', '#DBEAFE', '#1D4ED8'],
+                ['Repos', '#F3F4F6', '#374151'],
+                ['Événement', '#DCFCE7', '#166534'],
+                ['Aujourd\'hui', '#EFF6FF', '#185FA5'],
+                ['Week-end', '#F1F5F9', '#94A3B8'],
+            ] as [$label, $bg, $color])
+                <div class="flex items-center gap-1.5">
+                    <div class="w-3 h-3 rounded-full" style="background:{{ $bg }}; border:1px solid {{ $color }}20"></div>
+                    <span class="text-[10px] text-slate-500">{{ $label }}</span>
                 </div>
-
-            </button>
-
-        @endforeach
-
+            @endforeach
+        </div>
     </div>
 
-</div>
+    {{-- ══════════════════════════════════════
+         GRILLE CALENDRIER
+    ══════════════════════════════════════ --}}
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
 
-{{-- MODAL --}}
-<div id="eventModal"
-     class="hidden fixed inset-0 z-50 bg-black/40 items-center justify-center p-4">
-
-    <div class="bg-white rounded-2xl w-full max-w-xl p-5 shadow-xl">
-
-        <div class="flex items-center justify-between mb-5">
-
-            <div>
-                <h2 class="text-lg font-bold text-slate-800">
-                    Gestion des événements
-                </h2>
-
-                <p id="modalDate"
-                   class="text-sm text-slate-400 mt-1">
-                </p>
-            </div>
-
-            <button onclick="closeEventModal()"
-                    class="w-9 h-9 rounded-xl hover:bg-slate-100 text-slate-500">
-                ✕
-            </button>
-
+        {{-- En-têtes jours --}}
+        <div class="grid grid-cols-7 border-b border-slate-100">
+            @foreach(['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'] as $i => $jourNom)
+                <div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider
+                            {{ $i === 6 ? 'text-red-400' : 'text-slate-400' }}">
+                    {{ $jourNom }}
+                </div>
+            @endforeach
         </div>
 
-        {{-- EVENEMENTS --}}
-        <div id="eventsList"
-             class="space-y-2 mb-5">
+        {{-- Jours --}}
+        <div class="grid grid-cols-7">
+            @foreach($jours as $index => $jour)
+                @php
+                    $isToday    = $jour['date']->isToday();
+                    $isDimanche = $jour['date']->isSunday();
+                    $isSamedi   = $jour['date']->isSaturday();
+                    $hasFerie   = $jour['evenements']->where('type', 'ferie')->count() > 0;
+                    $borderRight = ($index + 1) % 7 !== 0;
+                    $borderBottom = $index < count($jours) - 7;
+                @endphp
+
+                <button
+                    type="button"
+                    @click="openDay('{{ $jour['date']->format('Y-m-d') }}', {{ $jour['evenements']->toJson() }})"
+                    class="relative min-h-[90px] sm:min-h-[110px] p-2 sm:p-3 text-left transition-all hover:z-10
+                           {{ $borderRight ? 'border-r border-slate-100' : '' }}
+                           {{ $borderBottom ? 'border-b border-slate-100' : '' }}
+                           {{ !$jour['dans_mois'] ? 'opacity-30' : '' }}
+                           {{ $isToday ? 'ring-2 ring-inset ring-blue-400' : '' }}
+                    "
+                    style="
+                        {{ $isToday ? 'background:#EFF6FF;' : '' }}
+                        {{ $hasFerie && !$isToday ? 'background:#F0F7FF;' : '' }}
+                        {{ ($isDimanche || $isSamedi) && !$isToday && !$hasFerie ? 'background:#F8FAFC;' : '' }}
+                        {{ !$isDimanche && !$isSamedi && !$isToday && !$hasFerie ? 'background:white;' : '' }}
+                    "
+                >
+                    {{-- Numéro du jour --}}
+                    <div class="flex items-start justify-between mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[12px] font-bold
+                                     {{ $isToday ? 'text-white' : ($isDimanche ? 'text-red-400' : 'text-slate-700') }}"
+                              style="{{ $isToday ? 'background:linear-gradient(135deg,#185FA5,#378ADD)' : '' }}">
+                            {{ $jour['date']->day }}
+                        </span>
+
+                        @if($isToday)
+                            <span class="hidden sm:block text-[8px] font-bold px-1.5 py-0.5 rounded-full text-white"
+                                  style="background:#185FA5">
+                                Aujourd'hui
+                            </span>
+                        @endif
+                    </div>
+
+                    {{-- Événements --}}
+                    <div class="space-y-0.5">
+                        @foreach($jour['evenements']->take(2) as $event)
+                            <div class="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-md font-semibold truncate"
+                                 style="background:{{ $event->badge['bg'] }}; color:{{ $event->badge['color'] }}">
+                                {{ $event->titre }}
+                            </div>
+                        @endforeach
+
+                        @if($jour['evenements']->count() > 2)
+                            <div class="text-[9px] text-slate-400 font-semibold">
+                                +{{ $jour['evenements']->count() - 2 }} autre(s)
+                            </div>
+                        @endif
+
+                        @if($isDimanche && $jour['evenements']->count() === 0)
+                            <div class="text-[9px] px-1.5 py-0.5 rounded-md font-medium"
+                                 style="background:#F1F5F9; color:#94A3B8">
+                                Repos
+                            </div>
+                        @endif
+                    </div>
+                </button>
+            @endforeach
         </div>
+    </div>
 
-        {{-- FORMULAIRE --}}
-        <form method="POST"
-              action="{{ route('calendrier.store') }}"
-              class="space-y-4">
+    {{-- ══════════════════════════════════════
+         MODAL — JOUR CLIQUÉ
+    ══════════════════════════════════════ --}}
+    <div x-show="dayModal"
+         x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+         style="display:none"
+         @keydown.escape.window="dayModal = false">
 
-            @csrf
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+             @click.outside="dayModal = false">
 
-            <input type="hidden"
-                   name="date"
-                   id="eventDateInput">
-
-            <div>
-                <label class="text-xs font-semibold text-slate-500 uppercase">
-                    Type
-                </label>
-
-                <select name="type"
-                        class="w-full mt-1 rounded-xl border-slate-200 text-sm">
-
-                    <option value="ferie">Jour férié</option>
-                    <option value="repos">Repos</option>
-                    <option value="evenement">Événement</option>
-
-                </select>
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <div>
+                    <h2 class="text-[15px] font-bold text-slate-800" x-text="selectedDateLabel"></h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Événements du jour</p>
+                </div>
+                <button @click="dayModal = false"
+                        class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-xl">&times;</button>
             </div>
 
-            <div>
-                <label class="text-xs font-semibold text-slate-500 uppercase">
-                    Titre
-                </label>
+            <div class="px-6 py-4">
+                {{-- Liste événements du jour --}}
+                <div class="space-y-2 mb-5">
+                    <template x-if="selectedEvents.length === 0">
+                        <div class="text-center py-6 text-slate-400 text-[13px]">
+                            Aucun événement ce jour
+                        </div>
+                    </template>
+                    <template x-for="event in selectedEvents" :key="event.id">
+                        <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full flex-shrink-0"
+                                     :style="`background:${getBadgeColor(event.type)}`"></div>
+                                <div>
+                                    <p class="text-[13px] font-semibold text-slate-800" x-text="event.titre"></p>
+                                    <p class="text-[10px] text-slate-400" x-text="getTypeLabel(event.type) + (event.est_paye ? ' · Payé' : '')"></p>
+                                </div>
+                            </div>
+                            @if(Auth::user()->role === 'directeur')
+                            <div class="flex items-center gap-1">
+                                <button @click="openEdit(event)"
+                                        class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-amber-50 text-amber-500 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+                                    </svg>
+                                </button>
+                                <button @click="confirmDelete(event)"
+                                        class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-red-400 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            @endif
+                        </div>
+                    </template>
+                </div>
 
-                <input type="text"
-                       name="titre"
-                       required
-                       class="w-full mt-1 rounded-xl border-slate-200 text-sm">
+                @if(Auth::user()->role === 'directeur')
+                {{-- Bouton ajouter sur ce jour --}}
+                <button @click="dayModal = false; openCreate(selectedDate)"
+                        class="w-full h-10 rounded-xl text-[13px] font-semibold text-white transition-all hover:-translate-y-px"
+                        style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                    + Ajouter un événement ce jour
+                </button>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    {{-- ══════════════════════════════════════
+         MODAL — CRÉER / MODIFIER ÉVÉNEMENT
+    ══════════════════════════════════════ --}}
+    @if(Auth::user()->role === 'directeur')
+    <div x-show="createModal"
+         x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+         style="display:none"
+         @keydown.escape.window="createModal = false">
+
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg"
+             @click.outside="createModal = false">
+
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h2 class="text-[15px] font-bold text-slate-800"
+                    x-text="editMode ? 'Modifier l\'événement' : 'Nouvel événement'"></h2>
+                <button @click="createModal = false"
+                        class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-xl">&times;</button>
             </div>
 
-            <div>
-                <label class="text-xs font-semibold text-slate-500 uppercase">
-                    Description
-                </label>
+            <form :action="editMode ? `/calendrier/${form.id}` : '{{ route('calendrier.store') }}'"
+                  method="POST"
+                  class="px-6 py-5 space-y-4">
+                @csrf
+                <template x-if="editMode">
+                    <input type="hidden" name="_method" value="PUT">
+                </template>
 
-                <textarea name="description"
-                          rows="3"
-                          class="w-full mt-1 rounded-xl border-slate-200 text-sm"></textarea>
+                {{-- Date --}}
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Date *</label>
+                    <input type="date" name="date" x-model="form.date" required
+                           class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                </div>
+
+                {{-- Type --}}
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Type *</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <template x-for="opt in typeOptions" :key="opt.value">
+                            <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all"
+                                   :style="form.type === opt.value ? `background:${opt.bg}; border-color:${opt.color}` : 'background:white; border-color:#e2e8f0'">
+                                <input type="radio" name="type" :value="opt.value" x-model="form.type" class="sr-only">
+                                <div class="w-2 h-2 rounded-full" :style="`background:${opt.color}`"></div>
+                                <span class="text-[12px] font-semibold" :style="`color:${opt.color}`" x-text="opt.label"></span>
+                            </label>
+                        </template>
+                    </div>
+                </div>
+
+                {{-- Titre --}}
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Titre *</label>
+                    <input type="text" name="titre" x-model="form.titre" required
+                           placeholder="Ex: Tabaski, Fête du travail…"
+                           class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                </div>
+
+                {{-- Description --}}
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
+                    <textarea name="description" x-model="form.description" rows="2"
+                              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 resize-none"></textarea>
+                </div>
+
+                {{-- Journée payée --}}
+                <div class="flex items-center gap-3 p-3 rounded-xl" style="background:#EFF6FF">
+                    <input type="checkbox" name="est_paye" id="est_paye" value="1"
+                           x-model="form.est_paye"
+                           class="w-4 h-4 rounded cursor-pointer"
+                           style="accent-color:#185FA5">
+                    <label for="est_paye" class="text-[13px] font-semibold cursor-pointer" style="color:#185FA5">
+                        Journée payée — les employés touchent leur salaire
+                    </label>
+                </div>
+
+                <div class="flex gap-3 pt-2 border-t border-slate-100">
+                    <button type="button" @click="createModal = false"
+                            class="flex-1 h-10 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="flex-1 h-10 rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-px"
+                            style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                        <span x-text="editMode ? 'Enregistrer' : 'Créer l\'événement'"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- ══════════════════════════════════════
+         MODAL — CONFIRMATION SUPPRESSION
+    ══════════════════════════════════════ --}}
+    <div x-show="deleteModal"
+         x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+         style="display:none">
+
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                     style="background:#FCEBEB">
+                    <svg class="w-5 h-5" style="color:#A32D2D" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800">Supprimer l'événement</h3>
+                    <p class="text-sm text-slate-500 mt-0.5" x-text="'« ' + deleteEvent?.titre + ' »'"></p>
+                </div>
             </div>
-
-            <label class="flex items-center gap-2">
-
-                <input type="checkbox"
-                       name="est_paye"
-                       value="1"
-                       class="rounded border-slate-300">
-
-                <span class="text-sm text-slate-600">
-                    Journée payée
-                </span>
-
-            </label>
-
-            <div class="flex justify-end gap-2 pt-2">
-
-                <button type="button"
-                        onclick="closeEventModal()"
-                        class="h-10 px-4 rounded-xl border border-slate-200 text-sm">
+            <p class="text-xs text-slate-400 mb-5">Cette action est irréversible. L'événement sera supprimé du calendrier.</p>
+            <div class="flex gap-3">
+                <button @click="deleteModal = false"
+                        class="flex-1 h-9 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50">
                     Annuler
                 </button>
-
-                <button type="submit"
-                        class="h-10 px-4 rounded-xl text-white text-sm font-semibold"
-                        style="background:linear-gradient(135deg,#185FA5,#378ADD)">
-                    Enregistrer
-                </button>
-
+                <form :action="'/calendrier/' + deleteEvent?.id" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="w-full h-9 rounded-xl text-sm font-bold text-white hover:opacity-90"
+                            style="background:#A32D2D">
+                        Supprimer
+                    </button>
+                </form>
             </div>
-
-        </form>
-
+        </div>
     </div>
+    @endif
 
 </div>
 
 <script>
+function calendrierApp() {
+    return {
+        dayModal: false,
+        createModal: false,
+        deleteModal: false,
+        editMode: false,
+        selectedDate: '',
+        selectedDateLabel: '',
+        selectedEvents: [],
+        deleteEvent: null,
 
-async function openEventModal(date)
-{
-    const modal = document.getElementById('eventModal');
+        typeOptions: [
+            { value: 'ferie',     label: 'Férié',      bg: '#DBEAFE', color: '#1D4ED8' },
+            { value: 'repos',     label: 'Repos',       bg: '#F3F4F6', color: '#374151' },
+            { value: 'evenement', label: 'Événement',   bg: '#DCFCE7', color: '#166534' },
+        ],
 
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+        form: {
+            id: null,
+            date: '',
+            type: 'ferie',
+            titre: '',
+            description: '',
+            est_paye: false,
+        },
 
-    document.getElementById('eventDateInput').value = date;
+        openDay(date, events) {
+            this.selectedDate = date;
+            this.selectedDateLabel = new Date(date).toLocaleDateString('fr-FR', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            });
+            this.selectedEvents = events;
+            this.dayModal = true;
+        },
 
-    const response = await fetch(`/calendrier/${date}`);
+        openCreate(date) {
+            this.editMode = false;
+            this.form = { id: null, date: date, type: 'ferie', titre: '', description: '', est_paye: false };
+            this.createModal = true;
+        },
 
-    const data = await response.json();
+        openEdit(event) {
+            this.editMode = true;
+            this.form = {
+                id: event.id,
+                date: event.date,
+                type: event.type,
+                titre: event.titre,
+                description: event.description ?? '',
+                est_paye: event.est_paye,
+            };
+            this.dayModal = false;
+            this.createModal = true;
+        },
 
-    document.getElementById('modalDate').innerText =
-        data.date;
+        confirmDelete(event) {
+            this.deleteEvent = event;
+            this.dayModal = false;
+            this.deleteModal = true;
+        },
 
-    let html = '';
+        getBadgeColor(type) {
+            const map = { ferie: '#1D4ED8', repos: '#374151', evenement: '#166534' };
+            return map[type] || '#64748B';
+        },
 
-    if (data.evenements.length === 0) {
-
-        html = `
-            <div class="text-sm text-slate-400 bg-slate-50 rounded-xl p-3">
-                Aucun événement
-            </div>
-        `;
-
-    } else {
-
-        data.evenements.forEach(event => {
-
-            html += `
-                <div class="rounded-xl border border-slate-100 p-3">
-
-                    <div class="flex items-center justify-between">
-
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700">
-                                ${event.titre}
-                            </p>
-
-                            <p class="text-xs text-slate-400 mt-1">
-                                ${event.type}
-                            </p>
-                        </div>
-
-                        ${event.est_paye
-                            ? `<span class="text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">
-                                    Payé
-                               </span>`
-                            : ''
-                        }
-
-                    </div>
-
-                </div>
-            `;
-        });
-    }
-
-    document.getElementById('eventsList').innerHTML = html;
+        getTypeLabel(type) {
+            const map = { ferie: 'Férié', repos: 'Repos', evenement: 'Événement' };
+            return map[type] || 'Autre';
+        },
+    };
 }
-
-function closeEventModal()
-{
-    const modal = document.getElementById('eventModal');
-
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-
-function openCreateModal()
-{
-    openEventModal(
-        '{{ now()->format('Y-m-d') }}'
-    );
-}
-
 </script>
-
 </x-app-layout>

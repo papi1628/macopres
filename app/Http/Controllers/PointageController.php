@@ -562,6 +562,36 @@ class PointageController extends Controller
         return view('pointages.statistiques', compact('statsGlobales', 'employes', 'mois'));
     }
 
+    public function pointerFP(Request $request)
+    {
+        $request->validate([
+            'employe_id' => 'required|exists:employes,id',
+            'date'       => 'required|date',
+        ]);
+
+        $employe = Employe::findOrFail($request->employe_id);
+
+        $existant = Pointage::where('employe_id', $employe->id)
+            ->whereDate('date', $request->date)
+            ->first();
+
+        if ($existant) {
+            return back()->with('error', "{$employe->prenom} {$employe->nom} est déjà pointé pour cette date.");
+        }
+
+        Pointage::create([
+            'employe_id'  => $employe->id,
+            'date'        => $request->date,
+            'statut'      => 'ferie_paye',
+            'type'        => 'manuel',
+            'salaire_jour'=> $employe->salaire,
+            'retard'      => false,
+            'created_by'  => auth()->id(),
+        ]);
+
+        return back()->with('success', "✓ {$employe->prenom} {$employe->nom} — Férié Payé enregistré.");
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SUPPRIMER UN POINTAGE (correction)

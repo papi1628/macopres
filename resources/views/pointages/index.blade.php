@@ -424,7 +424,7 @@
             </form>
         </div>
     </div>
-
+@include('pointages._modal_fp')
 </div>
 
 <script>
@@ -475,6 +475,44 @@ function pointageApp() {
             this.selectedEmploye = emp;
             this.employeSearch = emp.prenom + ' ' + emp.nom;
             this.resultats = [];
+        },
+        // Dans les données
+        fpModal: false,
+        fpEmployeId: null,
+        fpEmployeNom: '',
+        fpEmployeInitiales: '',
+        fpSalaireFormate: '',
+        fpDate: '',
+        fpEvenementTitre: '',
+        fpDerniersPointages: [],
+
+        // Méthode à appeler au clic sur "Pointer" quand la date est un férié
+        async pointerRapide(id, nom) {
+            // Vérifier si la date est un jour férié payé
+            const res = await fetch(`/calendrier/ferie/{{ $date->format('Y-m-d') }}`);
+            const data = await res.json();
+
+            if (data.est_ferie) {
+                // Ouvrir modal FP
+                const emp = EMPLOYES.find(e => e.id === id);
+                this.fpEmployeId = id;
+                this.fpEmployeNom = nom;
+                this.fpEmployeInitiales = emp?.initiales ?? '';
+                this.fpDate = '{{ $date->format('Y-m-d') }}';
+                this.fpEvenementTitre = data.evenement.titre;
+                this.fpSalaireFormate = emp?.salaire ?? '–';
+
+                // Charger les 5 derniers pointages
+                const r2 = await fetch(`/employes/${id}/derniers-pointages`);
+                this.fpDerniersPointages = await r2.json();
+                this.fpModal = true;
+            } else {
+                // Comportement normal
+                this.selectedEmploye = EMPLOYES.find(e => e.id === id);
+                this.employeSearch = nom;
+                this.currentTime = new Date().toTimeString().slice(0,5);
+                this.pointerModal = true;
+            }
         },
     };
 }

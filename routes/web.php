@@ -141,6 +141,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/pointages/statistiques', [PointageController::class, 'statistiques'])
     ->name('pointages.statistiques');
+
+    // Route Férié Payé
+    Route::post('/pointages/pointer-fp', [PointageController::class, 'pointerFP'])
+    ->name('pointages.pointer-fp');
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT
@@ -189,7 +193,7 @@ Route::middleware('auth')->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/calendrier', [CalendrierController::class, 'index'])
+        /*Route::get('/calendrier', [CalendrierController::class, 'index'])
             ->name('calendrier.index');
 
         Route::get('/calendrier', [CalendrierController::class, 'index'])
@@ -199,8 +203,24 @@ Route::middleware('auth')->group(function () {
             ->name('calendrier.show');
 
         Route::post('/calendrier/evenements', [CalendrierController::class, 'store'])
-            ->name('calendrier.store');
+            ->name('calendrier.store');*/
 
+        Route::get('/calendrier', [CalendrierController::class, 'index'])
+        ->name('calendrier.index');
+
+        Route::post('/calendrier', [CalendrierController::class, 'store'])
+        ->name('calendrier.store');
+
+        Route::put('/calendrier/{calendrier}', [CalendrierController::class, 'update'])
+        ->name('calendrier.update');
+
+        Route::delete('/calendrier/{calendrier}', [CalendrierController::class, 'destroy'])
+        ->name('calendrier.destroy');
+
+        Route::get('/calendrier/ferie/{date}', [CalendrierController::class, 'jourFerie'])
+        ->name('calendrier.ferie');
+
+        
     });
 
 });
