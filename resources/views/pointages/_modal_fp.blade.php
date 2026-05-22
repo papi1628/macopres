@@ -31,17 +31,78 @@
                     class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-xl">&times;</button>
         </div>
 
-        <div class="px-6 py-5 space-y-4">
+        <div class="px-6 py-5 space-y-4">            
 
-            {{-- Employé concerné --}}
-            <div class="flex items-center gap-3 px-4 py-3 rounded-xl"
-                 style="background:#E6F1FB">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
-                     style="background:linear-gradient(135deg,#185FA5,#378ADD)"
-                     x-text="fpEmployeInitiales"></div>
-                <div>
-                    <p class="text-[13px] font-bold" style="color:#0C447C" x-text="fpEmployeNom"></p>
-                    <p class="text-[10px]" style="color:#185FA5">Salaire journalier : <span class="font-bold" x-text="fpSalaireFormate"></span></p>
+            <!-- Recherche employé -->
+            <div>
+                <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                    Employé concerné
+                </label>
+
+                <input type="text"
+                    x-model="employeSearch"
+                    @input="filterEmployes()"
+                    placeholder="Nom, prénom ou matricule…"
+                    class="w-full h-10 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+
+                <!-- Résultats -->
+                <div x-show="employeSearch.length > 1 && resultats.length > 0"
+                    class="mt-2 border border-slate-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
+
+                    <template x-for="emp in resultats" :key="emp.id">
+
+                        <button type="button"
+                                @click="selectEmployeFP(emp)"
+                                class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 transition-colors text-left border-b border-slate-50 last:border-0">
+
+                            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
+                                style="background:linear-gradient(135deg,#185FA5,#378ADD)"
+                                x-text="emp.initiales">
+                            </div>
+
+                            <div>
+                                <p class="text-[13px] font-semibold text-slate-800"
+                                x-text="emp.prenom + ' ' + emp.nom">
+                                </p>
+
+                                <p class="text-[10px] text-slate-400"
+                                x-text="emp.matricule">
+                                </p>
+                            </div>
+
+                        </button>
+
+                    </template>
+                </div>
+
+                <!-- Employé sélectionné -->
+                <div x-show="fpEmployeId"
+                    class="mt-3 flex items-center gap-3 px-4 py-3 rounded-xl"
+                    style="background:#E6F1FB">
+
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+                        style="background:linear-gradient(135deg,#185FA5,#378ADD)"
+                        x-text="fpEmployeInitiales">
+                    </div>
+
+                    <div class="flex-1">
+                        <p class="text-[13px] font-bold"
+                        style="color:#0C447C"
+                        x-text="fpEmployeNom">
+                        </p>
+
+                        <p class="text-[10px]"
+                        style="color:#185FA5">
+                            Salaire journalier :
+                            <span class="font-bold" x-text="fpSalaireFormate"></span>
+                        </p>
+                    </div>
+
+                    <button type="button"
+                            @click="clearFpEmploye()"
+                            class="text-blue-400 hover:text-blue-600 text-lg">
+                        &times;
+                    </button>
                 </div>
             </div>
 
@@ -71,7 +132,7 @@
                                     </span>
                                 </template>
 
-                                <!-- NORMAL -->
+                                <!-- NORMAL  -->
                                 <template x-if="p.statut !== 'ferie'">
                                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                                         :style="getBadgeStyle(p.statut)"

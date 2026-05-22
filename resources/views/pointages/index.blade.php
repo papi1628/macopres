@@ -292,6 +292,7 @@
                 <h2 class="text-[15px] font-bold text-slate-800">Pointer un employé</h2>
                 <button @click="pointerModal = false" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-xl">&times;</button>
             </div>
+            
 
             <form method="POST" action="{{ route('pointages.pointer') }}" class="px-6 py-5 space-y-4">
                 @csrf
@@ -570,6 +571,40 @@ function pointageApp() {
                 ferie_global: 'Férié',
             };
             return labels[statut] ?? statut;
+        },
+
+        async selectEmployeFP(emp) {
+
+            this.fpEmployeId        = emp.id;
+            this.fpEmployeNom       = emp.prenom + ' ' + emp.nom;
+            this.fpEmployeInitiales = emp.initiales;
+            this.fpSalaireFormate   = Number(emp.salaire).toLocaleString('fr-FR') + ' F';
+
+            this.employeSearch = this.fpEmployeNom;
+            this.resultats = [];
+
+            try {
+
+                const r = await fetch(
+                    `/employes/${emp.id}/derniers-pointages?date=${this.fpDate}`
+                );
+
+                this.fpDerniersPointages = await r.json();
+
+            } catch(e) {
+
+                console.error(e);
+            }
+        },
+
+        clearFpEmploye() {
+
+            this.fpEmployeId = null;
+            this.fpEmployeNom = '';
+            this.fpEmployeInitiales = '';
+            this.fpSalaireFormate = '';
+            this.fpDerniersPointages = [];
+            this.employeSearch = '';
         },
     };
 }
