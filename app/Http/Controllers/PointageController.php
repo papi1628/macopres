@@ -523,7 +523,7 @@ class PointageController extends Controller
             // Déterminer statut affiché
             if ($ferie) {
 
-                if (($ligne->statut ?? null) === 'ferie_paye') {
+                if (($ligne->est_ferie_paye ?? null) === true) {
                     $ligne->statut_affiche = 'ferie_paye';
                     $ligne->libelle_statut = 'Férié payé';
                 } else {
