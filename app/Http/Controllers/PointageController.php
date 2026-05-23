@@ -647,6 +647,37 @@ class PointageController extends Controller
                         ->unique()
                         ->count();
                 }
+                /*
+                |--------------------------------------------------------------------------
+                | Calcul des jours fériés payés de l'entreprise
+                | depuis le premier pointage de l'employé
+                |--------------------------------------------------------------------------
+                */
+
+                $feries = \App\Models\Evenement::where('type', 'ferie')
+                    ->where('est_paye', true)
+                    ->whereMonth('date', $moisNum)
+                    ->whereYear('date', $annee)
+                    ->when($premierPointage, function ($q) use ($premierPointage) {
+                        $q->whereDate('date', '>=', $premierPointage->date);
+                    })
+                    ->pluck('date')
+                    ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+                    ->unique()
+                    ->count();
+
+
+                $joursTravailEmploye = 0;
+
+                if ($premierPointage) {
+
+                    $joursTravailEmploye = Pointage::whereDate('date', '>=', $premierPointage->date)
+                        ->whereMonth('date', $moisNum)
+                        ->whereYear('date', $annee)
+                        ->pluck('date')
+                        ->unique()
+                        ->count();
+                }
 
                 return [
                     'employe'        => $employe,
@@ -655,7 +686,7 @@ class PointageController extends Controller
 
                     'jours_absents'  => max(
                         0,
-                        $joursTravailEmploye - $joursPresents
+                        $joursTravailEmploye - $joursPresents - $feries
                     ),
                     'retards'        => $pts->where('statut', 'retard')->count(),
                     'heures_total'   => round($pts->sum('heures_travaillees'), 2),
