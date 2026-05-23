@@ -36,7 +36,6 @@ class PointageController extends Controller
             'presents' => $pointagesDuJour->whereIn('statut', [
             'present',
             'retard',
-            'ferie_paye',
         ])->count(),
             'absents'  => $employes->count() - $pointagesDuJour->count(),
             'retards'  => $pointagesDuJour->where('statut', 'retard')->count(),
@@ -132,7 +131,7 @@ class PointageController extends Controller
 
         $employe = $pointage->employe;
 
-        return back()->with('success', "✓ Départ de {$employe->prenom} {$employe->nom} enregistré — {$pointage->duree_formattee} travaillées.");
+        return back()->with('success', "✓ Départ de {$employe->prenom} {$employe->nom} enregistré."/*— {$pointage->duree_formattee} travaillées.")*/);
     }
 
     /*
@@ -232,7 +231,7 @@ class PointageController extends Controller
             return response()->json([
                 'success' => true,
                 'action'  => 'depart',
-                'message' => "✓ Départ de {$employe->prenom} {$employe->nom} enregistré — {$pointage->duree_formattee} travaillées.",
+                'message' => "✓ Départ de {$employe->prenom} {$employe->nom} enregistré."/* — {$pointage->duree_formattee} travaillées."*/,
                 'employe' => [
                     'nom'       => $employe->nom,
                     'prenom'    => $employe->prenom,
@@ -370,7 +369,6 @@ class PointageController extends Controller
             ->whereIn('statut', [
                 'present',
                 'retard',
-                'ferie_paye',
             ])
             ->count();
 
@@ -409,7 +407,6 @@ class PointageController extends Controller
             ->whereIn('statut', [
                 'present',
                 'retard',
-                'ferie_paye',
             ])
             ->pluck('date')
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
@@ -595,13 +592,11 @@ class PointageController extends Controller
             ->get();
 
 
-
         $statsGlobales = [
             'total_pointages' => $pointagesMois->count(),
             'total_presents'  => $pointagesMois->whereIn('statut', [
             'present',
             'retard',
-            'ferie_paye',
         ])->count(),
             'total_absents'   => 0, // recalculé après
             'total_retards'   => $pointagesMois->where('statut', 'retard')->count(),
@@ -698,7 +693,7 @@ class PointageController extends Controller
 
         if ($existant) {
 
-            if ($existant->statut === 'ferie_paye') {
+            if ($existant->est_ferie_paye) {
                 return back()->with(
                     'error',
                     "{$employe->prenom} {$employe->nom} possède déjà un férié payé."
