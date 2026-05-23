@@ -143,18 +143,19 @@
                                 </td>
                             --}}
                             <td class="px-4 py-3 text-[12px] font-semibold text-slate-700">
-                                {{ $pointage->salaire_jour ? number_format($pointage->salaire_jour, 0, ',', ' ') . ' F' : '–' }}
+                                {{ $pointage->salaire_affiche }}
                             </td>
                             <td class="px-4 py-3">
-                                @if($pointage->badge_statut)
-                                
-                                    @php $badge = $pointage->badge_statut; @endphp
-                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                        style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
-                                        {{ $badge['label'] }}
-                                    </span>
-
-                                @endif
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                    style="{{ 
+                                        $pointage->statut_affiche === 'ferie_paye'
+                                        ? 'background:#DBEAFE;color:#1D4ED8'
+                                        : ($pointage->statut_affiche === 'ferie_non_paye'
+                                            ? 'background:#FEE2E2;color:#B91C1C'
+                                            : 'background:' . ($pointage->badge_statut['bg'] ?? '#F1F5F9') . ';color:' . ($pointage->badge_statut['color'] ?? '#64748B'))
+                                    }}">
+                                    {{ $pointage->libelle_statut }}
+                                </span>
                             </td>
                         </tr>
                     @empty

@@ -507,7 +507,56 @@ class PointageController extends Controller
         $lignes = $pointages
             ->concat($absences)
             ->sortByDesc('date')
-            ->values();    
+            ->values();   
+            
+        $lignes->transform(function ($ligne) {
+
+            $dateStr = Carbon::parse($ligne->date)->format('Y-m-d');
+
+            $ferie = \App\Models\Evenement::whereDate('date', $dateStr)
+                ->where('type', 'ferie')
+                ->first();
+
+            $ligne->est_ferie = $ferie ? true : false;
+            $ligne->ferie_titre = $ferie?->titre;
+
+            // Déterminer statut affiché
+            if ($ferie) {
+
+                if (($ligne->statut ?? null) === 'ferie_paye') {
+                    $ligne->statut_affiche = 'ferie_paye';
+                    $ligne->libelle_statut = 'Férié payé';
+                } else {
+                    $ligne->statut_affiche = 'ferie_non_paye';
+                    $ligne->libelle_statut = 'Férié non payé';
+                }
+
+            } else {
+
+                $ligne->statut_affiche = $ligne->statut ?? 'absent';
+                $ligne->libelle_statut = $ligne->badge_statut['label'] ?? '–';
+            }
+
+            return $ligne;
+        });
+
+        $lignes->transform(function ($ligne) {
+
+            if ($ligne->est_ferie ?? false) {
+
+                $ligne->salaire_affiche = ($ligne->statut === 'ferie_paye')
+                    ? ($ligne->salaire_jour ? number_format($ligne->salaire_jour, 0, ',', ' ') . ' F' : '–')
+                    : '–';
+
+            } else {
+
+                $ligne->salaire_affiche = $ligne->salaire_jour
+                    ? number_format($ligne->salaire_jour, 0, ',', ' ') . ' F'
+                    : '–';
+            }
+
+            return $ligne;
+        });
 
         $stats = [
             'jours_presents'    => $joursPresents,
