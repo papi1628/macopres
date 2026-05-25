@@ -109,8 +109,8 @@
         <div class="flex flex-wrap gap-4 mt-4 pt-3 border-t border-slate-100">
             @foreach([
                 ['Férié payé', '#DBEAFE', '#1D4ED8'],
-                ['Repos', '#F3F4F6', '#374151'],
-                ['Événement', '#DCFCE7', '#166534'],
+                /*['Repos', '#F3F4F6', '#374151'],
+                ['Événement', '#DCFCE7', '#166534'],*/
                 ['Aujourd\'hui', '#EFF6FF', '#185FA5'],
                 ['Week-end', '#F1F5F9', '#94A3B8'],
             ] as [$label, $bg, $color])

@@ -18,6 +18,8 @@ return new class extends Migration
 
             $table->enum('type', [
                 'ferie',
+                'repos',
+                'evenement',
             ]);
 
             $table->string('titre');

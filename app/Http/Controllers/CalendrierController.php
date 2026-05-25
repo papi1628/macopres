@@ -58,7 +58,7 @@ class CalendrierController extends Controller
             'created_by'  => auth()->id(),
         ]);
 
-        return back()->with('success', "Événement « {$request->titre} » ajouté au calendrier.");
+        return back()->with('success', "Férié « {$request->titre} » ajouté au calendrier.");
     }
 
     public function update(Request $request, Evenement $calendrier)
@@ -81,7 +81,7 @@ class CalendrierController extends Controller
             'est_paye'    => $request->boolean('est_paye'),
         ]);
 
-        return back()->with('success', "Événement « {$request->titre} » mis à jour.");
+        return back()->with('success', "Férié « {$request->titre} » mis à jour.");
     }
 
     public function destroy(Evenement $calendrier)
@@ -91,7 +91,7 @@ class CalendrierController extends Controller
         $titre = $calendrier->titre;
         $calendrier->delete();
 
-        return back()->with('success', "Événement « {$titre} » supprimé.");
+        return back()->with('success', "Férié « {$titre} » supprimé.");
     }
 
     /**

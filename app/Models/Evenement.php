@@ -35,7 +35,7 @@ class Evenement extends Model
         return $this->type === 'ferie';
     }
 
-    public function isRepos(): bool
+    /*public function isRepos(): bool
     {
         return $this->type === 'repos';
     }
@@ -43,7 +43,7 @@ class Evenement extends Model
     public function isEvenement(): bool
     {
         return $this->type === 'evenement';
-    }
+    }*/
 
     /*
     |--------------------------------------------------------------------------
@@ -70,7 +70,7 @@ class Evenement extends Model
                 'bg' => '#DBEAFE',
                 'color' => '#1D4ED8',
             ],
-            'repos' => [
+            /*'repos' => [
                 'label' => 'Repos',
                 'bg' => '#F3F4F6',
                 'color' => '#374151',
@@ -79,7 +79,7 @@ class Evenement extends Model
                 'label' => 'Événement',
                 'bg' => '#DCFCE7',
                 'color' => '#166534',
-            ],
+            ],*/
             default => [
                 'label' => 'Autre',
                 'bg' => '#E5E7EB',
