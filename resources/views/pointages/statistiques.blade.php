@@ -43,16 +43,21 @@
     {{-- ══════════════════════════════════════
          KPI GLOBAUX DU MOIS
     ══════════════════════════════════════ --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5" style="border-left:3px solid #3B6D11">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Jour</p>
-            <p class="text-[28px] font-black leading-none" style="color:#3B6D11">{{ $statsGlobales['total_jours_travailles'] }}</p>
+            <p class="text-[28px] font-black leading-none" style="color:#3B6D11">{{ $statsGlobales['jours_ouvrables'] }}</p>
             <p class="text-[10px] text-slate-400 mt-1">jour travaillés</p>
         </div>
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5" style="border-left:3px solid #A32D2D">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Absences</p>
             <p class="text-[28px] font-black leading-none" style="color:#A32D2D">{{ $statsGlobales['total_absents'] }}</p>
             <p class="text-[10px] text-slate-400 mt-1">journées d'absence</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5" style="border-left:3px solid #1D4ED8">
+            <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Fériés Payés</p>
+            <p class="text-[28px] font-black leading-none" style="color:#1D4ED8">{{ $statsGlobales['total_feries_payes'] }}</p>
+            <p class="text-[10px] text-slate-400 mt-1">pointages</p>
         </div>
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5" style="border-left:3px solid #854F0B">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Retards</p>
@@ -72,8 +77,9 @@
          TAUX DE PRÉSENCE GLOBAL
     ══════════════════════════════════════ --}}
     @php
-        $totalPossible = $statsGlobales['total_presents'] + $statsGlobales['total_absents'];
-        $tauxGlobal    = $totalPossible > 0 ? round(($statsGlobales['total_presents'] / $totalPossible) * 100) : 0;
+        $tauxGlobal = $statsGlobales['jours_ouvrables'] > 0
+            ? round(($statsGlobales['total_presents'] / $statsGlobales['jours_ouvrables']) * 100)
+            : 0;
     @endphp
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
         <div class="flex items-center justify-between mb-4">
@@ -87,9 +93,10 @@
         </div>
         <div class="flex flex-wrap gap-x-6 gap-y-1 mt-3">
             @foreach([
-                ['Jours', $statsGlobales['total_jours_travailles'],  '#3B6D11'],
-                ['Retards',  $statsGlobales['total_retards'],   '#854F0B'],
-                ['Absents',  $statsGlobales['total_absents'],   '#A32D2D'],
+                ['Présents', $statsGlobales['total_presents'], '#3B6D11'],
+                ['Fériés payés', $statsGlobales['total_feries_payes'], '#1D4ED8'],
+                ['Retards', $statsGlobales['total_retards'], '#854F0B'],
+                ['Absents', $statsGlobales['total_absents'], '#A32D2D'],
                 /*['Total heures', $statsGlobales['total_heures'] . 'h', '#185FA5'],*/
             ] as [$label, $val, $color])
                 <div class="flex items-center gap-1.5">
@@ -123,6 +130,7 @@
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Département</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Présences</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Absences</th>
+                        <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Fériés</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Retards</th>
                         <!--<th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Heures</th>-->
                         <!--<th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Taux</th>-->
@@ -163,6 +171,12 @@
                                 <span class="text-[13px] font-bold {{ $row['jours_absents'] > 0 ? '' : 'text-slate-300' }}"
                                       style="{{ $row['jours_absents'] > 0 ? 'color:#A32D2D' : '' }}">
                                     {{ $row['jours_absents'] }}j
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="text-[13px] font-bold {{ $row['jours_feries'] > 0 ? '' : 'text-slate-300' }}"
+                                    style="{{ $row['jours_feries'] > 0 ? 'color:#1D4ED8' : '' }}">
+                                    {{ $row['jours_feries'] }}j
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center">
@@ -218,6 +232,9 @@
                         </td>-->
                         <td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#A32D2D">
                             {{ $employes->sum('jours_absents') }}j
+                        </td>
+                        <td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#1D4ED8">
+                            {{ $employes->sum('jours_feries') }}j
                         </td>
                         <td class="px-4 py-3 text-center text-[12px] font-bold" style="color:#854F0B">
                             {{ $employes->sum('retards') }}x
