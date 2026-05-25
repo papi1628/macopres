@@ -430,8 +430,8 @@ function calendrierApp() {
 
         typeOptions: [
             { value: 'ferie',     label: 'Férié',      bg: '#DBEAFE', color: '#1D4ED8' },
-            { value: 'repos',     label: 'Repos',       bg: '#F3F4F6', color: '#374151' },
-            { value: 'evenement', label: 'Événement',   bg: '#DCFCE7', color: '#166534' },
+            /*{ value: 'repos',     label: 'Repos',       bg: '#F3F4F6', color: '#374151' },
+            { value: 'evenement', label: 'Événement',   bg: '#DCFCE7', color: '#166534' },*/
         ],
 
         form: {
@@ -479,12 +479,12 @@ function calendrierApp() {
         },
 
         getBadgeColor(type) {
-            const map = { ferie: '#1D4ED8', repos: '#374151', evenement: '#166534' };
+            const map = { ferie: '#1D4ED8'/*, repos: '#374151', evenement: '#166534'*/ };
             return map[type] || '#64748B';
         },
 
         getTypeLabel(type) {
-            const map = { ferie: 'Férié', repos: 'Repos', evenement: 'Événement' };
+            const map = { ferie: 'Férié'/*, repos: 'Repos', evenement: 'Événement'*/ };
             return map[type] || 'Autre';
         },
     };
