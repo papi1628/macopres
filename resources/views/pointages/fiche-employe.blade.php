@@ -56,7 +56,7 @@
     {{-- ══════════════════════════════════════
          STATS KPI
     ══════════════════════════════════════ --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #3B6D11">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Présences</p>
             <p class="text-[24px] font-black leading-none" style="color:#3B6D11">{{ $stats['jours_presents'] }}</p>
@@ -77,6 +77,11 @@
             <p class="text-[24px] font-black leading-none" style="color:#0C447C">{{ $stats['heures_total'] }}h</p>
             <p class="text-[10px] text-slate-400 mt-1">{{ $titre }}</p>
         </div>-->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #1D4ED8">
+            <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Fériés Payés</p>
+            <p class="text-[24px] font-black leading-none" style="color:#1D4ED8">{{ $stats['jours_feries_payes'] }}</p>
+            <p class="text-[10px] text-slate-400 mt-1">jours</p>
+        </div>
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 col-span-2 lg:col-span-1" style="border-left:3px solid #185FA5">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Salaire</p>
             <p class="text-[20px] font-black leading-none" style="color:#185FA5">
@@ -142,19 +147,17 @@
                                     {{ $pointage->duree_formattee }}
                                 </td>
                             --}}
+                            
                             <td class="px-4 py-3 text-[12px] font-semibold text-slate-700">
-                                {{ $pointage->salaire_affiche }}
+                                {{ $pointage->salaire_jour ? number_format($pointage->salaire_jour, 0, ',', ' ') . ' F' : '–' }}
                             </td>
+                            
+
                             <td class="px-4 py-3">
+                                @php $badge = $pointage->badge_statut; @endphp
                                 <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                    style="{{ 
-                                        $pointage->statut_affiche === 'ferie_paye'
-                                        ? 'background:#DBEAFE;color:#1D4ED8'
-                                        : ($pointage->statut_affiche === 'ferie_non_paye'
-                                            ? 'background:#FEE2E2;color:#B91C1C'
-                                            : 'background:' . ($pointage->badge_statut['bg'] ?? '#F1F5F9') . ';color:' . ($pointage->badge_statut['color'] ?? '#64748B'))
-                                    }}">
-                                    {{ $pointage->libelle_statut }}
+                                    style="background:{{ $badge['bg'] }}; color:{{ $badge['color'] }}">
+                                    {{ $badge['label'] }}
                                 </span>
                             </td>
                         </tr>
