@@ -423,7 +423,7 @@ class PointageController extends Controller
         // Récupérer les événements fériés de la période
         $feriesPayes = \App\Models\Evenement::query()
             ->where('type', 'ferie')
-            ->where('est_paye', true)
+            /*->where('est_paye', true)*/
             ->when($periode === 'semaine', fn($q) => $q->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()]))
             ->when($periode === 'mois',    fn($q) => $q->whereMonth('date', now()->month)->whereYear('date', now()->year))
             ->when($periode === 'annee',   fn($q) => $q->whereYear('date', now()->year))
