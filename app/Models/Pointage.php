@@ -105,8 +105,8 @@ class Pointage extends Model
         $depart  = Carbon::parse($this->date->format('Y-m-d') . ' ' . $this->heure_depart);
 
         // Heures travaillées
-        $minutesTravaillees       = $arrivee->diffInMinutes($depart);
-        $this->heures_travaillees = round($minutesTravaillees / 60, 2);
+        /*$minutesTravaillees       = $arrivee->diffInMinutes($depart);
+        $this->heures_travaillees = round($minutesTravaillees / 60, 2);*/
 
         // Salaire : pleine journée ou demi selon ce que le pointeur a choisi
         if ($this->employe && $this->employe->salaire) {
@@ -188,10 +188,10 @@ class Pointage extends Model
     public function scopePresents($query)
     {
         return $query->whereIn('statut', [
-    'present',
-    'retard',
-    'ferie_paye',
-]);
+            'present',
+            'retard',
+            'ferie_paye',
+        ]);
     }
 
     public function scopeAbsents($query)
