@@ -42,9 +42,6 @@ return new class extends Migration
             $table->string('tel')
                 ->nullable();
 
-            $table->string('poste')
-                ->nullable();
-
             $table->string('departement')
                 ->nullable();
 
@@ -56,14 +53,6 @@ return new class extends Migration
             $table->string('qr_code')
                 ->unique()
                 ->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Statut
-            |--------------------------------------------------------------------------
-            */
-            $table->boolean('actif')
-                ->default(true);
 
             /*
             |--------------------------------------------------------------------------

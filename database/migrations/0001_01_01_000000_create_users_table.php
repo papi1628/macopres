@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('employe_id')
+                ->nullable()
+                ->constrained('employes')
+                ->cascadeOnDelete();
+
             $table->string('login')->unique();
 
             $table->string('password');

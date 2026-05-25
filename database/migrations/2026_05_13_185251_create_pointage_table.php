@@ -27,9 +27,10 @@ return new class extends Migration
             | Date et horaires
             |--------------------------------------------------------------------------
             */
-            $table->date('date');                          // 2025-05-13
-            $table->time('heure_arrivee')->nullable();     // 08:32:00
-            $table->time('heure_depart')->nullable();      // 17:15:00
+            $table->date('date');                          
+            $table->time('heure_arrivee')->nullable();     
+            $table->time('heure_depart')->nullable();       
+            $table->boolean('demi_journee')->default(false);   
 
             /*
             |--------------------------------------------------------------------------
@@ -40,6 +41,7 @@ return new class extends Migration
             */
             $table->enum('statut', ['present', 'absent', 'retard'])->default('present');
             $table->enum('type', ['manuel', 'qr_code'])->default('manuel');
+            $table->boolean('est_ferie_paye')->default(false);
 
             /*
             |--------------------------------------------------------------------------
