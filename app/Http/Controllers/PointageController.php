@@ -382,7 +382,7 @@ class PointageController extends Controller
                     'retard'        => false,
                     'minutes_retard'=> 0,
                     'badge_statut'  => [
-                        'label' => '🎉 ' . $feriesPayes[$dateStr]->titre,
+                        'label' => 'Férié non payé',
                         'bg'    => '#EFF6FF',
                         'color' => '#1D4ED8',
                     ],
@@ -410,7 +410,7 @@ class PointageController extends Controller
         $joursPresents    = $pointages->whereIn('statut', self::STATUTS_PRESENTS)->count();
         $joursFeriesPayes = $pointages->where('statut', 'ferie_paye')->count();
         $joursAbsents     = max(0, $joursOuvrables - $joursPresents - $joursFeriesPayes);
-
+        
         $stats = [
             'jours_presents'     => $joursPresents,
             'jours_feries_payes' => $joursFeriesPayes,
@@ -476,8 +476,9 @@ class PointageController extends Controller
                 if ($premierPointage) {
                     $debut = Carbon::parse($premierPointage->date);
                     if ($debut->gt($debutMois)) {
+                        
                         $joursOuvrablesEmploye = 0;
-                        for ($j = $debut->copy(); $j->lte($finMois); $j->addDay()) {
+                        for ($j = $debutMois->copy(); $j->lte($finMois) && $j->lte(today()); $j->addDay()) {
                             if (!$j->isSunday()) $joursOuvrablesEmploye++;
                         }
                     }
