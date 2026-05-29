@@ -72,11 +72,11 @@
             <p class="text-[24px] font-black leading-none" style="color:#854F0B">{{ $stats['jours_retard'] }}</p>
             <p class="text-[10px] text-slate-400 mt-1">jours</p>
         </div>
-        <!--<div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #0C447C">
+        {{-- <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #0C447C">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Heures travaillées</p>
             <p class="text-[24px] font-black leading-none" style="color:#0C447C">{{ $stats['heures_total'] }}h</p>
             <p class="text-[10px] text-slate-400 mt-1">{{ $titre }}</p>
-        </div>-->
+        </div> --}}
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style="border-left:3px solid #1D4ED8">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Fériés Payés</p>
             <p class="text-[24px] font-black leading-none" style="color:#1D4ED8">{{ $stats['jours_feries_payes'] }}</p>
