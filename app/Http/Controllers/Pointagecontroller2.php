@@ -7,7 +7,7 @@ use App\Models\Pointage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class PointageController extends Controller
+class PointageController2 extends Controller
 {
     /*
     |--------------------------------------------------------------------------

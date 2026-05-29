@@ -185,10 +185,10 @@
                                     {{ $row['retards'] }}x
                                 </span>
                             </td>
-                            <!--<td class="px-4 py-3 text-center text-[12px] text-slate-600 font-mono">
+                            {{-- <td class="px-4 py-3 text-center text-[12px] text-slate-600 font-mono">
                                 {{ $row['heures_total'] }}h
-                            </td>-->
-                            <!--<td class="px-4 py-3">
+                            </td>
+                            <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="flex-1 h-1.5 rounded-full overflow-hidden" style="background:#E6F1FB">
                                         <div class="h-full rounded-full"
@@ -200,7 +200,7 @@
                                         {{ $taux }}%
                                     </span>
                                 </div>
-                            </td>-->
+                            </td> --}}
                             <td class="px-4 py-3 text-right">
                                 <span class="text-[13px] font-bold text-slate-800">
                                     {{ number_format($row['salaire_du'], 0, ',', ' ') }} F
