@@ -46,8 +46,8 @@
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5" style="border-left:3px solid #3B6D11">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Jour</p>
-            <p class="text-[28px] font-black leading-none" style="color:#3B6D11">{{ $statsGlobales['jours_ouvrables'] }}</p>
-            <p class="text-[10px] text-slate-400 mt-1">jour travaillés</p>
+            <p class="text-[28px] font-black leading-none" style="color:#3B6D11">{{ $statsGlobales['jours_travail'] }}</p>
+            <p class="text-[10px] text-slate-400 mt-1">jour de travail</p>
         </div>
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5" style="border-left:3px solid #A32D2D">
             <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Absences</p>

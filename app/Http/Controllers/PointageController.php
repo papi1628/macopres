@@ -448,6 +448,11 @@ class PointageController extends Controller
             if (!$j->isSunday()) $joursOuvrablesMois++;
         }
 
+        $nombreFeries = Evenement::where('type', 'ferie')
+            ->whereMonth('date', $moisNum)
+            ->whereYear('date', $annee)
+            ->count();
+
         $statsGlobales = [
             'total_presents'     => $pointagesMois->whereIn('statut', self::STATUTS_PRESENTS)->count(),
             'total_feries_payes' => $pointagesMois->where('statut', 'ferie_paye')->count(),
@@ -455,6 +460,7 @@ class PointageController extends Controller
             'total_retards'      => $pointagesMois->where('statut', 'retard')->count(),
             'total_salaires'     => round($pointagesMois->sum('salaire_jour'), 2),
             'jours_ouvrables'    => $joursOuvrablesMois,
+            'jours_travail'    => max(0, $joursOuvrablesMois - $nombreFeries),
         ];
 
         $employes = Employe::orderBy('nom')
