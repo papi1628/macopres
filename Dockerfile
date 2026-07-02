@@ -35,6 +35,8 @@ RUN test -f public/build/manifest.json
 
 EXPOSE 10000
 
+
 CMD php artisan migrate --force && \
+    php artisan db:seed --force && \
     php artisan storage:link || true && \
     php artisan serve --host=0.0.0.0 --port=10000

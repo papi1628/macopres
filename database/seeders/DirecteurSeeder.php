@@ -10,13 +10,12 @@ class DirecteurSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-
-            'login' => 'pdg',
-            'password' => Hash::make('12345678'),
-            'role' => 'directeur',
-        ]);
-
+        User::firstOrCreate(
+            ['login' => 'pdg'],
+            [
+                'password' => Hash::make('12345678'),
+                'role' => 'directeur',
+            ]
+        );
     }
-
 }
