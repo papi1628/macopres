@@ -17,6 +17,7 @@ class User extends Authenticatable
         'password',
         'role',
         'employe_id',
+        'last_login_at',
     ];
 
     protected $hidden = [
@@ -27,6 +28,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'last_login_at'     => 'datetime',
     ];
 
     public function pointages()

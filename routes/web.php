@@ -9,7 +9,8 @@ use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\PointageController;
 use App\Http\Controllers\DirecteurDashboardController;
 use App\Http\Controllers\CalendrierController;
-
+use App\Http\Controllers\ImpressionController;
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | ROUTE PUBLIQUE
@@ -181,6 +182,53 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/calendrier/ferie/{date}', [CalendrierController::class, 'jourFerie'])
         ->name('calendrier.ferie');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | IMPRESSION
+    |--------------------------------------------------------------------------
+    */
+
+    // Page de sélection (employés + période) pour le bulletin de salaire
+    Route::get('/impressions', [ImpressionController::class, 'index'])
+        ->name('impressions.index');
+
+    // Bulletin de salaire imprimable — plusieurs employés sélectionnés
+    Route::post('/impressions/apercu', [ImpressionController::class, 'apercu'])
+        ->name('impressions.apercu');
+
+    // Bulletin de salaire imprimable — un seul employé (depuis sa fiche)
+    Route::get('/impressions/employe/{employe}', [ImpressionController::class, 'ficheEmploye'])
+        ->name('impressions.fiche-employe');
+
+    // Badges QR
+    Route::post('/impressions/badges', [ImpressionController::class, 'badges'])
+        ->name('impressions.badges');
+
+    // Rapport statistique par département
+    Route::get('/impressions/statistiques', [ImpressionController::class, 'statistiques'])
+        ->name('impressions.statistiques');
+
+    // Feuille de présence imprimable (jour ou plage)
+    Route::get('/impressions/feuille-presence', [ImpressionController::class, 'feuillePresence'])
+        ->name('impressions.feuille-presence');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFIL
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/profil', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::put('/profil/login', [ProfileController::class, 'updateLogin'])
+        ->name('profile.login');
+
+    Route::put('/profil/mot-de-passe', [ProfileController::class, 'updatePassword'])
+        ->name('profile.password');
+
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT

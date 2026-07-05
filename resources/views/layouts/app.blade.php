@@ -129,9 +129,9 @@
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
                              style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                             {{ Auth::user()->role === 'assistant'
-    ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
-    : 'DG'
-}}
+                                ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
+                                : 'DG'
+                            }}
                         </div>
                         <div class="flex-1 min-w-0" :class="{ 'lg:hidden': sidebarCollapsed }">
                              
@@ -202,9 +202,9 @@
                                 <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
                                      style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                                     {{ Auth::user()->role === 'assistant'
-    ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
-    : 'DG'
-}}
+                                        ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
+                                        : 'DG'
+                                    }}
                                 </div>
                                 <div class="hidden sm:block text-left">
                                     
@@ -216,20 +216,30 @@
                             </button>
 
                             <div x-show="open"
-                                 x-transition:enter="transition ease-out duration-150"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-100"
-                                 x-transition:leave-end="opacity-0"
-                                 class="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl border border-slate-100 shadow-xl py-1 z-50"
-                                 style="display:none">
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 scale-95"
+                                x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-end="opacity-0"
+                                class="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl border border-slate-100 shadow-xl py-1 z-50"
+                                style="display:none">
                                 <div class="px-4 py-2.5 border-b border-slate-100">
                                     <p class="text-[12px] font-semibold text-slate-700">{{ Auth::user()->role === 'assistant'
-    ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
-    : 'DG'
-}}</p>
+                                ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
+                                : 'DG'
+                            }}</p>
                                     <p class="text-[10px] text-slate-400 capitalize">{{ Auth::user()->role }}</p>
                                 </div>
+                            
+                                {{-- NOUVEAU --}}
+                                <a href="{{ route('profile.edit') }}"
+                                class="w-full flex items-center gap-2 px-4 py-2.5 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    Mon profil
+                                </a>
+                            
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"

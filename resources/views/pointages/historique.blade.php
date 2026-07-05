@@ -6,10 +6,15 @@
     {{-- ══════════════════════════════════════
          FILTRES
     ══════════════════════════════════════ --}}
+    @php
+        $impressionDebut = request('date_debut') ?: \Carbon\Carbon::parse(request('mois', now()->format('Y-m')) . '-01')->startOfMonth()->format('Y-m-d');
+        $impressionFin   = request('date_fin')   ?: \Carbon\Carbon::parse(request('mois', now()->format('Y-m')) . '-01')->endOfMonth()->format('Y-m-d');
+    @endphp
+    
     <form method="GET" action="{{ route('pointages.historique') }}"
-          class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+        class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
         <div class="flex flex-wrap gap-3 items-end">
-
+    
             <div class="flex-1 min-w-[140px]">
                 <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Employé</label>
                 <select name="employe_id"
@@ -22,7 +27,7 @@
                     @endforeach
                 </select>
             </div>
-
+    
             <div class="flex-1 min-w-[120px]">
                 <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Statut</label>
                 <select name="statut"
@@ -33,28 +38,28 @@
                     <option value="absent"   {{ request('statut') === 'absent'   ? 'selected' : '' }}>Absent</option>
                 </select>
             </div>
-
+    
             <div class="flex-1 min-w-[120px]">
                 <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Mois</label>
                 <input type="month" name="mois"
-                       value="{{ request('mois', now()->format('Y-m')) }}"
-                       class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
+                    value="{{ request('mois', now()->format('Y-m')) }}"
+                    class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
             </div>
-
+    
             <div class="flex-1 min-w-[120px]">
                 <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Date début</label>
                 <input type="date" name="date_debut"
-                       value="{{ request('date_debut') }}"
-                       class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
+                    value="{{ request('date_debut') }}"
+                    class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
             </div>
-
+    
             <div class="flex-1 min-w-[120px]">
                 <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Date fin</label>
                 <input type="date" name="date_fin"
-                       value="{{ request('date_fin') }}"
-                       class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
+                    value="{{ request('date_fin') }}"
+                    class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
             </div>
-
+    
             <div class="flex gap-2">
                 <button type="submit"
                         class="h-9 px-5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-px"
@@ -62,8 +67,17 @@
                     Filtrer
                 </button>
                 <a href="{{ route('pointages.historique') }}"
-                   class="h-9 px-4 rounded-xl text-sm font-semibold border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors flex items-center">
+                class="h-9 px-4 rounded-xl text-sm font-semibold border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors flex items-center">
                     Reset
+                </a>
+                {{-- NOUVEAU : Imprimer la période affichée --}}
+                <a href="{{ route('impressions.feuille-presence', ['date_debut' => $impressionDebut, 'date_fin' => $impressionFin]) }}"
+                target="_blank"
+                class="h-9 px-4 rounded-xl text-sm font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/>
+                    </svg>
+                    Imprimer
                 </a>
             </div>
         </div>

@@ -21,18 +21,75 @@
             <input x-model="search" type="text" placeholder="Rechercher un employé…"
                    class="w-full pl-9 pr-4 h-9 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
         </div>
-        <!--<select x-model="filterDept" class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-600">
-            <option value="">Tous les départements</option>
-            @foreach ($departements as $dept)
-                <option value="{{ $dept }}">{{ $dept }}</option>
-            @endforeach
-        </select>-->
-        
+
+        {{-- Toggle mode sélection badges --}}
+        <button @click="toggleSelectionMode()"
+                class="flex items-center gap-2 h-9 px-4 rounded-xl text-sm font-semibold transition-all"
+                :class="selectionMode ? 'text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'"
+                :style="selectionMode ? 'background:linear-gradient(135deg,#0C447C,#185FA5)' : ''">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/>
+            </svg>
+            <span x-text="selectionMode ? 'Annuler la sélection' : 'Imprimer des badges'"></span>
+        </button>
+
         <button @click="openCreate()"
                 class="flex items-center gap-2 h-9 px-4 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-px"
                 style="background:linear-gradient(135deg,#185FA5,#378ADD)">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             Nouvel employé
+        </button>
+    </div>
+
+    {{-- ── Barre flottante de sélection (visible en mode sélection) ── --}}
+    <div x-show="selectionMode"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         class="bg-white rounded-2xl border shadow-sm p-4 flex flex-wrap items-center gap-4"
+         style="border-color:#B5D4F4; background:#F5F9FE"
+         style="display:none">
+
+        <p class="text-[12px] font-semibold text-slate-700">
+            <span class="font-bold" style="color:#0C447C" x-text="selectionnesBadges.length"></span>
+            employé(s) sélectionné(s)
+        </p>
+
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Format</span>
+            <div class="flex gap-1 bg-white rounded-xl border border-slate-200 p-1">
+                <button type="button" @click="formatBadge = 'unique'"
+                        class="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+                        :class="formatBadge === 'unique' ? 'text-white' : 'text-slate-500'"
+                        :style="formatBadge === 'unique' ? 'background:linear-gradient(135deg,#185FA5,#378ADD)' : ''">
+                    1 par page
+                </button>
+                <button type="button" @click="formatBadge = 'planche'"
+                        class="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+                        :class="formatBadge === 'planche' ? 'text-white' : 'text-slate-500'"
+                        :style="formatBadge === 'planche' ? 'background:linear-gradient(135deg,#185FA5,#378ADD)' : ''">
+                    Planche
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <button type="button" @click="toutSelectionnerBadges()"
+                class="text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                style="color:#185FA5; background:#E6F1FB">
+            Tout sélectionner (page)
+        </button>
+
+        <button type="button" @click="imprimerBadges()"
+                :disabled="selectionnesBadges.length === 0"
+                :class="selectionnesBadges.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:-translate-y-px'"
+                class="flex items-center gap-2 h-9 px-4 rounded-xl text-sm font-bold text-white transition-all"
+                style="background:linear-gradient(135deg,#0C447C,#185FA5)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/>
+            </svg>
+            Imprimer les badges
         </button>
     </div>
 
@@ -42,6 +99,7 @@
             <table class="w-full text-sm min-w-[700px]">
                 <thead>
                     <tr class="border-b border-slate-100" style="background:#f8fafc">
+                        <th class="text-center px-3 py-3 w-8" x-show="selectionMode"></th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Matricule</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Employé</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Département</th>
@@ -52,7 +110,15 @@
                 </thead>
                 <tbody class="divide-y divide-slate-50">
                     @forelse ($employes as $employe)
-                    <tr class="hover:bg-slate-50/60 transition-colors">
+                    <tr class="hover:bg-slate-50/60 transition-colors"
+                        :class="selectionnesBadges.includes({{ $employe->id }}) ? 'bg-blue-50/50' : ''">
+                        <td class="px-3 py-3 text-center" x-show="selectionMode">
+                            <input type="checkbox"
+                                   :value="{{ $employe->id }}"
+                                   x-model="selectionnesBadges"
+                                   class="w-4 h-4 rounded cursor-pointer"
+                                   style="accent-color:#185FA5">
+                        </td>
                         <td class="px-4 py-3 font-mono text-[11px] font-bold" style="color:#0C447C">{{ $employe->matricule }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2.5">
@@ -67,7 +133,8 @@
                         </td>
                         <td class="px-4 py-3 text-slate-500 text-[12px]">{{ $employe->departement ?? '–' }}</td>
                         <td class="px-4 py-3 text-slate-400 text-[12px]">{{ $employe->tel ?? '–' }}</td>
-                        <td class="px-4 py-3 text-slate-400 text-[12px]">{{ $employe->salaire ?? '–' }}</td>                        
+                        <td class="px-4 py-3 text-slate-400 text-[12px]">{{ $employe->salaire ?? '–' }}</td>
+
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-1.5">
                                 {{-- QR --}}
@@ -76,7 +143,8 @@
                                 style="color:#185FA5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
                                 </button>
-                                 @php
+
+                                @php
                                     $canManage =
                                           Auth::user()->role !== 'assistant'
                                             || $employe->departement !== 'administration';
@@ -98,7 +166,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-12 text-center text-slate-400 text-sm">Aucun employé trouvé</td>
+                        <td colspan="7" class="px-4 py-12 text-center text-slate-400 text-sm">Aucun employé trouvé</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -117,34 +185,33 @@
          MODAL QR_CODE
     ══════════════════════════════════════ --}}
 
-        <div x-show="qrModal"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-            style="display:none">
+    <div x-show="qrModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        style="display:none">
 
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center"
-                @click.outside="qrModal = false">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center"
+            @click.outside="qrModal = false">
 
-                <h2 class="text-lg font-bold text-slate-800 mb-2" x-text="qrEmploye"></h2>
+            <h2 class="text-lg font-bold text-slate-800 mb-2" x-text="qrEmploye"></h2>
 
-                <p class="text-xs text-slate-400 mb-4" x-text="qrMatricule"></p>
+            <p class="text-xs text-slate-400 mb-4" x-text="qrMatricule"></p>
 
-                <img :src="'data:image/svg+xml;base64,' + qr" class="mx-auto w-48 h-48"/>
+            <img :src="'data:image/svg+xml;base64,' + qr" class="mx-auto w-48 h-48"/>
 
-                <div class="flex gap-3 pt-2 border-t border-slate-100">
-                    <button type="button" @click="qrModal = false"
-                            class="flex-1 h-10 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors">
-                        Fermer
-                    </button>
+            <div class="flex gap-3 pt-2 border-t border-slate-100">
+                <button type="button" @click="qrModal = false"
+                        class="flex-1 h-10 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors">
+                    Fermer
+                </button>
 
-                    <button @click="downloadQR()"
-                            class="flex-1 h-10 rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-px"
-                            style="background:linear-gradient(135deg,#185FA5,#378ADD)">
-                        Télécharger
-                    </button>
-                </div>
+                <button @click="downloadQR()"
+                        class="flex-1 h-10 rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-px"
+                        style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                    Télécharger
+                </button>
             </div>
         </div>
-
+    </div>
 
     {{-- ══════════════════════════════════════
          MODAL CRÉER / MODIFIER
@@ -210,7 +277,7 @@
                                 if (Auth::user()->role === 'directeur') {
                                     array_unshift($departementsListe, 'administration');
                                 }
-                            @endphp                  
+                            @endphp
                             @foreach ($departementsListe as $dept)
                                 <option value="{{ $dept }}">{{ $dept }}</option>
                             @endforeach
@@ -296,31 +363,36 @@ function employesApp() {
         search: '',
         filterDept: '',
         filterStatut: '',
+
+        // Sélection pour impression des badges
+        selectionMode: false,
+        selectionnesBadges: [],
+        formatBadge: 'unique',
+
         form: {
-            id: null, 
-            prenom: '', 
-            nom: '', 
+            id: null,
+            prenom: '',
+            nom: '',
             tel: '',
-            departement: '', 
-            date_embauche: '', 
-            salaire: '', 
+            departement: '',
+            date_embauche: '',
+            salaire: '',
         },
-        
 
         openCreate() {
             this.editMode = false;
-            this.form = { 
-                id: null, 
-                prenom: '', 
-                nom: '', 
-                tel: '', 
-                departement: '', 
-                date_embauche: '', 
-                salaire: '', 
+            this.form = {
+                id: null,
+                prenom: '',
+                nom: '',
+                tel: '',
+                departement: '',
+                date_embauche: '',
+                salaire: '',
             };
-            
+
             this.modal = true;
-            
+
         },
 
         openEdit(employe) {
@@ -331,7 +403,7 @@ function employesApp() {
                 nom: employe.nom,
                 tel: employe.tel ?? '',
                 departement: employe.departement ?? '',
-                date_embauche: employe.date_embauche 
+                date_embauche: employe.date_embauche
                     ? employe.date_embauche.split('T')[0]
                     : '',
                 salaire: employe.salaire ?? '',
@@ -364,6 +436,53 @@ function employesApp() {
             link.href = 'data:image/svg+xml;base64,' + this.qr;
             link.download = this.qrMatricule + '.svg';
             link.click();
+        },
+
+        // ── Sélection / impression des badges ──
+        toggleSelectionMode() {
+            this.selectionMode = !this.selectionMode;
+            this.selectionnesBadges = [];
+        },
+
+        toutSelectionnerBadges() {
+            const ids = Array.from(document.querySelectorAll('input[type=checkbox][x-model]'))
+                .map(el => el._x_model ? el._x_model.get() : null); // fallback non utilisé
+            // Solution simple et fiable : re-sélectionne toutes les checkboxes visibles à l'écran
+            const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+            this.selectionnesBadges = Array.from(checkboxes).map(cb => parseInt(cb.value));
+        },
+
+        imprimerBadges() {
+            if (this.selectionnesBadges.length === 0) return;
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("impressions.badges") }}';
+            form.target = '_blank';
+
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            form.appendChild(csrf);
+
+            this.selectionnesBadges.forEach(id => {
+                const inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'employe_ids[]';
+                inp.value = id;
+                form.appendChild(inp);
+            });
+
+            const fmt = document.createElement('input');
+            fmt.type = 'hidden';
+            fmt.name = 'format';
+            fmt.value = this.formatBadge;
+            form.appendChild(fmt);
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
         }
     };
 }

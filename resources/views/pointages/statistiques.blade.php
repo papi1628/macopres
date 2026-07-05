@@ -7,12 +7,12 @@
          SÉLECTEUR DE MOIS
     ══════════════════════════════════════ --}}
     <form method="GET" action="{{ route('pointages.statistiques') }}"
-          class="flex items-center gap-3 flex-wrap">
+        class="flex items-center gap-3 flex-wrap">
         <div>
             <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Période</label>
             <input type="month" name="mois" value="{{ $mois }}"
-                   onchange="this.form.submit()"
-                   class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white">
+                onchange="this.form.submit()"
+                class="h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400 bg-white">
         </div>
         <div class="flex gap-2 mt-4">
             @php
@@ -20,20 +20,30 @@
                 $moisSuivant  = \Carbon\Carbon::parse($mois . '-01')->addMonth()->format('Y-m');
             @endphp
             <a href="{{ route('pointages.statistiques', ['mois' => $moisPrecedent]) }}"
-               class="h-9 px-3 rounded-xl text-sm border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center">
+            class="h-9 px-3 rounded-xl text-sm border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center">
                 ← Mois préc.
             </a>
             <a href="{{ route('pointages.statistiques', ['mois' => now()->format('Y-m')]) }}"
-               class="h-9 px-4 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-px flex items-center"
-               style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+            class="h-9 px-4 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-px flex items-center"
+            style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                 Ce mois
             </a>
             @if($moisSuivant <= now()->format('Y-m'))
                 <a href="{{ route('pointages.statistiques', ['mois' => $moisSuivant]) }}"
-                   class="h-9 px-3 rounded-xl text-sm border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center">
+                class="h-9 px-3 rounded-xl text-sm border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center">
                     Mois suiv. →
                 </a>
             @endif
+    
+            {{-- NOUVEAU : Imprimer le rapport statistique (global + par département) --}}
+            <a href="{{ route('impressions.statistiques', ['periode' => 'mois', 'mois' => $mois]) }}"
+            target="_blank"
+            class="h-9 px-4 rounded-xl text-sm font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/>
+                </svg>
+                Imprimer le rapport
+            </a>
         </div>
         <div class="mt-4 text-[11px] text-slate-400 font-medium">
             {{ \Carbon\Carbon::parse($mois . '-01')->locale('fr')->isoFormat('MMMM YYYY') }}
