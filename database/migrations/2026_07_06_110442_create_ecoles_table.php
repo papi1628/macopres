@@ -8,20 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('entreprises', function (Blueprint $table) {
+        Schema::create('ecoles', function (Blueprint $table) {
             $table->id();
-            $table->string('nom')->default('MACOPRES');
+            $table->string('nom');
             $table->string('adresse')->nullable();
             $table->string('telephone')->nullable();
-            $table->string('email')->nullable();
-            $table->string('devise')->default('FCFA');
-            $table->string('logo')->nullable(); // chemin sur le disque "public"
+            $table->string('contact_nom')->nullable();       // responsable / directeur de l'école
+            $table->string('contact_telephone')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('entreprises');
+        Schema::dropIfExists('ecoles');
     }
 };

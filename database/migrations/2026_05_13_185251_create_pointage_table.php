@@ -22,6 +22,8 @@ return new class extends Migration
                 ->constrained('employes')
                 ->cascadeOnDelete();
 
+                
+
             /*
             |--------------------------------------------------------------------------
             | Date et horaires

@@ -11,6 +11,7 @@ use App\Http\Controllers\DirecteurDashboardController;
 use App\Http\Controllers\CalendrierController;
 use App\Http\Controllers\ImpressionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProgrammeController;
 /*
 |--------------------------------------------------------------------------
 | ROUTE PUBLIQUE
@@ -229,6 +230,65 @@ Route::middleware('auth')->group(function () {
     Route::put('/profil/mot-de-passe', [ProfileController::class, 'updatePassword'])
         ->name('profile.password');
 
+    /*
+    |--------------------------------------------------------------------------
+    | PROGRAMMES / COMMANDES CLIENTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/programmes', [ProgrammeController::class, 'index'])
+        ->name('programmes.index');
+
+    Route::get('/programmes/creer', [ProgrammeController::class, 'create'])
+        ->name('programmes.create');
+
+    Route::post('/programmes', [ProgrammeController::class, 'store'])
+        ->name('programmes.store');
+
+    Route::get('/programmes/{programme}', [ProgrammeController::class, 'show'])
+        ->name('programmes.show');
+
+    Route::delete('/programmes/{programme}', [ProgrammeController::class, 'destroy'])
+        ->name('programmes.destroy');
+
+    Route::patch('/programmes/{programme}/statut', [ProgrammeController::class, 'updateStatut'])
+        ->name('programmes.statut');
+
+    // Bons de commande
+    Route::post('/programmes/{programme}/bons', [ProgrammeController::class, 'storeBonCommande'])
+        ->name('programmes.bons.store');
+    Route::delete('/bons-commande/{bonCommande}', [ProgrammeController::class, 'destroyBonCommande'])
+        ->name('programmes.bons.destroy');
+
+    // Lignes d'un bon de commande (articles : désignation, taille, couleur, matière, logo, quantité, prix)
+    Route::post('/bons-commande/{bonCommande}/lignes', [ProgrammeController::class, 'storeLigneBonCommande'])
+        ->name('programmes.bons.lignes.store');
+    Route::delete('/lignes-bon-commande/{ligneBonCommande}', [ProgrammeController::class, 'destroyLigneBonCommande'])
+        ->name('programmes.bons.lignes.destroy');
+
+    // Échéances de paiement
+    Route::post('/programmes/{programme}/echeances', [ProgrammeController::class, 'storeEcheance'])
+        ->name('programmes.echeances.store');
+    Route::delete('/echeances/{echeancePaiement}', [ProgrammeController::class, 'destroyEcheance'])
+        ->name('programmes.echeances.destroy');
+
+    // Paiements (encaissements réels)
+    Route::post('/programmes/{programme}/paiements', [ProgrammeController::class, 'storePaiement'])
+        ->name('programmes.paiements.store');
+    Route::delete('/paiements/{paiement}', [ProgrammeController::class, 'destroyPaiement'])
+        ->name('programmes.paiements.destroy');
+
+    // Fiche de production
+    Route::post('/programmes/{programme}/articles', [ProgrammeController::class, 'storeArticle'])
+        ->name('programmes.articles.store');
+    Route::delete('/articles-production/{articleProduction}', [ProgrammeController::class, 'destroyArticle'])
+        ->name('programmes.articles.destroy');
+
+    // Livraisons
+    Route::post('/programmes/{programme}/livraisons', [ProgrammeController::class, 'storeLivraison'])
+        ->name('programmes.livraisons.store');
+    Route::delete('/livraisons/{livraison}', [ProgrammeController::class, 'destroyLivraison'])
+        ->name('programmes.livraisons.destroy');
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT
