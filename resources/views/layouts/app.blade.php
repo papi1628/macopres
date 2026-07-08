@@ -88,7 +88,7 @@
                     <div class="flex-1 min-w-0 lg:block"
                          :class="{ 'lg:hidden': sidebarCollapsed }">
                         <p class="text-white font-bold text-[13px] leading-tight whitespace-nowrap">MACOPRES</p>
-                        <p class="text-[10px] whitespace-nowrap" style="color:#B5D4F4;">RH &amp; Pointage</p>
+                        
                     </div>
 
                     {{-- Bouton collapse DESKTOP — toujours visible --}}

@@ -1,64 +1,27 @@
 <?php
 
-namespace App\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Model;
-
-class BonCommande extends Model
+return new class extends Migration
 {
-    protected $table = 'bons_commande';
-
-    protected $fillable = [
-        'programme_id',
-        'numero',
-        'date',
-        'montant',
-        'nature',
-        'condition_paiement',
-    ];
-
-    protected $casts = [
-        'date'    => 'date',
-        'montant' => 'decimal:2',
-    ];
-
-    public function programme()
+    public function up(): void
     {
-        return $this->belongsTo(Programme::class);
+        Schema::create('bons_commande', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('programme_id')->constrained('programmes')->cascadeOnDelete();
+            $table->string('numero');
+            $table->date('date');
+            $table->decimal('montant', 12, 2);
+            $table->string('nature')->nullable();              // ex: "Uniformes Scolaires 2025/2026"
+            $table->string('condition_paiement')->nullable();  // ex: "VOIR CONTRAT", "A LA LIVRAISON"
+            $table->timestamps();
+        });
     }
 
-    public function lignes()
+    public function down(): void
     {
-        return $this->hasMany(LigneBonCommande::class);
+        Schema::dropIfExists('bons_commande');
     }
-
-    /**
-     * Recalcule et sauvegarde le montant total du bon à partir de ses lignes.
-     * À appeler après tout ajout/suppression/modification de ligne.
-     */
-    public function recalculerMontant(): void
-    {
-        $this->montant = $this->lignes()->sum('montant_ligne');
-        $this->save();
-    }
-
-    /**
-     * Quantité totale d'articles commandés (toutes lignes confondues).
-     */
-    public function quantiteTotale(): int
-    {
-        return (int) $this->lignes()->sum('quantite');
-    }
-
-    /**
-     * Liste des conditions de paiement proposées par le système.
-     */
-    public static function conditionsProposees(): array
-    {
-        return [
-            'VOIR CONTRAT',
-            'A LA LIVRAISON',
-            '50% ACOMPTE, 50% A LA LIVRAISON',
-        ];
-    }
-}
+};

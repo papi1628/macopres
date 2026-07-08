@@ -159,16 +159,7 @@ class ProgrammeController extends Controller
     */
     public function show(Programme $programme)
     {
-        $programme->load(
-            'ecole',
-            'contrat',
-            'bonsCommande.lignes.designation',
-            'echeancesPaiement',
-            'paiements.receveur',
-            'articlesProduction',
-            'livraisons'
-        );
-
+        $programme->load('ecole', 'bonsCommande.lignes.designation');
         $designations = \App\Models\Designation::orderBy('nom')->get();
 
         return view('programmes.show', compact('programme', 'designations'));
@@ -204,19 +195,19 @@ class ProgrammeController extends Controller
     */
     public function storeBonCommande(Request $request, Programme $programme)
     {
-        // Le système génère le bon de commande automatiquement — l'utilisateur ne saisit rien ici.
+        // Le système génère la commande automatiquement — l'utilisateur clique juste "Nouvelle commande".
         $rang   = $programme->bonsCommande()->count() + 1;
-        $numero = 'BC' . $programme->id . '-' . str_pad($rang, 2, '0', STR_PAD_LEFT);
+        $numero = 'BC-' . now()->year . '-' . str_pad($rang, 4, '0', STR_PAD_LEFT);
 
         $bon = $programme->bonsCommande()->create([
             'numero'             => $numero,
             'date'               => now()->format('Y-m-d'),
+            'nature'             => 'Uniformes scolaires ' . $programme->annee_scolaire,
             'condition_paiement' => null,
             'montant'            => 0,
         ]);
 
-        return back()->with('success', 'Bon de commande créé. Ajoutez maintenant ses articles.')
-            ->with('bon_ouvert', $bon->id);
+        return back()->with('bon_ouvert', $bon->id);
     }
 
     public function updateConditionPaiement(Request $request, BonCommande $bonCommande)
@@ -264,6 +255,13 @@ class ProgrammeController extends Controller
 
         $bonCommande->recalculerMontant();
 
+        if (!$bonCommande->programme->contrat) {
+            Contrat::create([
+                'programme_id'    => $bonCommande->programme_id,
+                'bon_commande_id' => $bonCommande->id,
+                'statut'          => 'brouillon',
+            ]);
+        }
         return back()->with('success', 'Article ajouté au bon de commande.');
     }
 

@@ -259,6 +259,8 @@ Route::middleware('auth')->group(function () {
         ->name('programmes.bons.store');
     Route::delete('/bons-commande/{bonCommande}', [ProgrammeController::class, 'destroyBonCommande'])
         ->name('programmes.bons.destroy');
+    Route::patch('/bons-commande/{bonCommande}/condition', [ProgrammeController::class, 'updateConditionPaiement'])
+        ->name('programmes.bons.condition');
 
     // Lignes d'un bon de commande (articles : désignation, taille, couleur, matière, logo, quantité, prix)
     Route::post('/bons-commande/{bonCommande}/lignes', [ProgrammeController::class, 'storeLigneBonCommande'])
