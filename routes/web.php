@@ -12,6 +12,8 @@ use App\Http\Controllers\CalendrierController;
 use App\Http\Controllers\ImpressionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgrammeController;
+use App\Http\Controllers\BonCommandeController;
+use App\Http\Controllers\ContratController;
 /*
 |--------------------------------------------------------------------------
 | ROUTE PUBLIQUE
@@ -89,24 +91,8 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/pointages', [PointageController::class, 'index'])
-        ->name('pointages.index');
-
-    Route::get('/pointages/scan', [PointageController::class, 'scan'])
-        ->name('pointages.scan');
-
-    Route::get('/pointages/historique', [PointageController::class, 'historique'])
-        ->name('pointages.historique');
-
     Route::post('/pointages/store', [PointageController::class, 'store'])
         ->name('pointages.store');
-
-    
-    /*
-    |--------------------------------------------------------------------------
-    | ROUTES POINTAGES
-    |--------------------------------------------------------------------------
-    */
 
     // Feuille de présence du jour
     Route::get('/pointages', [PointageController::class, 'index'])
@@ -236,61 +222,44 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/programmes', [ProgrammeController::class, 'index'])
-        ->name('programmes.index');
+    Route::get('/programmes', [ProgrammeController::class, 'index'])->name('programmes.index');
+    Route::get('/programmes/creer', [ProgrammeController::class, 'create'])->name('programmes.create');
+    Route::post('/programmes', [ProgrammeController::class, 'store'])->name('programmes.store');
+    Route::get('/programmes/{programme}', [ProgrammeController::class, 'show'])->name('programmes.show');
+    Route::delete('/programmes/{programme}', [ProgrammeController::class, 'destroy'])->name('programmes.destroy');
+    Route::patch('/programmes/{programme}/statut', [ProgrammeController::class, 'updateStatut'])->name('programmes.statut');
 
-    Route::get('/programmes/creer', [ProgrammeController::class, 'create'])
-        ->name('programmes.create');
+    /*
+    |--------------------------------------------------------------------------
+    | BONS DE COMMANDE
+    |--------------------------------------------------------------------------
+    */
 
-    Route::post('/programmes', [ProgrammeController::class, 'store'])
-        ->name('programmes.store');
+    Route::get('/programmes/{programme}/bons', [BonCommandeController::class, 'index'])->name('programmes.bons.index');
+    Route::post('/programmes/{programme}/bons', [BonCommandeController::class, 'store'])->name('programmes.bons.store');
+    Route::get('/bons-commande/{bonCommande}', [BonCommandeController::class, 'show'])->name('programmes.bons.show');
+    Route::patch('/bons-commande/{bonCommande}/condition', [BonCommandeController::class, 'update'])->name('programmes.bons.condition');
+    Route::delete('/bons-commande/{bonCommande}', [BonCommandeController::class, 'destroy'])->name('programmes.bons.destroy');
 
-    Route::get('/programmes/{programme}', [ProgrammeController::class, 'show'])
-        ->name('programmes.show');
+    // Articles (lignes) d'un bon de commande
+    Route::post('/bons-commande/{bonCommande}/lignes', [BonCommandeController::class, 'storeLigneBonCommande'])->name('programmes.bons.lignes.store');
+    Route::delete('/lignes-bon-commande/{ligneBonCommande}', [BonCommandeController::class, 'destroyLigneBonCommande'])->name('programmes.bons.lignes.destroy');
 
-    Route::delete('/programmes/{programme}', [ProgrammeController::class, 'destroy'])
-        ->name('programmes.destroy');
+    /*
+    |--------------------------------------------------------------------------
+    | CONTRAT (généré et actualisé automatiquement depuis le 1er BC)
+    |--------------------------------------------------------------------------
+    */
 
-    Route::patch('/programmes/{programme}/statut', [ProgrammeController::class, 'updateStatut'])
-        ->name('programmes.statut');
+    Route::get('/programmes/{programme}/contrat', [ContratController::class, 'show'])->name('programmes.contrat.show');
+    Route::put('/programmes/{programme}/contrat', [ContratController::class, 'update'])->name('programmes.contrat.update');
+    Route::patch('/programmes/{programme}/contrat/signer', [ContratController::class, 'marquerSigne'])->name('programmes.contrat.signer');
+    Route::get('/programmes/{programme}/contrat/imprimer', [ContratController::class, 'imprimer'])->name('programmes.contrat.imprimer');
 
-    // Bons de commande
-    Route::post('/programmes/{programme}/bons', [ProgrammeController::class, 'storeBonCommande'])
-        ->name('programmes.bons.store');
-    Route::delete('/bons-commande/{bonCommande}', [ProgrammeController::class, 'destroyBonCommande'])
-        ->name('programmes.bons.destroy');
-    Route::patch('/bons-commande/{bonCommande}/condition', [ProgrammeController::class, 'updateConditionPaiement'])
-        ->name('programmes.bons.condition');
-
-    // Lignes d'un bon de commande (articles : désignation, taille, couleur, matière, logo, quantité, prix)
-    Route::post('/bons-commande/{bonCommande}/lignes', [ProgrammeController::class, 'storeLigneBonCommande'])
-        ->name('programmes.bons.lignes.store');
-    Route::delete('/lignes-bon-commande/{ligneBonCommande}', [ProgrammeController::class, 'destroyLigneBonCommande'])
-        ->name('programmes.bons.lignes.destroy');
-
-    // Échéances de paiement
-    Route::post('/programmes/{programme}/echeances', [ProgrammeController::class, 'storeEcheance'])
-        ->name('programmes.echeances.store');
-    Route::delete('/echeances/{echeancePaiement}', [ProgrammeController::class, 'destroyEcheance'])
-        ->name('programmes.echeances.destroy');
-
-    // Paiements (encaissements réels)
-    Route::post('/programmes/{programme}/paiements', [ProgrammeController::class, 'storePaiement'])
-        ->name('programmes.paiements.store');
-    Route::delete('/paiements/{paiement}', [ProgrammeController::class, 'destroyPaiement'])
-        ->name('programmes.paiements.destroy');
-
-    // Fiche de production
-    Route::post('/programmes/{programme}/articles', [ProgrammeController::class, 'storeArticle'])
-        ->name('programmes.articles.store');
-    Route::delete('/articles-production/{articleProduction}', [ProgrammeController::class, 'destroyArticle'])
-        ->name('programmes.articles.destroy');
-
-    // Livraisons
-    Route::post('/programmes/{programme}/livraisons', [ProgrammeController::class, 'storeLivraison'])
-        ->name('programmes.livraisons.store');
-    Route::delete('/livraisons/{livraison}', [ProgrammeController::class, 'destroyLivraison'])
-        ->name('programmes.livraisons.destroy');
+    // Échéancier de paiement (Article 4 du contrat)
+    Route::post('/programmes/{programme}/echeances', [ContratController::class, 'storeEcheance'])->name('programmes.contrat.echeances.store');
+    Route::delete('/echeances/{echeancePaiement}', [ContratController::class, 'destroyEcheance'])->name('programmes.contrat.echeances.destroy');
+   
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT
@@ -322,6 +291,7 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/assistants/{id}', [AssistantController::class, 'destroy'])
             ->name('assistants.destroy');
+    
 
         /*
         |--------------------------------------------------------------------------

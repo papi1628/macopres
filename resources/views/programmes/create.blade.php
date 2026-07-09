@@ -240,22 +240,21 @@
     <div class="flex justify-end gap-3">
 
 
-    <a href="{{route('programmes.index')}}"
-    class="h-10 px-5 rounded-xl border border-slate-200 text-slate-500 text-sm flex items-center">
+        <a href="{{route('programmes.index')}}"
+            class="h-10 px-5 rounded-xl border border-slate-200 text-slate-500 text-sm flex items-center">
 
-    Annuler
+                Annuler
 
-    </a>
+        </a>
 
 
 
-    <button type="submit"
-    class="h-10 px-6 rounded-xl text-white text-sm font-bold"
-    style="background:linear-gradient(135deg,#0C447C,#185FA5)">
+        <button type="submit"
+            class="h-10 px-6 rounded-xl text-white text-sm font-bold"
+            style="background:linear-gradient(135deg,#0C447C,#185FA5)">
 
-    Créer la commande
-
-    </button>
+                Enregistrer
+        </button>
 
 
     </div>

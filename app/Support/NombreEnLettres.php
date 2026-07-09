@@ -4,6 +4,20 @@ namespace App\Support;
 
 class NombreEnLettres
 {
+    /**
+     * Convertit un entier en nombre ordinal français (1 -> "premier", 2 -> "deuxième"...).
+     */
+    public static function ordinal(int $n): string
+    {
+        $mots = [
+            1 => 'premier', 2 => 'deuxième', 3 => 'troisième', 4 => 'quatrième',
+            5 => 'cinquième', 6 => 'sixième', 7 => 'septième', 8 => 'huitième',
+            9 => 'neuvième', 10 => 'dixième', 11 => 'onzième', 12 => 'douzième',
+        ];
+
+        return $mots[$n] ?? $n . 'ème';
+    }
+
     private static array $unites = [
         '', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf',
         'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize',
