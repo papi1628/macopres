@@ -34,7 +34,7 @@
                 <div class="w-10 h-10 rounded-lg flex items-center justify-center text-[18px] font-bold text-white flex-shrink-0"
                      style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                     {{ $user->role === 'assistant'
-                        ? strtoupper(substr($employe->nom ?? 'AS', 0, 2))
+                        ? mb_strtoupper(substr($employe->nom ?? 'AS', 0, 2))
                         : 'DG' }}
                 </div>
                 <div>

@@ -216,7 +216,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profil/mot-de-passe', [ProfileController::class, 'updatePassword'])
         ->name('profile.password');
 
-    /*
+/*
     |--------------------------------------------------------------------------
     | PROGRAMMES / COMMANDES CLIENTS
     |--------------------------------------------------------------------------
@@ -238,11 +238,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/programmes/{programme}/bons', [BonCommandeController::class, 'index'])->name('programmes.bons.index');
     Route::post('/programmes/{programme}/bons', [BonCommandeController::class, 'store'])->name('programmes.bons.store');
     Route::get('/bons-commande/{bonCommande}', [BonCommandeController::class, 'show'])->name('programmes.bons.show');
+    Route::get('/bons-commande/{bonCommande}/imprimer', [BonCommandeController::class, 'imprimer'])->name('programmes.bons.imprimer');
     Route::patch('/bons-commande/{bonCommande}/condition', [BonCommandeController::class, 'update'])->name('programmes.bons.condition');
     Route::delete('/bons-commande/{bonCommande}', [BonCommandeController::class, 'destroy'])->name('programmes.bons.destroy');
 
     // Articles (lignes) d'un bon de commande
     Route::post('/bons-commande/{bonCommande}/lignes', [BonCommandeController::class, 'storeLigneBonCommande'])->name('programmes.bons.lignes.store');
+    Route::patch('/lignes-bon-commande/{ligneBonCommande}', [BonCommandeController::class, 'updateLigneBonCommande'])->name('programmes.bons.lignes.update');
     Route::delete('/lignes-bon-commande/{ligneBonCommande}', [BonCommandeController::class, 'destroyLigneBonCommande'])->name('programmes.bons.lignes.destroy');
 
     /*
@@ -259,7 +261,6 @@ Route::middleware('auth')->group(function () {
     // Échéancier de paiement (Article 4 du contrat)
     Route::post('/programmes/{programme}/echeances', [ContratController::class, 'storeEcheance'])->name('programmes.contrat.echeances.store');
     Route::delete('/echeances/{echeancePaiement}', [ContratController::class, 'destroyEcheance'])->name('programmes.contrat.echeances.destroy');
-   
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT

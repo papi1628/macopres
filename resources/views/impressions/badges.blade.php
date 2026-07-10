@@ -103,7 +103,7 @@
                     </div>
                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:14px;">
                         <div style="width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; font-size:20px; background:linear-gradient(135deg,#185FA5,#378ADD);">
-                            {{ strtoupper(substr($employe->prenom,0,1).substr($employe->nom,0,1)) }}
+                            {{ mb_strtoupper(substr($employe->prenom,0,1).substr($employe->nom,0,1)) }}
                         </div>
                         <div style="text-align:center;">
                             <p style="font-size:18px; font-weight:800; color:#1e293b;">{{ $employe->prenom }} {{ $employe->nom }}</p>

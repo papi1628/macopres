@@ -103,7 +103,7 @@
                                     <div class="flex items-center gap-2">
                                         <div class="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0"
                                              style="background:linear-gradient(135deg,#185FA5,#378ADD)">
-                                            {{ strtoupper(substr($pointage->employe->prenom, 0, 1) . substr($pointage->employe->nom, 0, 1)) }}
+                                            {{ mb_strtoupper(substr($pointage->employe->prenom, 0, 1) . substr($pointage->employe->nom, 0, 1)) }}
                                         </div>
                                         <span class="font-semibold text-slate-700">
                                             {{ $pointage->employe->prenom }} {{ $pointage->employe->nom }}
@@ -203,7 +203,7 @@
                                     <div class="flex items-center gap-2">
                                         <div class="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold flex-shrink-0"
                                              style="background:#FCEBEB; color:#A32D2D">
-                                            {{ strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)) }}
+                                            {{ mb_strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)) }}
                                         </div>
                                         <span class="font-semibold text-slate-700">
                                             {{ $employe->prenom }} {{ $employe->nom }}

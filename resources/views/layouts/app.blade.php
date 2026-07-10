@@ -129,7 +129,7 @@
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
                              style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                             {{ Auth::user()->role === 'assistant'
-                                ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
+                                ? mb_strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
                                 : 'DG'
                             }}
                         </div>
@@ -202,7 +202,7 @@
                                 <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
                                      style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                                     {{ Auth::user()->role === 'assistant'
-                                        ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
+                                        ? mb_strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
                                         : 'DG'
                                     }}
                                 </div>
@@ -225,7 +225,7 @@
                                 style="display:none">
                                 <div class="px-4 py-2.5 border-b border-slate-100">
                                     <p class="text-[12px] font-semibold text-slate-700">{{ Auth::user()->role === 'assistant'
-                                ? strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
+                                ? mb_strtoupper(substr(Auth::user()->employeAssistant->nom ?? 'AS', 0, 2))
                                 : 'DG'
                             }}</p>
                                     <p class="text-[10px] text-slate-400 capitalize">{{ Auth::user()->role }}</p>

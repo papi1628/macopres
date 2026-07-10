@@ -62,7 +62,7 @@
 
         <p style="margin-top:14px;"><strong>D'autre part</strong></p>
         <p>
-            {{ strtoupper($ecole->nom) }}
+            {{ mb_strtoupper($ecole->nom) }}
             Représenté par {{ $contrat->representant_client ?: '……………………………' }}
             {{ $contrat->representant_client_role ?: '' }}
             Numéro de téléphone {{ $ecole->contact_telephone ?: $ecole->telephone ?: '……………………………' }}
@@ -74,7 +74,7 @@
         <p class="article-titre">Article 1 : Engagement</p>
         <p>
             MACOPRES s'engage à assurer les fournitures et la réalisation des produits jusqu'à leur livraison
-            pour {{ strtoupper($ecole->nom) }} sur la base d'un bon de commande qui détermine les quantités suivantes :
+            pour {{ mb_strtoupper($ecole->nom) }} sur la base d'un bon de commande qui détermine les quantités suivantes :
         </p>
         @if(count($engagementLignes) > 0)
             <ul class="engagement">
@@ -164,7 +164,7 @@
                 <p style="font-weight:700;">Client</p>
                 <p>
                     Je soussigné {{ $contrat->representant_client ?: '……………………………' }}
-                    {{ $contrat->representant_client_role ?: '' }} de l'école {{ strtoupper($ecole->nom) }},
+                    {{ $contrat->representant_client_role ?: '' }} de l'école {{ mb_strtoupper($ecole->nom) }},
                     certifie avoir lu et approuvé les termes de versement, et m'engage à les respecter scrupuleusement.
                 </p>
                 <p style="margin-top:40px;">Signature cachet</p>

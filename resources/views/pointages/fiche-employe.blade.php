@@ -11,7 +11,7 @@
             <div class="flex items-center gap-4">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[14px] font-bold text-white flex-shrink-0"
                      style="background:linear-gradient(135deg,#185FA5,#378ADD)">
-                    {{ strtoupper(substr($employe->prenom,0,1).substr($employe->nom,0,1)) }}
+                    {{ mb_strtoupper(substr($employe->prenom,0,1).substr($employe->nom,0,1)) }}
                 </div>
                 <div>
                     <h2 class="text-[16px] font-bold text-slate-800">{{ $employe->prenom }} {{ $employe->nom }}</h2>

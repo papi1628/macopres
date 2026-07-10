@@ -49,7 +49,7 @@ class PointageController extends Controller
             'matricule'   => $e->matricule,
             'departement' => $e->departement,
             'salaire'     => $e->salaire,
-            'initiales'   => strtoupper(substr($e->prenom, 0, 1) . substr($e->nom, 0, 1)),
+            'initiales'   => mb_strtoupper(substr($e->prenom, 0, 1) . substr($e->nom, 0, 1)),
         ])->values();
 
         $jourFerie = Evenement::whereDate('date', $date)
@@ -241,7 +241,7 @@ class PointageController extends Controller
                     'nom'       => $employe->nom,
                     'prenom'    => $employe->prenom,
                     'matricule' => $employe->matricule,
-                    'initiales' => strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)),
+                    'initiales' => mb_strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)),
                 ],
                 'heure'  => $maintenant->format('H:i'),
                 'statut' => $pointage->statut,
@@ -260,7 +260,7 @@ class PointageController extends Controller
                     'nom'       => $employe->nom,
                     'prenom'    => $employe->prenom,
                     'matricule' => $employe->matricule,
-                    'initiales' => strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)),
+                    'initiales' => mb_strtoupper(substr($employe->prenom, 0, 1) . substr($employe->nom, 0, 1)),
                 ],
                 'heure'              => $maintenant->format('H:i'),
                 'heures_travaillees' => $pointage->duree_formattee,

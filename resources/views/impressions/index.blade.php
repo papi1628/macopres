@@ -164,7 +164,7 @@
                                style="accent-color:#185FA5">
                         <div class="w-6 h-6 rounded-lg flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0"
                              style="background:linear-gradient(135deg,#185FA5,#378ADD)">
-                            {{ strtoupper(substr($employe->prenom,0,1).substr($employe->nom,0,1)) }}
+                            {{ mb_strtoupper(substr($employe->prenom,0,1).substr($employe->nom,0,1)) }}
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-[12px] font-semibold text-slate-800 truncate">{{ $employe->prenom }} {{ $employe->nom }}</p>

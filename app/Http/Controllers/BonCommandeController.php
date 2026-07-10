@@ -52,6 +52,13 @@ class BonCommandeController extends Controller
         return view('bons.show', compact('bonCommande', 'designations'));
     }
 
+    public function imprimer(BonCommande $bonCommande)
+    {
+        $bonCommande->load('programme.ecole', 'lignes.designation');
+
+        return view('bons.imprimer', compact('bonCommande'));
+    }
+
     public function update(Request $request, BonCommande $bonCommande)
     {
         $request->validate(['condition_paiement' => 'nullable|string|max:255']);
@@ -84,7 +91,7 @@ class BonCommandeController extends Controller
             'prix_unitaire'     => 'required|numeric|min:0',
         ]);
 
-        $bonCommande->lignes()->create([
+        $ligne = $bonCommande->lignes()->create([
             'designation_id'    => $request->designation_id,
             'designation_libre' => $request->designation_libre,
             'taille'            => $request->taille,
@@ -101,16 +108,85 @@ class BonCommandeController extends Controller
         // Le contrat se génère/actualise automatiquement — uniquement si ce BC est le premier du programme.
         ContratController::synchroniser($bonCommande);
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'ligne'   => $this->ligneAsArray($ligne),
+                'montant' => $bonCommande->montant,
+            ]);
+        }
+
         return back()->with('success', 'Article ajouté au bon de commande.');
     }
 
-    public function destroyLigneBonCommande(LigneBonCommande $ligneBonCommande)
+    public function updateLigneBonCommande(Request $request, LigneBonCommande $ligneBonCommande)
+    {
+        $request->validate([
+            'designation_id'    => 'nullable|exists:designations,id',
+            'designation_libre' => 'nullable|string|max:255',
+            'taille'            => 'nullable|string|max:20',
+            'couleur'           => 'nullable|string|max:100',
+            'matiere'           => 'nullable|string|max:100',
+            'logo'              => 'nullable|boolean',
+            'quantite'          => 'required|integer|min:1',
+            'prix_unitaire'     => 'required|numeric|min:0',
+        ]);
+
+        $ligneBonCommande->update([
+            'designation_id'    => $request->designation_id,
+            'designation_libre' => $request->designation_libre,
+            'taille'            => $request->taille,
+            'couleur'           => $request->couleur,
+            'matiere'           => $request->matiere,
+            'logo'              => $request->boolean('logo'),
+            'quantite'          => $request->quantite,
+            'prix_unitaire'     => $request->prix_unitaire,
+            'montant_ligne'     => $request->quantite * $request->prix_unitaire,
+        ]);
+
+        $bonCommande = $ligneBonCommande->bonCommande;
+        $bonCommande->recalculerMontant();
+        ContratController::synchroniser($bonCommande);
+
+        return response()->json([
+            'success' => true,
+            'ligne'   => $this->ligneAsArray($ligneBonCommande->fresh()),
+            'montant' => $bonCommande->montant,
+        ]);
+    }
+
+    /**
+     * Représentation JSON homogène d'une ligne, utilisée par les réponses AJAX
+     * (ajout, modification) pour que le front puisse reconstruire la ligne du tableau.
+     */
+    private function ligneAsArray(LigneBonCommande $ligne): array
+    {
+        return [
+            'id'               => $ligne->id,
+            'designation'      => $ligne->libelle(),
+            'designation_libre'=> $ligne->designation_libre,
+            'taille'           => $ligne->taille,
+            'couleur'          => $ligne->couleur,
+            'matiere'          => $ligne->matiere,
+            'quantite'         => $ligne->quantite,
+            'prix_unitaire'    => $ligne->prix_unitaire,
+            'montant_ligne'    => $ligne->montant_ligne,
+            'logo'             => (bool) $ligne->logo,
+            'bon_commande_id'  => $ligne->bon_commande_id,
+        ];
+    }
+
+    public function destroyLigneBonCommande(Request $request, LigneBonCommande $ligneBonCommande)
     {
         $bonCommande = $ligneBonCommande->bonCommande;
         $ligneBonCommande->delete();
         $bonCommande->recalculerMontant();
 
         ContratController::synchroniser($bonCommande);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'montant' => $bonCommande->montant]);
+        }
 
         return back()->with('success', 'Article supprimé du bon de commande.');
     }

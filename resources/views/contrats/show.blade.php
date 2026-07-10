@@ -160,7 +160,7 @@
                        class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
             </div>
             <div>
-                <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Date de signature</label>
+                <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Date de réalisation</label>
                 <input type="date" name="date_signature" value="{{ $contrat->date_signature?->format('Y-m-d') }}"
                        class="w-full h-9 border border-slate-200 rounded-xl px-3 text-sm focus:outline-none focus:border-blue-400">
             </div>
