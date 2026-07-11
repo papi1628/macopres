@@ -1,6 +1,19 @@
 <x-app-layout>
     <x-slot name="title">Nouvelle commande client</x-slot>
-
+    @if(session('error'))
+        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if ($errors->any())
+        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+            <ul class="list-disc pl-5 text-sm text-red-700">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div x-data="{ ecoleMode: 'existante' }" class="space-y-5 max-w-3xl">
 
     <form method="POST" action="{{ route('programmes.store') }}">

@@ -49,9 +49,10 @@ class ProgrammeController extends Controller
     */
     public function store(Request $request)
     {
+
         $request->validate([
             'ecole_id'                => 'nullable|exists:ecoles,id',
-            'ecole_nom'               => 'required_without:ecole_id|string|max:255',
+            'ecole_nom' => 'nullable|required_without:ecole_id|string|max:255',
             'ecole_adresse'           => 'nullable|string|max:255',
             'ecole_telephone'         => 'nullable|string|max:50',
             'ecole_contact_nom'       => 'nullable|string|max:255',

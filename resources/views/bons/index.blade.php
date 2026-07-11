@@ -9,6 +9,13 @@
     </div>
 @endif
 
+@if (session('error'))
+    <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border"
+         style="background:#FCEBEB; color:#A32D2D; border-color:#F5C0C0">
+        {{ session('error') }}
+    </div>
+@endif
+
 <div class="space-y-5">
 
     {{-- EN-TÊTE --}}
@@ -76,11 +83,19 @@
                                     <p class="text-[12px] font-semibold text-slate-700">{{ $bon->lignes->count() }}</p>
                                 </div>
                             </div>
-<a href="{{ route('programmes.bons.imprimer', $bon) }}" target="_blank" @click.stop
-   class="ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1.5 flex-shrink-0"
-   style="background:linear-gradient(135deg,#0C447C,#185FA5)">
-    Imprimer
-</a>
+                            {{-- <a href="{{ route('programmes.bons.facture', $bon) }}" target="_blank" @click.stop
+                            class="h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1.5 flex-shrink-0"
+                            style="background:linear-gradient(135deg,#3B6D11,#5A9A1E)">
+                                Facture
+                            </a> --}}
+                            <a href="{{ route('programmes.bons.imprimer', $bon) }}" target="_blank" @click.stop
+                            class="ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1.5 flex-shrink-0"
+                            style="background:linear-gradient(135deg,#0C447C,#185FA5)">
+                                Imprimer
+                            </a>
+
+                            
+                            
                         </div>
 
                         <div x-show="open" class="border-t border-slate-100">
@@ -92,7 +107,7 @@
                                 <div>
                                     <p class="text-[9px] font-semibold text-slate-400 uppercase mb-1">Condition de paiement</p>
                                     <select
-                                        onchange="updateCondition(this, '{{ route('programmes.bons.condition', $bon) }}')"
+                                        onchange="updateCondition(this, '{{ route('bons.condition.update', $bon) }}')"
                                         class="h-7 border border-slate-200 rounded-lg px-2 py-1 text-[11px] bg-white text-slate-700">
 
                                         <option value="" {{ !$bon->condition_paiement ? 'selected' : '' }}>–</option>
@@ -340,6 +355,7 @@ async function ajouterArticle(event, form, bonId) {
    Condition de paiement
 ────────────────────────────────────────── */
 async function updateCondition(select, url) {
+
     try {
         const response = await fetch(url, {
             method: 'PATCH',

@@ -65,7 +65,7 @@
             {{ mb_strtoupper($ecole->nom) }}
             Représenté par {{ $contrat->representant_client ?: '……………………………' }}
             {{ $contrat->representant_client_role ?: '' }}
-            Numéro de téléphone {{ $ecole->contact_telephone ?: $ecole->telephone ?: '……………………………' }}
+            Numéro de téléphone {{ $ecole->contact_telephone ?: '……………………………' }}
         </p>
 
         <p style="margin-top:14px;">Il a été convenu et arrêté ce qui suit :</p>

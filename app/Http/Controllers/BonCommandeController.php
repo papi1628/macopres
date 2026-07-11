@@ -105,8 +105,9 @@ class BonCommandeController extends Controller
 
         $bonCommande->recalculerMontant();
 
-        // Le contrat se génère/actualise automatiquement — uniquement si ce BC est le premier du programme.
+        // Le contrat (BC1 uniquement) et la facture (chaque BC) se génèrent/actualisent automatiquement.
         ContratController::synchroniser($bonCommande);
+        FactureController::synchroniser($bonCommande);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -147,6 +148,7 @@ class BonCommandeController extends Controller
         $bonCommande = $ligneBonCommande->bonCommande;
         $bonCommande->recalculerMontant();
         ContratController::synchroniser($bonCommande);
+        FactureController::synchroniser($bonCommande);
 
         return response()->json([
             'success' => true,
@@ -183,6 +185,7 @@ class BonCommandeController extends Controller
         $bonCommande->recalculerMontant();
 
         ContratController::synchroniser($bonCommande);
+        FactureController::synchroniser($bonCommande);
 
         if ($request->wantsJson()) {
             return response()->json(['success' => true, 'montant' => $bonCommande->montant]);

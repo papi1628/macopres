@@ -32,6 +32,11 @@ class BonCommande extends Model
         return $this->hasMany(LigneBonCommande::class);
     }
 
+    public function facture()
+    {
+        return $this->hasOne(Facture::class);
+    }
+
     /**
      * Recalcule et sauvegarde le montant total du bon à partir de ses lignes.
      * À appeler après tout ajout/suppression/modification de ligne.

@@ -83,7 +83,7 @@
         </div>
     @else
         {{-- ══════════════════════════════════════
-            TIMELINE — 2 SECTIONS
+            TIMELINE — 3 SECTIONS
         ══════════════════════════════════════ --}}
         <div class="relative pl-8">
             <div class="absolute left-[15px] top-2 bottom-2 w-px" style="background:#E2E8F0"></div>
@@ -143,6 +143,42 @@
                             <div class="text-right">
                                 <p class="text-[9px] font-semibold text-slate-400 uppercase">Montant</p>
                                 <p class="text-[13px] font-bold" style="color:#185FA5">{{ number_format($programme->contrat?->bonCommande?->montant ?? 0,0,',',' ') }} F</p>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            {{-- SECTION FACTURES --}}
+            @php
+                $nbFactures = $programme->bonsCommande->filter(fn($b) => $b->facture)->count();
+                $montantFacture = $programme->bonsCommande->sum(fn($b) => $b->facture->montant ?? 0);
+            @endphp
+            <div class="relative mb-5">
+                <div class="absolute -left-8 top-4 w-8 h-8 rounded-full flex items-center justify-center text-white"
+                    style="background:linear-gradient(135deg,#0C447C,#185FA5)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z"/>
+                    </svg>
+                </div>
+            
+                <a href="{{ route('programmes.factures.index', $programme) }}"
+                class="block bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4 transition-all hover:-translate-y-px hover:shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#EAF3DE; color:#3B6D11">Facture</span>
+                            <p class="font-bold text-[14px] text-slate-700">
+                                {{ $nbFactures }} {{ Str::plural('facture', $nbFactures) }}
+                            </p>
+                        </div>
+            
+                        <div class="flex items-center gap-6">
+                            <div class="text-right">
+                                <p class="text-[9px] font-semibold text-slate-400 uppercase">Total facturé</p>
+                                <p class="text-[13px] font-bold" style="color:#185FA5">{{ number_format($montantFacture, 0, ',', ' ') }} F</p>
                             </div>
                             <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
