@@ -107,7 +107,7 @@
                                 <div>
                                     <p class="text-[9px] font-semibold text-slate-400 uppercase mb-1">Condition de paiement</p>
                                     <select
-                                        onchange="updateCondition(this, '{{ route('bons.condition.update', $bon) }}')"
+                                        onchange="updateCondition(this, '{{ route('programmes.bons.condition', $bon) }}')"
                                         class="h-7 border border-slate-200 rounded-lg px-2 py-1 text-[11px] bg-white text-slate-700">
 
                                         <option value="" {{ !$bon->condition_paiement ? 'selected' : '' }}>–</option>

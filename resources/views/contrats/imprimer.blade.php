@@ -44,7 +44,7 @@
             : [];
     @endphp
 
-    <div class="page">
+    <div class="page" style="text-align:center;">
 
         <h1 style="text-align:center; font-size:18px; font-weight:800; letter-spacing:.02em; margin-bottom:24px;">
             CONTRAT DE PRESTATION DE SERVICES {{ $programme->annee_scolaire }}
@@ -177,6 +177,17 @@
 
         <p style="margin-top:40px;">
             Fait à DAKAR le {{ $contrat->date_signature?->format('d/m/Y') ?? '……………………………' }}
+        </p>
+
+        <p style="
+        font-size:9px;
+        color:#cbd5e1;
+        margin-top:40px;
+        text-align:center;
+        ">
+
+        Contrat généré le {{ $contrat->date_signature?->format('d/m/Y à H:i') }} — MACOPRES
+
         </p>
     </div>
 </body>

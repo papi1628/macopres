@@ -11,7 +11,7 @@
 
 @php $contrat = $programme->contrat; @endphp
 
-<div class="space-y-5 max-w-3xl">
+<div class="space-y-5">
 
     {{-- EN-TÊTE --}}
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">

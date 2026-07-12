@@ -208,8 +208,8 @@ font-size:10px;
 ">
 
 
-<span style="font-weight:700;color:#64748b">
-NUMERO
+<span style="font-weight:700;color:#64748b;">
+NUMERO : 
 </span>
 
 <span style="font-weight:900;color:#0C447C">
@@ -218,8 +218,8 @@ NUMERO
 
 
 
-<span style="font-weight:700;color:#64748b">
-DATE
+<span style="font-weight:700;color:#64748b;">
+DATE : 
 </span>
 
 <span>
@@ -233,8 +233,8 @@ DATE
 
 
 
-<span style="font-weight:700;color:#64748b">
-COMMERCIAL
+<span style="font-weight:700;color:#64748b;">
+COMMERCIAL :
 </span>
 
 <span>
@@ -253,26 +253,37 @@ M. BA
 
 {{-- CLIENT --}}
 
+
 <div style="
-background:#f8fafc;
-border-radius:12px;
-padding:15px;
-margin-bottom:25px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-bottom:20px;
 ">
 
 
-<div style="display:flex;justify-content:space-between">
+<div style="
+background:#f8fafc;
+padding:15px;
+border-radius:12px;
+">
 
-
-<div>
-
-<p class="text-xs text-slate-400 uppercase">
+<p style="
+font-size:10px;
+color:#94a3b8;
+text-transform:uppercase; text-decoration:underline
+">
 CLIENT
 </p>
 
 
-<p style="font-size:15px;font-weight:800">
+<p style="
+font-weight:900;
+font-size:15px;
+">
+
 {{ mb_strtoupper($ecole->nom) }}
+
 </p>
 
 
@@ -280,18 +291,34 @@ CLIENT
 
 
 
-<div>
+<div style="
+background:#f8fafc;
+padding:15px;
+border-radius:12px;
+">
 
-<p class="text-xs text-slate-400 uppercase">
+<p style="
+font-size:10px;
+color:#94a3b8;
+text-transform:uppercase; text-decoration:underline
+">
 CONTACT
 </p>
 
 
-<p style="font-weight:700">
+<p style="
+font-weight:900;
+font-size:15px;
+">
 
-{{ $ecole->contact_nom ?? 'M. DIACK' }}
+{{ $ecole->contact_nom }}
 
-{{ $ecole->contact_telephone ?? $ecole->telephone ?? '' }}
+
+<p style="font-size:12px;color:#64748b">
+
+{{  $ecole->contact_telephone ?? $ecole->telephone ?? '' }}
+
+</p>
 
 </p>
 
@@ -301,10 +328,6 @@ CONTACT
 
 
 </div>
-
-
-</div>
-
 
 
 
@@ -485,23 +508,21 @@ Arrêtée à la somme de :
 
 
 @if($bonCommande->condition_paiement)
-
-
-<div style="
+<p style="
 margin-top:20px;
 font-size:12px;
+font-style:italic;
 ">
 
+Condition de paiement :
 
 <strong>
-Condition de paiement :
-</strong>
-
 
 {{ mb_strtoupper($bonCommande->condition_paiement) }}
 
+</strong>
 
-</div>
+
 
 
 @endif
@@ -512,20 +533,29 @@ Condition de paiement :
 
 
 <div style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:60px;
 margin-top:80px;
-text-align:right;
 ">
 
 
-<p style="font-size:12px;color:#64748b">
+<div></div>
+
+
+
+<div style="text-align:center">
+
+
+<p style="
+border-top:1px solid #cbd5e1;
+padding-top:10px;
+font-size:11px;
+">
 
 LE SERVICE COMMERCIAL
 
 </p>
-
-
-
-
 
 
 </div>
@@ -533,12 +563,17 @@ LE SERVICE COMMERCIAL
 
 
 
+</div>
+<p style="
+font-size:9px;
+color:#cbd5e1;
+margin-top:40px;
+text-align:center;
+">
 
+Facture générée le {{ now()->format('d/m/Y à H:i') }} — MACOPRES
 
-
-
-
-
+</p>
 </div>
 
 

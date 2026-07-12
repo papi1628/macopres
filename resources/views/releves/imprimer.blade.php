@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Bon de commande {{ $bonCommande->numero }}</title>
+<title>Relevé de compte — {{ $programme->ecole->nom }}</title>
 
 @vite(['resources/css/app.css'])
 
@@ -77,7 +78,7 @@ td {
 <div class="toolbar bg-white border-b px-5 py-3 flex justify-between">
 
 <p class="font-bold text-slate-700">
-Bon de commande {{ $bonCommande->numero }}
+Relevé de compte — {{ $programme->ecole->nom }}
 </p>
 
 
@@ -89,13 +90,37 @@ Imprimer
 
 </button>
 
-
 </div>
 
 
 
 @php
-$ecole = $bonCommande->programme->ecole;
+
+$ecole = $programme->ecole;
+
+
+$factures = $programme->bonsCommande
+    ->filter(fn($b)=>$b->facture)
+    ->map(fn($b)=>$b->facture)
+    ->sortBy('date')
+    ->values();
+
+
+$versements = $programme->paiements
+    ->sortBy('date')
+    ->values();
+
+
+
+$totalFactures = $factures->sum('montant');
+$totalVersements = $versements->sum('montant');
+$resteAPayer = $totalFactures - $totalVersements;
+
+
+$nbLignes = max($factures->count(),$versements->count(),1);
+
+$dateReleve = $versements->last()?->date ?? now();
+
 @endphp
 
 
@@ -125,32 +150,24 @@ MACOPRES
 </h1>
 
 
-
-
 <p style="font-size:11px;margin-top:15px">
-
 Siège Social : DAKAR (SENEGAL), 14 Cité Fadia
-
 </p>
 
 
 <p style="font-size:11px">
-
 RCCM : SN.DKR.2017.B.12286
 &nbsp; | &nbsp;
 NINEA : 006363775-2T2
-
 </p>
 
 
 <p style="font-size:11px">
-
 www.macopresgroup.sn
 -
 contact@macopres.sn
 -
 +221 33 855 16 70 / +221 77 659 42 18
-
 </p>
 
 
@@ -161,7 +178,7 @@ contact@macopres.sn
 
 
 
-{{-- TITRE BC --}}
+{{-- TITRE --}}
 
 
 <div style="
@@ -184,56 +201,40 @@ color:#0C447C;
 margin:0;
 ">
 
-BON DE COMMANDE
+RELEVÉ DE COMPTE
 
 </h2>
-
-
-
-
 
 </div>
 
 
 
-<div style="
-display:grid;
-gap:8px 20px;
-font-size:10px;
-">
-
-
-<p>
-<span style="font-weight:700;color:#64748b">
-NUMERO :
-</span>
-<span style="font-weight:900;color:#0C447C">
-{{ $bonCommande->numero }}
-</span>
-</p>
-
-
-
+<div style="font-size:10px;">
 
 <p>
 <span style="font-weight:700;color:#64748b">
 DATE :
 </span>
-{{ $bonCommande->date->format('d/m/Y') }}
+
+{{ $dateReleve->format('d/m/Y') }}
+
 </p>
 
 
-</div>
 
 
 </div>
 
 
+</div>
 
 
 
 
-{{-- CLIENT BENEFICIAIRE --}}
+
+
+
+{{-- CLIENT --}}
 
 
 <div style="
@@ -256,7 +257,9 @@ font-size:10px;
 color:#94a3b8;
 text-transform:uppercase; text-decoration:underline
 ">
+
 CLIENT
+
 </p>
 
 
@@ -269,20 +272,7 @@ font-size:15px;
 
 </p>
 
-
-{{-- <p style="font-size:11px;color:#64748b">
-
-{{ $ecole->adresse ?? '' }}
-
-<br>
-
-{{ $ecole->telephone ?? $ecole->contact_telephone ?? '' }}
-
-</p> --}}
-
-
 </div>
-
 
 
 
@@ -299,9 +289,7 @@ font-size:10px;
 color:#94a3b8;
 text-transform:uppercase; text-decoration:underline
 ">
-
-BENEFICIAIRE
-
+CONTACT
 </p>
 
 
@@ -310,45 +298,14 @@ font-weight:900;
 font-size:15px;
 ">
 
-MACOPRES
+{{ $ecole->contact_nom }}
+
+
+<p style="font-size:12px;color:#64748b">
+
+{{  $ecole->contact_telephone ?? $ecole->telephone ?? '' }}
 
 </p>
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-{{-- INFORMATIONS --}}
-
-
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-margin-bottom:20px; margin-left: 15px;
-">
-
-
-<div>
-
-<p style="font-size:10px;color:#94a3b8;text-transform:uppercase; text-decoration:underline">
-
-Nature 
-</p>
-
-
-<p style="font-weight:700;font-size:12px">
-
-{{ $bonCommande->nature ?? 'UNIFORMES SCOLAIRES' }}
 
 </p>
 
@@ -356,11 +313,8 @@ Nature
 </div>
 
 
-
-
-
-
 </div>
+
 
 
 
@@ -375,21 +329,22 @@ Nature
 
 <thead>
 
-<tr style="text-align: left;">
+<tr>
 
-<th>Désignations</th>
-<th>Taille / Classe </th>
-<th style="text-align:center">
-Qté
-</th>
+<th>Factures</th>
+
+<th>Date</th>
 
 <th style="text-align:right">
-P.U
+Montant facture
 </th>
 
 
+<th>Date versement</th>
+
+
 <th style="text-align:right">
-Valeur
+Montant versé
 </th>
 
 
@@ -403,60 +358,60 @@ Valeur
 <tbody>
 
 
+@for($i=0;$i<$nbLignes;$i++)
 
-@foreach($bonCommande->lignes as $index=>$ligne)
+
+@php
+
+$facture=$factures->get($i);
+$versement=$versements->get($i);
+
+@endphp
+
 
 
 <tr>
 
 
+<td style="font-weight:700">
 
-
-
-
-<td style="font-weight:600">
-
-{{ $ligne->libelle() }}
+{{ $facture?->numero }}
 
 </td>
-
 
 
 <td>
 
-{{ $ligne->taille ?? '……………………………' }}
-</td>
-
-
-
-
-
-<td style="text-align:center;font-weight:bold">
-
-{{ $ligne->quantite }}
+{{ $facture?->date?->format('d/m/Y') }}
 
 </td>
 
 
 
-<td style="text-align:right">
+<td style="text-align:right;font-weight:700;color:#185FA5">
 
-{{ number_format($ligne->prix_unitaire,0,',',' ') }}
-FCFA
+@if($facture)
+{{ number_format($facture->montant,0,',',' ') }} FCFA
+@endif
 
 </td>
 
 
 
+<td  style="text-align:center">
 
-<td style="
-text-align:right;
-font-weight:700;
-color:#185FA5;
-">
+{{ $versement?->date?->format('d/m/Y') }}
 
-{{ number_format($ligne->montant_ligne,0,',',' ') }}
-FCFA
+</td>
+
+
+<td style="text-align:right;font-weight:700">
+
+@if($versement)
+
+{{ number_format($versement->montant,0,',',' ') }} FCFA
+
+@endif
 
 </td>
 
@@ -465,7 +420,7 @@ FCFA
 </tr>
 
 
-@endforeach
+@endfor
 
 
 
@@ -481,38 +436,43 @@ FCFA
 
 
 <td colspan="2"
-style="font-weight:800;text-align:left">
+style="font-weight:800">
 
-TOTAL 
-
-</td>
-
-
-<td style="font-weight:900;text-align:center">
-
-{{ $bonCommande->lignes->sum('quantite') }}
+TOTAL FACTURES
 
 </td>
-
-
-<td colspan="1"></td>
 
 
 <td style="
-font-size:14px;
+text-align:right;
 font-weight:900;
 color:#0C447C;
-text-align:right;
 ">
 
-{{ number_format($bonCommande->montant,0,',',' ') }}
-FCFA
+{{ number_format($totalFactures,0,',',' ') }} FCFA
+
+</td>
+
+
+
+<td style="font-weight:800">
+
+TOTAL VERSEMENTS
+
+</td>
+
+
+<td style="
+text-align:right;
+font-weight:900;
+">
+
+{{ number_format($totalVersements,0,',',' ') }} FCFA
 
 </td>
 
 
 </tr>
-
 
 
 </tfoot>
@@ -525,7 +485,50 @@ FCFA
 
 
 
-@if($bonCommande->montant > 0)
+
+{{-- RESTE --}}
+
+
+<div style="
+margin-top:25px;
+background:#f8fafc;
+border-radius:12px;
+padding:15px;
+text-align:center;
+font-weight:900;
+font-size:14px;
+">
+
+
+
+
+@if($resteAPayer <= 0.01 && $totalFactures > 0)
+
+<span style="color:#3B6D11">
+SOLDÉ
+</span>
+
+
+@else
+
+<span style="color:#A32D2D">
+
+RESTE À PAYER : {{ number_format($resteAPayer,0,',',' ') }} FCFA
+
+</span>
+
+
+@endif
+
+
+</div>
+
+
+
+
+
+
+@if($resteAPayer > 0.01)
 
 <p style="
 margin-top:20px;
@@ -534,12 +537,12 @@ font-style:italic;
 ">
 
 
-Arrêté le présent bon de commande à la somme de :
+Arrêté le présent relevé de compte à la somme de :
 
 
 <strong>
 
-{{ mb_strtoupper(\App\Support\NombreEnLettres::enMontant($bonCommande->montant)) }}
+{{ mb_strtoupper(\App\Support\NombreEnLettres::enMontant($resteAPayer)) }}
 
 </strong>
 
@@ -549,24 +552,8 @@ Arrêté le présent bon de commande à la somme de :
 
 @endif
 
-<p style="
-margin-top:20px;
-font-size:12px;
-font-style:italic;
-">
 
 
-Condition de paiement :
-
-
-<strong>
-
-{{ $bonCommande->condition_paiement ?? 'VOIR CONTRAT' }}
-
-</strong>
-
-
-</p>
 
 
 
@@ -594,7 +581,7 @@ padding-top:10px;
 font-size:11px;
 ">
 
-LA DIRECTION
+LA COMPTABILITÉ
 
 </p>
 
@@ -603,6 +590,7 @@ LA DIRECTION
 
 
 </div>
+
 
 
 
@@ -615,7 +603,7 @@ margin-top:40px;
 text-align:center;
 ">
 
-Bon de commande généré le {{ now()->format('d/m/Y à H:i') }} — MACOPRES
+Relevé généré le {{ now()->format('d/m/Y à H:i') }} — MACOPRES
 
 </p>
 
@@ -623,18 +611,6 @@ Bon de commande généré le {{ now()->format('d/m/Y à H:i') }} — MACOPRES
 
 </div>
 
-
-</div>
-
-
-
-
-
-
-
-
-
-</div>
 
 
 </body>

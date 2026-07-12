@@ -15,6 +15,8 @@ use App\Http\Controllers\ProgrammeController;
 use App\Http\Controllers\BonCommandeController;
 use App\Http\Controllers\ContratController;
 use App\Http\Controllers\FactureController;
+use App\Http\Controllers\ReleveController;
+use App\Http\Controllers\FicheProductionController;
 /*
 |--------------------------------------------------------------------------
 | ROUTE PUBLIQUE
@@ -242,7 +244,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/bons-commande/{bonCommande}', [BonCommandeController::class, 'show'])->name('programmes.bons.show');
     Route::get('/bons-commande/{bonCommande}/imprimer', [BonCommandeController::class, 'imprimer'])->name('programmes.bons.imprimer');
     Route::get('/bons-commande/{bonCommande}/facture', [FactureController::class, 'imprimer'])->name('programmes.bons.facture');
-    Route::patch('/bons-commande/{bonCommande}/condition-paiement', [BonCommandeController::class, 'update'])->name('bons.condition.update');
+
+    // Fiche de production (groupée automatiquement depuis les articles du BC)
+    Route::get('/programmes/{programme}/fiches', [FicheProductionController::class, 'index'])->name('programmes.fiches.index');
+    Route::get('/bons-commande/{bonCommande}/fiche', [FicheProductionController::class, 'show'])->name('programmes.bons.fiche.show');
+    Route::post('/bons-commande/{bonCommande}/fiche/note', [FicheProductionController::class, 'storeNote'])->name('programmes.bons.fiche.note');
+    Route::get('/bons-commande/{bonCommande}/fiche/imprimer', [FicheProductionController::class, 'imprimer'])->name('programmes.bons.fiche.imprimer');
+    Route::patch('/bons-commande/{bonCommande}/condition', [BonCommandeController::class, 'update'])->name('programmes.bons.condition');
     Route::delete('/bons-commande/{bonCommande}', [BonCommandeController::class, 'destroy'])->name('programmes.bons.destroy');
 
     // Articles (lignes) d'un bon de commande
@@ -265,6 +273,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/programmes/{programme}/echeances', [ContratController::class, 'storeEcheance'])->name('programmes.contrat.echeances.store');
     Route::delete('/echeances/{echeancePaiement}', [ContratController::class, 'destroyEcheance'])->name('programmes.contrat.echeances.destroy');
 
+    /*
+    |--------------------------------------------------------------------------
+    | RELEVÉ DE COMPTE (auto-généré à partir des factures + versements)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/programmes/{programme}/releve', [ReleveController::class, 'show'])->name('programmes.releve.show');
+    Route::get('/programmes/{programme}/releve/imprimer', [ReleveController::class, 'imprimer'])->name('programmes.releve.imprimer');
+    Route::post('/programmes/{programme}/releve/paiements', [ReleveController::class, 'storePaiement'])->name('programmes.releve.paiements.store');
+    Route::patch('/paiements/{paiement}', [ReleveController::class, 'updatePaiement'])->name('programmes.releve.paiements.update');
+    Route::delete('/paiements/{paiement}', [ReleveController::class, 'destroyPaiement'])->name('programmes.releve.paiements.destroy');
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT
