@@ -8,6 +8,8 @@ class Livraison extends Model
 {
     protected $fillable = [
         'programme_id',
+        'numero',
+        'reference',
         'date',
         'livreur',
         'receptionniste',
@@ -22,5 +24,10 @@ class Livraison extends Model
     public function programme()
     {
         return $this->belongsTo(Programme::class);
+    }
+
+    public function lignes()
+    {
+        return $this->hasMany(LigneLivraison::class);
     }
 }

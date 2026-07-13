@@ -16,21 +16,28 @@ body {
     color:#1e293b;
 }
 
-
 .page {
-    width:800px;
+    max-width:800px;
+    width:100%;
     margin:auto;
     background:white;
     padding:35px 45px;
     min-height:1100px;
+    box-sizing:border-box;
 }
 
+.toolbar { flex-wrap:wrap; gap:8px; }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.signature-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+
+.table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 
 table {
     width:100%;
     border-collapse:collapse;
+    min-width:520px;
 }
-
 
 th {
     background:#0C447C;
@@ -38,8 +45,8 @@ th {
     padding:10px;
     font-size:11px;
     text-transform:uppercase;
+    white-space:nowrap;
 }
-
 
 td {
     padding:8px;
@@ -47,23 +54,19 @@ td {
     border-bottom:1px solid #e2e8f0;
 }
 
-
+@media (max-width: 640px) {
+    .page { padding: 20px 16px; min-height:0; }
+    .grid-2 { grid-template-columns:1fr; gap:12px; }
+    .signature-grid { grid-template-columns:1fr; gap:30px; margin-top:50px !important; }
+    h1 { font-size:22px !important; }
+    h2 { font-size:16px !important; }
+}
 
 @media print {
-
-    body {
-        background:white;
-    }
-
-    .toolbar {
-        display:none;
-    }
-
-    .page {
-        padding:0;
-        width:auto;
-    }
-
+    body { background:white; }
+    .toolbar { display:none; }
+    .page { padding:0; width:auto; max-width:none; }
+    .table-scroll { overflow:visible; }
 }
 
 </style>
@@ -74,9 +77,9 @@ td {
 <body>
 
 
-<div class="toolbar bg-white border-b px-5 py-3 flex justify-between">
+<div class="toolbar bg-white border-b px-5 py-3 flex justify-between items-center">
 
-<p class="font-bold text-slate-700">
+<p class="font-bold text-slate-700 text-sm">
 Bon de commande {{ $bonCommande->numero }}
 </p>
 
@@ -166,8 +169,10 @@ contact@macopres.sn
 
 <div style="
 display:flex;
+flex-wrap:wrap;
 justify-content:space-between;
 align-items:center;
+gap:12px;
 background:#f8fafc;
 border-radius:14px;
 padding:18px 22px;
@@ -236,12 +241,7 @@ DATE :
 {{-- CLIENT BENEFICIAIRE --}}
 
 
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin-bottom:20px;
-">
+<div class="grid-2" style="margin-bottom:20px;">
 
 
 <div style="
@@ -268,17 +268,6 @@ font-size:15px;
 {{ mb_strtoupper($ecole->nom) }}
 
 </p>
-
-
-{{-- <p style="font-size:11px;color:#64748b">
-
-{{ $ecole->adresse ?? '' }}
-
-<br>
-
-{{ $ecole->telephone ?? $ecole->contact_telephone ?? '' }}
-
-</p> --}}
 
 
 </div>
@@ -331,11 +320,7 @@ MACOPRES
 {{-- INFORMATIONS --}}
 
 
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-margin-bottom:20px; margin-left: 15px;
-">
+<div style="margin-bottom:20px;">
 
 
 <div>
@@ -356,10 +341,6 @@ Nature
 </div>
 
 
-
-
-
-
 </div>
 
 
@@ -369,6 +350,7 @@ Nature
 
 {{-- TABLEAU --}}
 
+<div class="table-scroll">
 
 <table>
 
@@ -520,6 +502,8 @@ FCFA
 
 </table>
 
+</div>
+
 
 
 
@@ -573,12 +557,7 @@ Condition de paiement :
 {{-- SIGNATURE --}}
 
 
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:60px;
-margin-top:80px;
-">
+<div class="signature-grid" style="margin-top:80px;">
 
 
 <div></div>
@@ -618,19 +597,6 @@ text-align:center;
 Bon de commande généré le {{ now()->format('d/m/Y à H:i') }} — MACOPRES
 
 </p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
 
 
 

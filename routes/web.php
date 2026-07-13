@@ -17,6 +17,7 @@ use App\Http\Controllers\ContratController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\ReleveController;
 use App\Http\Controllers\FicheProductionController;
+use App\Http\Controllers\LivraisonController;
 /*
 |--------------------------------------------------------------------------
 | ROUTE PUBLIQUE
@@ -284,6 +285,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/programmes/{programme}/releve/paiements', [ReleveController::class, 'storePaiement'])->name('programmes.releve.paiements.store');
     Route::patch('/paiements/{paiement}', [ReleveController::class, 'updatePaiement'])->name('programmes.releve.paiements.update');
     Route::delete('/paiements/{paiement}', [ReleveController::class, 'destroyPaiement'])->name('programmes.releve.paiements.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | LIVRAISONS (bordereaux + tableau de suivi)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/programmes/{programme}/livraisons', [LivraisonController::class, 'index'])->name('programmes.livraisons.index');
+    Route::get('/programmes/{programme}/livraisons/creer', [LivraisonController::class, 'create'])->name('programmes.livraisons.create');
+    Route::post('/programmes/{programme}/livraisons', [LivraisonController::class, 'store'])->name('programmes.livraisons.store');
+    Route::get('/programmes/{programme}/suivi-livraisons', [LivraisonController::class, 'suivi'])->name('programmes.livraisons.suivi');
+    Route::get('/livraisons/{livraison}/imprimer', [LivraisonController::class, 'imprimer'])->name('programmes.livraisons.imprimer');
+    Route::delete('/livraisons/{livraison}', [LivraisonController::class, 'destroy'])->name('programmes.livraisons.destroy');
     /*
     |--------------------------------------------------------------------------
     | DIRECTEUR UNIQUEMENT
