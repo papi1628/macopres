@@ -19,17 +19,26 @@ body {
 
 
 .page {
-    width:800px;
+    max-width:800px;
+    width:100%;
     margin:auto;
     background:white;
     padding:35px 45px;
     min-height:1100px;
+    box-sizing:border-box;
 }
 
+.toolbar { flex-wrap:wrap; gap:8px; }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.signature-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+
+.table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 
 table {
     width:100%;
     border-collapse:collapse;
+    min-width:560px;
 }
 
 
@@ -39,6 +48,7 @@ th {
     padding:10px;
     font-size:11px;
     text-transform:uppercase;
+    white-space:nowrap;
 }
 
 
@@ -48,7 +58,13 @@ td {
     border-bottom:1px solid #e2e8f0;
 }
 
-
+@media (max-width: 640px) {
+    .page { padding: 20px 16px; min-height:0; }
+    .grid-2 { grid-template-columns:1fr; gap:12px; }
+    .signature-grid { grid-template-columns:1fr; gap:30px; margin-top:50px !important; }
+    h1 { font-size:22px !important; }
+    h2 { font-size:16px !important; }
+}
 
 @media print {
 
@@ -63,7 +79,10 @@ td {
     .page {
         padding:0;
         width:auto;
+        max-width:none;
     }
+
+    .table-scroll { overflow:visible; }
 
 }
 
@@ -75,9 +94,9 @@ td {
 <body>
 
 
-<div class="toolbar bg-white border-b px-5 py-3 flex justify-between">
+<div class="toolbar bg-white border-b px-5 py-3 flex justify-between items-center">
 
-<p class="font-bold text-slate-700">
+<p class="font-bold text-slate-700 text-sm">
 Relevé de compte — {{ $programme->ecole->nom }}
 </p>
 
@@ -183,8 +202,10 @@ contact@macopres.sn
 
 <div style="
 display:flex;
+flex-wrap:wrap;
 justify-content:space-between;
 align-items:center;
+gap:12px;
 background:#f8fafc;
 border-radius:14px;
 padding:18px 22px;
@@ -237,12 +258,7 @@ DATE :
 {{-- CLIENT --}}
 
 
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin-bottom:20px;
-">
+<div class="grid-2" style="margin-bottom:20px;">
 
 
 <div style="
@@ -323,6 +339,7 @@ font-size:15px;
 
 {{-- TABLEAU --}}
 
+<div class="table-scroll">
 
 <table>
 
@@ -480,6 +497,8 @@ font-weight:900;
 
 </table>
 
+</div>
+
 
 
 
@@ -560,12 +579,7 @@ Arrêté le présent relevé de compte à la somme de :
 {{-- SIGNATURE --}}
 
 
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:60px;
-margin-top:80px;
-">
+<div class="signature-grid" style="margin-top:80px;">
 
 
 <div></div>

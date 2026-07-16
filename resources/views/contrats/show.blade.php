@@ -14,7 +14,7 @@
 <div class="space-y-5">
 
     {{-- EN-TÊTE --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5">
         <div class="flex items-center justify-between flex-wrap gap-4">
             <div>
                 <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
@@ -51,7 +51,7 @@
             <h3 class="text-[12px] font-semibold text-slate-800">Article 1 — Engagement</h3>
             <p class="text-[10px] text-slate-400 mt-0.5">Généré automatiquement à partir des articles du premier bon de commande</p>
         </div>
-        <div class="p-5">
+        <div class="p-4 sm:p-5">
             <p class="text-[12px] text-slate-700 whitespace-pre-line">{{ $contrat->description_engagement ?: 'Aucun article pour le moment.' }}</p>
         </div>
     </div>
@@ -61,7 +61,7 @@
         <div class="px-5 py-3.5 border-b border-slate-100">
             <h3 class="text-[12px] font-semibold text-slate-800">Article 2 — Facturation</h3>
         </div>
-        <div class="p-5">
+        <div class="p-4 sm:p-5">
             <p class="text-[20px] font-black" style="color:#0C447C">{{ number_format($contrat->montant_total, 0, ',', ' ') }} FCFA</p>
             @if($contrat->montant_total > 0)
                 <p class="text-[11px] italic text-slate-500 mt-1">{{ \App\Support\NombreEnLettres::enMontant($contrat->montant_total) }}</p>
@@ -81,7 +81,7 @@
             </button>
         </div>
 
-        <div x-show="open" class="p-5 border-b border-slate-100" style="background:#f8fafc">
+        <div x-show="open" class="p-4 sm:p-5 border-b border-slate-100" style="background:#f8fafc">
             <form method="POST" action="{{ route('programmes.contrat.echeances.store', $programme) }}" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 @csrf
                 <input type="date" name="date_prevue" required class="h-9 border border-slate-200 rounded-xl px-3 text-[12px]">
@@ -137,7 +137,7 @@
             <h3 class="text-[12px] font-semibold text-slate-800">Représentant, délai et signature</h3>
             <p class="text-[10px] text-slate-400 mt-0.5">Ces informations ne peuvent pas être déduites automatiquement</p>
         </div>
-        <form method="POST" action="{{ route('programmes.contrat.update', $programme) }}" class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <form method="POST" action="{{ route('programmes.contrat.update', $programme) }}" class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
             @csrf @method('PUT')
             <div>
                 <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Représentant de l'école</label>

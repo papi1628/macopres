@@ -19,8 +19,8 @@
 <div class="space-y-5">
 
     {{-- EN-TÊTE --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-        <div class="flex items-center justify-between flex-wrap gap-4">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
                 <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#DBEAFE; color:#1D4ED8">Bons de commande</span>
                 <h2 class="text-[17px] font-bold text-slate-800 mt-1">{{ $programme->ecole->nom }}</h2>
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h3 class="text-[13px] font-bold text-slate-800">Commandes ({{ $programme->bonsCommande->count() }})</h3>
         <form method="POST" action="{{ route('programmes.bons.store', $programme) }}">
             @csrf
@@ -53,23 +53,23 @@
         </div>
     @else
         {{-- Sous-timeline des BC (ancien accordéon, inchangé) --}}
-        <div class="relative pl-8">
+        <div class="relative pl-5 sm:pl-8">
             <div class="absolute left-[15px] top-2 bottom-2 w-px" style="background:#E2E8F0"></div>
 
             @foreach($programme->bonsCommande as $i => $bon)
                 <div x-data="{ open: {{ session('bon_ouvert') == $bon->id ? 'true' : 'false' }} }" class="relative mb-5">
-                    <div class="absolute -left-8 top-4 w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white"
+                    <div class="absolute -left-5 sm:-left-8 top-4 w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white"
                          style="background:linear-gradient(135deg,#0C447C,#185FA5)">
                         {{ $i + 1 }}
                     </div>
 
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                        <div class="flex items-center justify-between px-5 py-4 cursor-pointer" @click="open = !open">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-5 py-4 cursor-pointer" @click="open = !open">
                             <div>
                                 <p class="text-[11px] font-semibold text-slate-400">Commande n°{{ $i + 1 }}</p>
                                 <p class="font-mono font-bold text-[14px]" style="color:#0C447C">{{ $bon->numero }}</p>
                             </div>
-                            <div class="grid grid-cols-3 gap-6 text-right">
+                            <div class="grid grid-cols-3 gap-3 sm:gap-6 text-left sm:text-right w-full sm:w-auto">
                                 <div>
                                     <p class="text-[9px] font-semibold text-slate-400 uppercase">Date</p>
                                     <p class="text-[12px] font-semibold text-slate-700">{{ $bon->date->format('d/m/Y') }}</p>
@@ -89,7 +89,7 @@
                                 Facture
                             </a> --}}
                             <a href="{{ route('programmes.bons.imprimer', $bon) }}" target="_blank" @click.stop
-                            class="ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1.5 flex-shrink-0"
+                            class="sm:ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1.5 flex-shrink-0"
                             style="background:linear-gradient(135deg,#0C447C,#185FA5)">
                                 Imprimer
                             </a>
@@ -134,7 +134,7 @@
 
                                 @if($bon->lignes->count() > 0)
                                     <div class="overflow-x-auto">
-                                        <table class="w-full text-[12px]">
+                                        <table class="min-w-[850px] w-full text-[12px]">
                                             <thead>
                                                 <tr class="border-b border-slate-100">
                                                     <th class="text-left py-2 text-[9px] font-semibold text-slate-400 uppercase">Désignation</th>
@@ -223,7 +223,7 @@
 
                                     <form id="form-bon-{{ $bon->id }}" method="POST" x-show="openAjout" onsubmit="ajouterArticle(event,this,{{ $bon->id }})"
                                             action="{{ route('programmes.bons.lignes.store',$bon) }}"
-                                          class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
+                                          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-3">
                                         @csrf
                                         <input type="text" name="designation_libre" x-show="!designationId" placeholder="Nom de l'article"
                                                class="h-8 border border-slate-200 rounded-lg px-2 text-[11px] sm:col-span-2">
@@ -284,7 +284,7 @@ function celulasLigne(ligne) {
         <td class="py-2 text-center font-semibold">${ligne.quantite}</td>
         <td class="py-2 text-right">${Number(ligne.prix_unitaire).toLocaleString('fr-FR')}</td>
         <td class="py-2 text-right font-semibold" style="color:#185FA5">${Number(ligne.montant_ligne).toLocaleString('fr-FR')}</td>
-        <td class="py-2 text-right whitespace-nowrap">
+        <td class="py-2 text-right whitespace-nowrap sticky right-0 bg-white">
             <button type="button" onclick="modifierArticle(${ligne.id})"
                     class="text-blue-400 hover:text-blue-600 text-[20px] mr-2 align-middle" title="Modifier">✎</button>
             <button type="button" onclick="supprimerArticle(this, '${urlSuppressionLigne}/${ligne.id}', ${ligne.bon_commande_id}, ${ligne.id})"
@@ -415,7 +415,7 @@ function modifierArticle(id) {
 
     tr.innerHTML = `
         <td colspan="9" class="py-2.5">
-            <div class="grid grid-cols-2 sm:grid-cols-8 gap-2 items-center bg-slate-50 rounded-xl p-3 border border-slate-100">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-2 items-center bg-slate-50 rounded-xl p-3 border border-slate-100">
                 <input id="designation-${id}" value="${d.designation ?? ''}" placeholder="Désignation"
                        class="h-8 border border-slate-200 rounded-lg px-2 text-[11px] focus:outline-none focus:border-blue-400 sm:col-span-2">
                 <input id="taille-${id}" value="${d.taille ?? ''}" placeholder="Taille"

@@ -8,16 +8,24 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1e293b; }
-        .barre-outils { }
+        .barre-outils { flex-wrap: wrap; gap: 8px; }
+        .page { max-width: 800px; width: 100%; margin: 0 auto; padding: 30px 20px 60px; font-size: 13px; line-height: 1.6; box-sizing: border-box; }
+        .article-titre { font-weight: 800; text-transform: uppercase; margin-top: 26px; margin-bottom: 8px; color: #0C447C; }
+        ul.engagement { margin: 8px 0 0 0; padding-left: 18px; }
+        ul.engagement li { margin-bottom: 3px; }
+        .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 16px; }
+
+        @media (max-width: 640px) {
+            .page { padding: 20px 16px 40px; font-size: 12.5px; }
+            .signature-grid { grid-template-columns: 1fr; gap: 28px; }
+            h1 { font-size: 15px !important; }
+        }
+
         @media print {
             .barre-outils { display: none !important; }
             body { background: white; }
             .page { padding: 0 !important; }
         }
-        .page { max-width: 800px; margin: 0 auto; padding: 30px 20px 60px; font-size: 13px; line-height: 1.6; }
-        .article-titre { font-weight: 800; text-transform: uppercase; margin-top: 26px; margin-bottom: 8px; color: #0C447C; }
-        ul.engagement { margin: 8px 0 0 0; padding-left: 18px; }
-        ul.engagement li { margin-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -77,7 +85,7 @@
             pour {{ mb_strtoupper($ecole->nom) }} sur la base d'un bon de commande qui détermine les quantités suivantes :
         </p>
         @if(count($engagementLignes) > 0)
-            <ul class="engagement">
+            <ul class="engagement" style="text-align:center;">
                 @foreach($engagementLignes as $ligne)
                     <li>{{ ltrim($ligne, '- ') }}</li>
                 @endforeach
@@ -105,7 +113,7 @@
             et leurs dates d'échéances sont inchangeables.
         </p>
         @if($echeances->count() > 0)
-            <ul class="engagement">
+            <ul class="engagement" style="text-align:left;">
                 @foreach($echeances as $i => $ech)
                     <li>
                         le {{ \App\Support\NombreEnLettres::ordinal($ech->numero_versement) }} versement est prévu
@@ -125,7 +133,7 @@
         {{-- ARTICLE 5 --}}
         <p class="article-titre">Article 5 : Encaissement</p>
         <p>Les encaissements se feront :</p>
-        <ul class="engagement">
+        <ul class="engagement" style="text-align:center;">
             <li>Soit par chèque au nom de MACOPRES</li>
             <li>
                 Soit par virement bancaire<br>
@@ -150,7 +158,7 @@
         {{-- ARTICLE 6 --}}
         <p class="article-titre">Article 6 : Signature</p>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:16px;">
+        <div class="signature-grid">
             <div>
                 <p style="font-weight:700;">Prestataire</p>
                 <p>

@@ -16,16 +16,26 @@
     }
 
     .page {
-        width: 800px;
+        max-width:800px;
+        width:100%;
         margin:auto;
         background:white;
         padding:35px 45px;
         min-height:1100px;
+        box-sizing:border-box;
     }
+
+    .toolbar { flex-wrap:wrap; gap:8px; }
+
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .signature-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+
+    .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 
     table {
         width:100%;
         border-collapse:collapse;
+        min-width:520px;
     }
 
     th {
@@ -34,12 +44,21 @@
         font-size:11px;
         text-transform:uppercase;
         padding:10px;
+        white-space:nowrap;
     }
 
     td {
         padding:9px;
         border-bottom:1px solid #e2e8f0;
         font-size:12px;
+    }
+
+    @media (max-width: 640px) {
+        .page { padding: 20px 16px; min-height:0; }
+        .grid-2 { grid-template-columns:1fr; gap:12px; }
+        .signature-grid { grid-template-columns:1fr; gap:30px; margin-top:50px !important; }
+        h1 { font-size:22px !important; }
+        h2 { font-size:16px !important; }
     }
 
     @media print {
@@ -54,8 +73,11 @@
 
         .page {
             width:auto;
+            max-width:none;
             padding:0;
         }
+
+        .table-scroll { overflow:visible; }
     }
 
 </style>
@@ -75,9 +97,9 @@ $ecole = $bonCommande->programme->ecole;
 
 
 
-<div class="toolbar bg-white border-b px-5 py-3 flex justify-between">
+<div class="toolbar bg-white border-b px-5 py-3 flex justify-between items-center">
 
-<p class="font-bold text-slate-700">
+<p class="font-bold text-slate-700 text-sm">
 Facture {{ $facture->numero }}
 </p>
 
@@ -171,8 +193,10 @@ contact@macopres.sn
 
 <div style="
 display:flex;
+flex-wrap:wrap;
 justify-content:space-between;
 align-items:center;
+gap:12px;
 background:#f8fafc;
 border-radius:14px;
 padding:18px 22px;
@@ -254,12 +278,7 @@ M. BA
 {{-- CLIENT --}}
 
 
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin-bottom:20px;
-">
+<div class="grid-2" style="margin-bottom:20px;">
 
 
 <div style="
@@ -335,6 +354,7 @@ font-size:15px;
 
 {{-- ARTICLES --}}
 
+<div class="table-scroll">
 
 <table>
 
@@ -473,6 +493,8 @@ FCFA
 
 </table>
 
+</div>
+
 
 
 
@@ -532,12 +554,7 @@ Condition de paiement :
 
 
 
-<div style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:60px;
-margin-top:80px;
-">
+<div class="signature-grid" style="margin-top:80px;">
 
 
 <div></div>

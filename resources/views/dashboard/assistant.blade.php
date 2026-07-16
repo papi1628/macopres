@@ -9,7 +9,7 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
             {{-- Employés --}}
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5"
                  style="border-left:3px solid #0C447C">
                 <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Employés</p>
                 <p class="text-[28px] font-black text-slate-800 leading-none">{{ $totalEmployes }}</p>
@@ -17,7 +17,7 @@
             </div>
 
             {{-- Présents aujourd'hui --}}
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5"
                  style="border-left:3px solid #3B6D11">
                 <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Présents</p>
                 <p class="text-[28px] font-black leading-none" style="color:#3B6D11">{{ $presents }}</p>
@@ -27,7 +27,7 @@
             </div>
 
             {{-- Retards --}}
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5"
                  style="border-left:3px solid #854F0B">
                 <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Retards</p>
                 <p class="text-[28px] font-black leading-none" style="color:#854F0B">{{ $retards }}</p>
@@ -35,7 +35,7 @@
             </div>
 
             {{-- Absents --}}
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5"
                  style="border-left:3px solid #A32D2D">
                 <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Absents</p>
                 <p class="text-[28px] font-black leading-none" style="color:#A32D2D">{{ $absents }}</p>
@@ -49,7 +49,7 @@
         {{-- ══════════════════════════════════════
              GRILLE PRINCIPALE
         ══════════════════════════════════════ --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:p-5">
 
             {{-- ── Présence par département ── --}}
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -147,10 +147,10 @@
         {{-- ══════════════════════════════════════
              LIGNE DU BAS : Répartition + Absents
         ══════════════════════════════════════ --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:p-5">
 
             {{-- Taux de présence global --}}
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5">
                 <h3 class="text-[12px] font-semibold text-slate-800 mb-4">Taux de présence</h3>
                 @php
                     $taux = $totalEmployes > 0 ? round(($presents / $totalEmployes) * 100) : 0;
