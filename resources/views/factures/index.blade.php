@@ -24,9 +24,9 @@
 
 
 {{-- HEADER --}}
-<div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5">
 
-<div class="flex items-center justify-between flex-wrap gap-4">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 
 <div>
 
@@ -50,7 +50,7 @@ Factures
 
 
 <a href="{{ route('programmes.show',$programme) }}"
-class="h-9 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center">
+class="w-full sm:w-auto h-9 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">
 ← Retour au programme
 </a>
 
@@ -88,7 +88,7 @@ Les factures seront générées automatiquement.
 
 
 
-<div class="relative pl-8">
+<div class="relative pl-5 sm:pl-8">
 
 
 <div class="absolute left-[15px] top-2 bottom-2 w-px"
@@ -107,7 +107,7 @@ style="background:#E2E8F0">
 
 
 {{-- NUMERO --}}
-<div class="absolute -left-8 top-4 w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white"
+<div class="absolute -left-5 sm:-left-8 top-4 w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white"
 style="background:linear-gradient(135deg,#3B6D11,#5A9A1E)">
 {{ $i+1 }}
 </div>
@@ -122,7 +122,7 @@ style="background:linear-gradient(135deg,#3B6D11,#5A9A1E)">
 
 
 {{-- PARTIE HAUTE --}}
-<div class="flex items-center justify-between px-5 py-4 cursor-pointer"
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-4 sm:px-4 sm:px-5 py-4 cursor-pointer"
 @click="open=!open">
 
 
@@ -152,7 +152,7 @@ Commande : {{ $bon->numero }}
 
 
 
-<div class="grid grid-cols-3 gap-6 text-right">
+<div class="grid grid-cols-3 gap-3 sm:gap-6 text-left sm:text-right w-full lg:w-auto">
 
 
 <div>
@@ -214,7 +214,7 @@ Articles
 <a href="{{ route('programmes.bons.facture',$bon) }}"
 target="_blank"
 @click.stop
-class="ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center"
+class="w-full sm:w-auto sm:ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center justify-center"
 style="background:linear-gradient(135deg,#3B6D11,#5A9A1E)">
 Imprimer
 </a>
@@ -232,7 +232,7 @@ Imprimer
 {{-- PARTIE QUI S'OUVRE AU MILIEU --}}
 <div x-show="open"
 x-collapse
-class="border-t border-slate-100 px-5 py-4"
+class="border-t border-slate-100 px-4 sm:px-4 sm:px-5 py-4"
 style="background:#ffffff">
 
 
@@ -244,7 +244,7 @@ Détails des articles
 
 <div class="overflow-x-auto">
 
-<table class="w-full text-[12px]">
+<table class="min-w-[650px] w-full text-[12px]">
 
 
 <thead>
@@ -347,11 +347,11 @@ style="color:#3B6D11">
 
 
 {{-- PARTIE BASSE TOUJOURS VISIBLE --}}
-<div class="border-t border-slate-100 px-5 py-3"
+<div class="border-t border-slate-100 px-4 sm:px-4 sm:px-5 py-3"
 style="background:#f8fafc">
 
 
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
 
 
@@ -375,7 +375,7 @@ Commande liée
 Montant en lettres
 </p>
 
-<p class="text-[11px] italic text-slate-500">
+<p class="text-[11px] italic text-slate-500 break-words">
 
 {{ \App\Support\NombreEnLettres::enMontant($bon->facture->montant) }}
 
