@@ -12,28 +12,28 @@
 <div class="space-y-5">
 
     {{-- EN-TÊTE --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-        <div class="flex items-center justify-between flex-wrap gap-4">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
                 <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#F3E8FF; color:#7E22CE">Fiche de production</span>
                 <h2 class="text-[16px] sm:text-[17px] font-bold text-slate-800 mt-1">{{ $bonCommande->programme->ecole->nom }}</h2>
                 <p class="text-[11px] text-slate-400 mt-1">{{ $bonCommande->numero }} · {{ $bonCommande->date->format('d/m/Y') }}</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                 <a href="{{ route('programmes.bons.fiche.imprimer', $bonCommande) }}" target="_blank"
-                   class="h-9 px-4 rounded-xl text-[12px] font-semibold text-white flex items-center gap-1.5"
+                   class="w-full sm:w-auto h-9 px-4 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5"
                    style="background:linear-gradient(135deg,#7E22CE,#A855F7)">
                     Imprimer la fiche
                 </a>
-                <a href="{{ route('programmes.fiches.index', $bonCommande) }}"
-                   class="h-9 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center">
+                <a href="{{ route('programmes.fiches.index', $bonCommande->programme) }}"
+                   class="w-full sm:w-auto h-9 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">
                     ← Retour
                 </a>
             </div>
         </div>
     </div>
 
-    <p class="text-[11px] text-slate-400 px-1">
+    <p class="text-[11px] text-slate-400 px-1 leading-5">
         Les groupes ci-dessous sont formés automatiquement à partir des articles du bon de commande
         (même désignation + couleur + matière + logo = un seul groupe). Vous pouvez préciser une description
         et ajouter une photo pour chaque groupe — c'est ce que verra l'atelier de production.
@@ -42,7 +42,7 @@
     {{-- GROUPES --}}
     @forelse($groupes as $groupe)
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="px-4 sm:px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+            <div class="px-4 sm:px-5 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                     <h3 class="text-[13px] font-bold text-slate-800">{{ $groupe['libelle'] }}</h3>
                     <p class="text-[11px] text-slate-400 mt-0.5">
@@ -54,7 +54,7 @@
                 <span class="text-[12px] font-bold" style="color:#0C447C">{{ $groupe['total'] }} pièce(s)</span>
             </div>
 
-            <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="p-4 sm:p-5 grid grid-cols-1 xl:grid-cols-2 gap-5"> 
                 {{-- Répartition tailles --}}
                 <div>
                     <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Répartition par taille</p>
