@@ -16,7 +16,7 @@
         <div class="flex items-center justify-between flex-wrap gap-4">
             <div>
                 <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#F3E8FF; color:#7E22CE">Fiche de production</span>
-                <h2 class="text-[17px] font-bold text-slate-800 mt-1">{{ $bonCommande->programme->ecole->nom }}</h2>
+                <h2 class="text-[16px] sm:text-[17px] font-bold text-slate-800 mt-1">{{ $bonCommande->programme->ecole->nom }}</h2>
                 <p class="text-[11px] text-slate-400 mt-1">{{ $bonCommande->numero }} · {{ $bonCommande->date->format('d/m/Y') }}</p>
             </div>
             <div class="flex items-center gap-2">
@@ -42,7 +42,7 @@
     {{-- GROUPES --}}
     @forelse($groupes as $groupe)
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+            <div class="px-4 sm:px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
                 <div>
                     <h3 class="text-[13px] font-bold text-slate-800">{{ $groupe['libelle'] }}</h3>
                     <p class="text-[11px] text-slate-400 mt-0.5">

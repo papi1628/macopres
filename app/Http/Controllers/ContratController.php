@@ -100,17 +100,42 @@ class ContratController extends Controller
 
         $numero = $programme->echeancesPaiement()->max('numero_versement') + 1;
 
-        $programme->echeancesPaiement()->create([
+        
+
+        $echeance = $programme->echeancesPaiement()->create([
             'numero_versement' => $numero,
             'date_prevue'      => $request->date_prevue,
             'montant_prevu'    => $request->montant_prevu,
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Échéance ajoutée.',
+                'echeance' => [
+                    'id' => $echeance->id,
+                    'numero_versement' => \App\Support\NombreEnLettres::ordinal(
+                        $echeance->numero_versement
+                    ),
+                    'date_prevue' => $echeance->date_prevue->format('d/m/Y'),
+                    'montant_prevu' => $echeance->montant_prevu,
+                ],
+                'total' => $programme->fresh()
+                    ->echeancesPaiement
+                    ->sum('montant_prevu'),
+            ]);
+        }
+
         return back()->with('success', 'Échéance ajoutée.');
     }
 
-    public function destroyEcheance(EcheancePaiement $echeancePaiement)
+    
+
+    public function destroyEcheance( Programme $programme, EcheancePaiement $echeancePaiement )
     {
+        if($echeancePaiement->programme_id !== $programme->id){
+            abort(404);
+        }
         $programme = $echeancePaiement->programme;
         $echeancePaiement->delete();
 
@@ -118,7 +143,68 @@ class ContratController extends Controller
         $programme->echeancesPaiement()->orderBy('date_prevue')->get()->values()
             ->each(fn($e, $i) => $e->update(['numero_versement' => $i + 1]));
 
+        $total = $programme->fresh()->echeancesPaiement->sum('montant_prevu');
+
+        if (request()->expectsJson()) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Échéance supprimée.',
+                'total' => $total,
+                'echeances' => $programme
+                    ->fresh()
+                    ->echeancesPaiement
+                    ->sortBy('numero_versement')
+                    ->values()
+                    ->map(fn($e)=>[
+                        'id'=>$e->id,
+                        'numero'=>\App\Support\NombreEnLettres::ordinal($e->numero_versement),
+                    ]),
+            ]);
+
+        }
+
         return back()->with('success', 'Échéance supprimée.');
+    }
+
+    public function updateEcheance(Request $request, Programme $programme, EcheancePaiement $echeancePaiement)
+    {
+        $request->validate([
+            'date_prevue' => 'required|date',
+            'montant_prevu' => 'required|numeric|min:0',
+        ]);
+
+
+        $echeancePaiement->update([
+            'date_prevue' => $request->date_prevue,
+            'montant_prevu' => $request->montant_prevu,
+        ]);
+
+
+        $total = $programme
+            ->fresh()
+            ->echeancesPaiement
+            ->sum('montant_prevu');
+
+
+        return response()->json([
+
+            'success'=>true,
+
+            'message'=>'Échéance modifiée.',
+
+            'echeance'=>[
+
+                'date'=>\Carbon\Carbon::parse($echeancePaiement->date_prevue)
+                    ->format('d/m/Y'),
+
+                'montant'=>$echeancePaiement->montant_prevu,
+
+            ],
+
+            'total'=>$total
+
+        ]);
     }
 
     /*
@@ -163,12 +249,35 @@ class ContratController extends Controller
             'date_signature'
         ));
 
+        if ($request->expectsJson()) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Contrat mis à jour.',
+            ]);
+
+        }
+
         return back()->with('success', 'Contrat mis à jour.');
     }
 
     public function marquerSigne(Programme $programme)
     {
-        $programme->contrat->update(['statut' => 'signe']);
+        $programme->contrat->update([
+            'statut' => 'signe',
+        ]);
+
+        if (request()->expectsJson()) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Contrat marqué comme signé.',
+                'statut' => 'signe',
+                'libelle' => $programme->contrat->libelleStatut(),
+            ]);
+
+        }
+
         return back()->with('success', 'Contrat marqué comme signé.');
     }
 }

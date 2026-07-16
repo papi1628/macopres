@@ -271,8 +271,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/programmes/{programme}/contrat/imprimer', [ContratController::class, 'imprimer'])->name('programmes.contrat.imprimer');
 
     // Échéancier de paiement (Article 4 du contrat)
-    Route::post('/programmes/{programme}/echeances', [ContratController::class, 'storeEcheance'])->name('programmes.contrat.echeances.store');
-    Route::delete('/echeances/{echeancePaiement}', [ContratController::class, 'destroyEcheance'])->name('programmes.contrat.echeances.destroy');
+
+    Route::post(
+        '/programmes/{programme}/echeances',
+        [ContratController::class, 'storeEcheance']
+    )->name('programmes.contrat.echeances.store');
+
+
+    Route::put(
+        '/programmes/{programme}/echeances/{echeancePaiement}',
+        [ContratController::class,'updateEcheance']
+    )->name('programmes.contrat.echeances.update');
+
+
+    Route::delete(
+        '/programmes/{programme}/echeances/{echeancePaiement}',
+        [ContratController::class,'destroyEcheance']
+    )->name('programmes.contrat.echeances.destroy');
 
     /*
     |--------------------------------------------------------------------------

@@ -20,7 +20,7 @@
 
     @if(Auth::user()->role === 'directeur')
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div class="px-5 py-3.5 border-b border-slate-100">
+        <div class="px-4 sm:px-5 py-3.5 border-b border-slate-100">
             <h3 class="text-[12px] font-semibold text-slate-800">Ajouter une désignation</h3>
         </div>
         <form method="POST" action="{{ route('designations.store') }}" class="p-5 grid grid-cols-1 sm:grid-cols-4 gap-3">

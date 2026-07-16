@@ -88,8 +88,10 @@
                             style="background:linear-gradient(135deg,#3B6D11,#5A9A1E)">
                                 Facture
                             </a> --}}
+
+                            {{-- Le bouton doit occuper les 1/3 de l'espace --}}
                             <a href="{{ route('programmes.bons.imprimer', $bon) }}" target="_blank" @click.stop
-                            class="sm:ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1.5 flex-shrink-0"
+                            class="sm:ml-4 h-8 px-3 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center"
                             style="background:linear-gradient(135deg,#0C447C,#185FA5)">
                                 Imprimer
                             </a>

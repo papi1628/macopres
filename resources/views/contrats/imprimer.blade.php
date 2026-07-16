@@ -9,16 +9,52 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1e293b; }
         .barre-outils { flex-wrap: wrap; gap: 8px; }
-        .page { max-width: 800px; width: 100%; margin: 0 auto; padding: 30px 20px 60px; font-size: 13px; line-height: 1.6; box-sizing: border-box; }
+        .page { 
+            max-width:800px;
+            width:100%;
+            margin:0 auto;
+            padding:30px 24px 60px;
+            font-size:13px;
+            line-height:1.6;
+            box-sizing:border-box;
+            overflow-wrap:break-word;
+        }
         .article-titre { font-weight: 800; text-transform: uppercase; margin-top: 26px; margin-bottom: 8px; color: #0C447C; }
         ul.engagement { margin: 8px 0 0 0; padding-left: 18px; }
         ul.engagement li { margin-bottom: 3px; }
+        p, li {
+            word-break: normal;
+        }
         .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 16px; }
+        .signature-grid > div {
+            break-inside: avoid;
+        }
 
-        @media (max-width: 640px) {
-            .page { padding: 20px 16px 40px; font-size: 12.5px; }
-            .signature-grid { grid-template-columns: 1fr; gap: 28px; }
-            h1 { font-size: 15px !important; }
+        @media (max-width:640px) {
+
+            .page {
+                padding:20px 15px 40px;
+                font-size:12px;
+                line-height:1.55;
+            }
+
+            .signature-grid {
+                grid-template-columns:1fr;
+                gap:35px;
+            }
+
+            h1 {
+                font-size:15px !important;
+                line-height:1.4;
+            }
+
+            .article-titre {
+                margin-top:22px;
+            }
+
+            ul.engagement {
+                padding-left:15px;
+            }
         }
 
         @media print {
@@ -26,14 +62,22 @@
             body { background: white; }
             .page { padding: 0 !important; }
         }
+
+        @media print {
+
+            .signature-grid {
+                grid-template-columns:1fr 1fr;
+            }
+
+        }
     </style>
 </head>
 <body>
 
-    <div class="barre-outils sticky top-0 z-10 bg-white border-b border-slate-200 px-5 py-3 flex items-center justify-between shadow-sm">
-        <p class="text-sm font-semibold text-slate-700">Contrat de prestation — {{ $programme->ecole->nom }}</p>
+    <div class="barre-outils sticky top-0 z-10 bg-white border-b border-slate-200 px-4 sm:px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm">
+        <p class="text-xs sm:text-sm font-semibold text-slate-700">Contrat de prestation — {{ $programme->ecole->nom }}</p>
         <button onclick="window.print()"
-                class="h-9 px-5 rounded-xl text-sm font-bold text-white transition-all"
+                class="h-9 px-4 sm:px-5 rounded-xl text-xs sm:text-sm font-bold text-white transition-all mt-2 sm:mt-0"
                 style="background:linear-gradient(135deg,#185FA5,#378ADD)">
             Imprimer
         </button>
@@ -52,7 +96,7 @@
             : [];
     @endphp
 
-    <div class="page" style="text-align:center;">
+    <div class="page text-center sm:text-center">
 
         <h1 style="text-align:center; font-size:18px; font-weight:800; letter-spacing:.02em; margin-bottom:24px;">
             CONTRAT DE PRESTATION DE SERVICES {{ $programme->annee_scolaire }}

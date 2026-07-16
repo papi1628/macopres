@@ -53,7 +53,7 @@
 
             {{-- ── Présence par département ── --}}
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
+                <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-100">
                     <h3 class="text-[12px] font-semibold text-slate-800">Présence par département</h3>
                     <span class="text-[10px] text-slate-400">Aujourd'hui</span>
                 </div>
@@ -78,7 +78,7 @@
 
             {{-- ── Premières arrivées ── --}}
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
+                <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-100">
                     <h3 class="text-[12px] font-semibold text-slate-800">Premières arrivées</h3>
                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                           style="background:#E6F1FB; color:#0C447C">
@@ -181,7 +181,7 @@
 
             {{-- Absents du jour --}}
             <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
+                <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-100">
                     <h3 class="text-[12px] font-semibold text-slate-800">Absents du jour</h3>
                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                           style="background:#FCEBEB; color:#A32D2D">
