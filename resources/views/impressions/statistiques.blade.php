@@ -14,7 +14,13 @@
             body { background: white; }
             .page { padding: 0 !important; }
         }
-        .page { max-width: 900px; margin: 0 auto; padding: 24px 20px 60px; }
+        .page {
+            max-width:900px;
+            width:100%;
+            margin:auto;
+            padding:24px 20px 60px;
+            box-sizing:border-box;
+        }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 10px 12px; font-size: 12px; text-align: left; }
         thead th {
@@ -23,6 +29,143 @@
         }
         tbody tr { border-bottom: 1px solid #f1f5f9; }
         .kpi { border-left: 3px solid #0C447C; background: white; border-radius: 16px; padding: 16px; }
+        .table-scroll {
+            width:100%;
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
+        }
+        @media(max-width:640px){
+
+    body{
+        background:white;
+    }
+
+
+    .barre-outils{
+        padding:12px 15px !important;
+        gap:10px;
+    }
+
+
+    .barre-outils p{
+        font-size:12px !important;
+        line-height:1.3;
+        max-width:65%;
+    }
+
+
+    .barre-outils button{
+        height:36px !important;
+        padding:0 14px !important;
+        font-size:12px !important;
+        border-radius:10px;
+    }
+
+
+    .page{
+        padding:20px 12px 40px;
+    }
+
+
+    /* En-tête */
+
+    .page > div:first-child{
+        flex-direction:column;
+        align-items:flex-start !important;
+        gap:8px;
+    }
+
+
+    h1{
+        font-size:17px !important;
+    }
+
+
+    /* Cartes KPI */
+
+    
+
+    .kpi-grid{
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:10px !important;
+    }
+
+
+    .kpi{
+        padding:14px;
+    }
+
+
+    .kpi p:last-child{
+        font-size:20px !important;
+    }
+
+
+    /* Masse salariale */
+
+    .kpi[style*="display:flex"]{
+        flex-direction:column;
+        align-items:flex-start !important;
+        gap:8px;
+    }
+
+
+    /* Tableau */
+
+    table{
+        min-width:850px;
+    }
+
+
+    th,
+    td{
+        font-size:11px;
+        padding:8px;
+    }
+
+
+}
+
+@media(max-width:380px){
+
+    .barre-outils{
+        flex-direction:column;
+        align-items:stretch !important;
+    }
+
+
+    .barre-outils p{
+        max-width:100%;
+    }
+
+
+    .barre-outils button{
+        width:100%;
+    }
+
+
+    .page{
+        padding:15px 10px 30px;
+    }
+
+}
+
+@media(max-width:640px){
+
+    .kpi-grid{
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:10px !important;
+    }
+
+    .kpi{
+        padding:12px;
+    }
+
+    .kpi .text-\[28px\]{
+        font-size:22px !important;
+    }
+
+}
     </style>
 </head>
 <body>
@@ -47,37 +190,80 @@
         </div>
 
         {{-- KPI globaux --}}
-        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:24px;">
-            <div class="kpi">
-                <p style="font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:.04em;">Employés</p>
-                <p style="font-size:22px; font-weight:800; color:#0C447C;">{{ $globalStats['nb_employes'] }}</p>
+        <div class="kpi-grid grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+                style="border-left:3px solid #0C447C">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                    Employés
+                </p>
+                <p class="text-[28px] font-black leading-none" style="color:#0C447C">
+                    {{ $globalStats['nb_employes'] }}
+                </p>
+                <p class="text-[10px] text-slate-400 mt-1">
+                    employés actifs
+                </p>
             </div>
-            <div class="kpi" style="border-left-color:#3B6D11">
-                <p style="font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:.04em;">Présents</p>
-                <p style="font-size:22px; font-weight:800; color:#3B6D11;">{{ $globalStats['jours_presents'] }}</p>
+
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+                style="border-left:3px solid #3B6D11">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                    Présences
+                </p>
+                <p class="text-[28px] font-black leading-none" style="color:#3B6D11">
+                    {{ $globalStats['jours_presents'] }}
+                </p>
+                <p class="text-[10px] text-slate-400 mt-1">
+                    journées présentes
+                </p>
             </div>
-            <div class="kpi" style="border-left-color:#A32D2D">
-                <p style="font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:.04em;">Absents</p>
-                <p style="font-size:22px; font-weight:800; color:#A32D2D;">{{ $globalStats['jours_absents'] }}</p>
+
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+                style="border-left:3px solid #A32D2D">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                    Absences
+                </p>
+                <p class="text-[28px] font-black leading-none" style="color:#A32D2D">
+                    {{ $globalStats['jours_absents'] }}
+                </p>
+                <p class="text-[10px] text-slate-400 mt-1">
+                    journées perdues
+                </p>
             </div>
-            <div class="kpi" style="border-left-color:#854F0B">
-                <p style="font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:.04em;">Retards</p>
-                <p style="font-size:22px; font-weight:800; color:#854F0B;">{{ $globalStats['jours_retard'] }}</p>
+
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+                style="border-left:3px solid #854F0B">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                    Retards
+                </p>
+                <p class="text-[28px] font-black leading-none" style="color:#854F0B">
+                    {{ $globalStats['jours_retard'] }}
+                </p>
+                <p class="text-[10px] text-slate-400 mt-1">
+                    arrivées tardives
+                </p>
             </div>
-            <div class="kpi" style="border-left-color:#185FA5">
-                <p style="font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:.04em;">Taux présence</p>
-                <p style="font-size:22px; font-weight:800; color:#185FA5;">{{ $globalStats['taux_presence'] }}%</p>
+
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+                style="border-left:3px solid #185FA5">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                    Masse salariale
+                </p>
+                <p class="text-[22px] font-black leading-none" style="color:#185FA5">
+                    {{ number_format($globalStats['masse_salariale'],0,',',' ') }}
+                </p>
+                <p class="text-[10px] text-slate-400 mt-1">
+                    FCFA période
+                </p>
             </div>
         </div>
 
-        <div class="kpi" style="margin-bottom:28px; display:flex; align-items:center; justify-content:space-between;">
-            <span style="font-size:12px; color:#64748b; font-weight:600;">Masse salariale de la période</span>
-            <span style="font-size:20px; font-weight:800; color:#0C447C;">{{ number_format($globalStats['masse_salariale'], 0, ',', ' ') }} FCFA</span>
-        </div>
+        
 
         {{-- Détail par département --}}
         <h2 style="font-size:14px; font-weight:700; margin-bottom:10px; color:#1e293b;">Détail par département</h2>
-        <table style="border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+        <div class="table-scroll">
+
+            <table style="border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
             <thead>
                 <tr>
                     <th>Département</th>
@@ -106,7 +292,8 @@
                     <tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:24px;">Aucune donnée pour cette période</td></tr>
                 @endforelse
             </tbody>
-        </table>
+            </table>
+        </div>
 
         <p style="font-size:10px; color:#94a3b8; margin-top:20px;">Généré le {{ now()->format('d/m/Y à H:i') }} — MACOPRES RH</p>
     </div>

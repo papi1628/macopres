@@ -233,11 +233,6 @@ DATE :
 
 </div>
 
-
-
-
-
-
 {{-- CLIENT BENEFICIAIRE --}}
 
 
@@ -304,17 +299,10 @@ MACOPRES
 </p>
 
 
-
-
-
 </div>
 
 
 </div>
-
-
-
-
 
 
 {{-- INFORMATIONS --}}

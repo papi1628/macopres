@@ -16,7 +16,13 @@
             .jour-bloc { page-break-after: always; }
             .jour-bloc:last-child { page-break-after: auto; }
         }
-        .page { max-width: 900px; margin: 0 auto; padding: 24px 20px 60px; }
+        .page {
+            max-width:900px;
+            width:100%;
+            margin:auto;
+            padding:24px 20px 60px;
+            box-sizing:border-box;
+        }
         table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
         th, td { padding: 8px 10px; font-size: 12px; text-align: left; }
         thead th {
@@ -26,6 +32,104 @@
         tbody tr { border-bottom: 1px solid #f1f5f9; }
         .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
         .jour-bloc { margin-bottom: 32px; }
+
+        .table-scroll {
+            width:100%;
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
+        }
+
+        @media(max-width:640px){
+
+            body{
+                background:white;
+            }
+
+
+            .barre-outils{
+                padding:12px 15px !important;
+                gap:10px;
+            }
+
+
+            .barre-outils p{
+                font-size:12px !important;
+                line-height:1.3;
+                max-width:65%;
+            }
+
+
+            .barre-outils button{
+                height:36px !important;
+                padding:0 14px !important;
+                font-size:12px !important;
+                border-radius:10px;
+            }
+
+
+            .page{
+                padding:20px 12px 40px;
+            }
+
+
+            .jour-bloc{
+                margin-bottom:25px;
+            }
+
+
+            .jour-bloc h2{
+                font-size:13px !important;
+                line-height:1.4;
+            }
+
+
+            .jour-bloc > div:first-child{
+                flex-direction:column;
+                gap:8px;
+            }
+
+
+            .jour-bloc span{
+                font-size:10px !important;
+            }
+
+
+            table{
+                min-width:700px;
+            }
+
+
+            th,
+            td{
+                padding:8px;
+                font-size:11px;
+            }
+
+        }
+
+        @media(max-width:380px){
+
+            .barre-outils{
+                flex-direction:column;
+                align-items:stretch !important;
+            }
+
+
+            .barre-outils p{
+                max-width:100%;
+            }
+
+
+            .barre-outils button{
+                width:100%;
+            }
+
+
+            .page{
+                padding:15px 10px 30px;
+            }
+
+        }
     </style>
 </head>
 <body>
@@ -56,7 +160,9 @@
                     </span>
                 </div>
 
-                <table style="border:1px solid #e2e8f0; border-radius:10px; overflow:hidden;">
+                <div class="table-scroll">
+
+                    <table style="border:1px solid #e2e8f0; border-radius:10px; overflow:hidden;">
                     <thead>
                         <tr>
                             <th>Matricule</th>
@@ -97,7 +203,8 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
         @endforeach
 

@@ -12,7 +12,7 @@
                 <p class="text-[11px] text-slate-400 mt-1">{{ $programme->annee_scolaire }}</p>
             </div>
             <a href="{{ route('programmes.show', $programme) }}"
-               class="h-9 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center">
+               class="h-9 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center text-center justify-center">
                 ← Retour au programme
             </a>
         </div>
@@ -25,7 +25,7 @@
                 <thead>
                     <tr class="border-b border-slate-100" style="background:#f8fafc">
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase">Commande</th>
-                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase">Date</th>
+                        <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase">Date</th> 
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase">Articles</th>
                         <th class="text-center px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase">Document</th>
                     </tr>
@@ -57,4 +57,95 @@
         </div>
     </div>
 </div>
+<style>
+    @media (max-width: 640px) {
+
+        /* Conteneur général */
+        .space-y-5 {
+            gap: 12px;
+        }
+
+
+        /* Carte en-tête */
+        .bg-white.rounded-2xl {
+            border-radius: 16px;
+        }
+
+
+        /* Titre école */
+        h2 {
+            font-size: 15px !important;
+            line-height: 1.3;
+        }
+
+
+        /* En-tête */
+        .flex.items-center.justify-between.flex-wrap {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+
+        /* Bouton retour */
+        a[href*="programmes.show"] {
+            width: 100%;
+            justify-content: center;
+            height: 38px;
+        }
+
+
+        /* Tableau */
+        table {
+            min-width: 560px;
+        }
+
+
+        th,
+        td {
+            white-space: nowrap;
+        }
+
+
+        /* Carte tableau */
+        .overflow-hidden {
+            border-radius: 16px;
+        }
+
+
+        /* Espacement cellules */
+        th.px-4,
+        td.px-4 {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+
+        td.py-3 {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+    }
+
+
+    /* Très petits téléphones */
+    @media (max-width: 380px) {
+
+        .p-5 {
+            padding: 14px;
+        }
+
+
+        .text-\[17px\] {
+            font-size: 15px !important;
+        }
+
+
+        table {
+            min-width: 520px;
+        }
+
+    }
+
+</style>
 </x-app-layout>

@@ -35,6 +35,184 @@
         }
         tbody tr { border-bottom: 1px solid #f1f5f9; }
         .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+        /* RESPONSIVE MOBILE */
+
+        .table-container {
+            width:100%;
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
+        }
+
+
+        .header-bulletin {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:20px;
+        }
+
+
+        .info-employe {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:16px;
+        }
+
+
+        .net-payer {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:15px;
+        }
+
+
+        .signature-grid {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:40px;
+        }
+
+
+
+        @media(max-width:640px){
+
+            body{
+                background:white;
+            }
+
+
+            .barre-outils{
+                padding:12px 15px !important;
+            }
+
+
+            .barre-outils p{
+                font-size:12px !important;
+                max-width:60%;
+                line-height:1.3;
+            }
+
+
+            .barre-outils button{
+                height:36px !important;
+                padding:0 14px !important;
+                font-size:12px !important;
+            }
+
+
+
+            .bulletin-page{
+                padding:10px 0;
+            }
+
+
+            .bulletin{
+
+                border-radius:12px;
+
+                padding:20px 14px;
+
+                border:none;
+
+            }
+
+
+
+            .header-bulletin{
+
+                flex-direction:column;
+
+                align-items:flex-start;
+
+                text-align:left !important;
+
+            }
+
+
+            .header-bulletin div:last-child{
+
+                text-align:left !important;
+
+                width:100%;
+
+            }
+
+
+
+            .info-employe{
+
+                grid-template-columns:1fr;
+
+            }
+
+
+
+            .net-payer{
+
+                flex-direction:column;
+
+                align-items:flex-start;
+
+            }
+
+
+            .net-payer p:last-child{
+
+                font-size:22px !important;
+
+            }
+
+
+
+            table{
+
+                min-width:600px;
+
+            }
+
+
+
+            .table-wrapper{
+
+                overflow-x:auto;
+
+            }
+
+
+
+            .signature-grid{
+
+                grid-template-columns:1fr;
+
+                gap:35px;
+
+            }
+
+
+
+        }
+
+
+
+        @media(max-width:380px){
+
+
+            .bulletin{
+
+                padding:15px 10px;
+
+            }
+
+
+            h1{
+
+                font-size:18px !important;
+
+            }
+
+
+        }
     </style>
 </head>
 <body>
@@ -60,7 +238,11 @@
             <div class="bulletin">
 
                 {{-- En-tête entreprise --}}
-                <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #0C447C; padding-bottom:16px; margin-bottom:20px;">
+                <div class="header-bulletin" style="
+                border-bottom:2px solid #0C447C;
+                padding-bottom:16px;
+                margin-bottom:20px;
+                ">
                     <div>
                         <p style="font-size:16px; font-weight:800; color:#0C447C; letter-spacing:.02em;">MACOPRES</p>
                         <p style="font-size:10px; color:#94a3b8; margin-top:2px;">Siège social : DAKAR (SENEGAL), 14 Cité Fadia</p>
@@ -77,7 +259,7 @@
                 </div>
 
                 {{-- Bloc employé --}}
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+                <div class="info-employe" style="margin-bottom:20px;">
                     <div style="background:#f8fafc; border-radius:12px; padding:12px 16px;">
                         <p style="font-size:9px; text-transform:uppercase; letter-spacing:.04em; color:#94a3b8; margin-bottom:4px;">Employé</p>
                         <p style="font-size:14px; font-weight:800; color:#1e293b;">{{ $employe->prenom }} {{ $employe->nom }}</p>
@@ -91,8 +273,9 @@
                     </div>
                 </div>
 
-                {{-- Récapitulatif jours / salaire --}}
-                <table style="border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; margin-bottom:16px;">
+                {{-- Récapitulatif jours / salaire 
+                <div class="table-wrapper">
+                    <table>
                     <thead>
                         <tr>
                             <th>Désignation</th>
@@ -129,10 +312,16 @@
                             <td style="text-align:right;"></td>
                         </tr>
                     </tbody>
-                </table>
+                    </table>
+                </div> --}}
 
                 {{-- Net à payer --}}
-                <div style="display:flex; align-items:center; justify-content:space-between; background:linear-gradient(135deg,#0C447C,#185FA5); border-radius:12px; padding:16px 20px; margin-bottom:24px;">
+                <div class="net-payer" style="
+                background:linear-gradient(135deg,#0C447C,#185FA5);
+                border-radius:12px;
+                padding:10px 20px;
+                margin-bottom:24px;
+                ">
                     <div>
                         <p style="font-size:10px; color:#B5D4F4; text-transform:uppercase; letter-spacing:.04em;">Net à payer</p>
                         @if($stats['salaire_mensuel'])
@@ -144,7 +333,8 @@
 
                 {{-- Détail journalier --}}
                 <p style="font-size:11px; font-weight:700; color:#1e293b; margin-bottom:8px;">Détail des pointages</p>
-                <table style="border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; margin-bottom:28px;">
+                <div class="table-wrapper">
+                    <table>
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -170,10 +360,11 @@
                             <tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:20px;">Aucun pointage pour cette période</td></tr>
                         @endforelse
                     </tbody>
-                </table>
+                    </table>
+                </div>
 
                 {{-- Signatures --}}
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:32px;">
+                <div class="signature-grid" style="margin-top:32px;">
                     <div style="text-align:center;">
                         <div style="border-top:1px solid #cbd5e1; padding-top:8px;">
                             <p style="font-size:10px; color:#94a3b8;">Signature de l'employé</p>

@@ -77,6 +77,155 @@
             height: 100%;
             object-fit: contain;
         }
+
+        /* RESPONSIVE BADGES */
+
+@media(max-width: 900px){
+
+    .grille-planche{
+        grid-template-columns:repeat(2, 1fr);
+        padding:20px;
+        gap:20px;
+    }
+
+}
+
+
+@media(max-width:640px){
+
+    body{
+        background:white;
+    }
+
+
+    .barre-outils{
+        padding:12px 15px !important;
+        gap:10px;
+    }
+
+
+    .barre-outils p{
+        font-size:12px !important;
+        max-width:60%;
+        line-height:1.3;
+    }
+
+
+    .barre-outils button{
+        height:36px !important;
+        padding:0 14px !important;
+        font-size:12px !important;
+        white-space:nowrap;
+    }
+
+
+
+    /* PLANche badges */
+
+    .grille-planche{
+
+        grid-template-columns:1fr;
+
+        padding:15px;
+
+        gap:15px;
+
+    }
+
+
+
+    .badge-carte{
+
+        width:100%;
+
+        max-width:340px;
+
+        height:auto;
+
+        min-height:120px;
+
+        margin:auto;
+
+    }
+
+
+
+    .badge-entete{
+
+        padding:8px 10px;
+
+    }
+
+
+
+    .badge-corps{
+
+        padding:12px;
+
+        gap:12px;
+
+    }
+
+
+
+    .badge-qr{
+
+        width:70px !important;
+
+        height:70px !important;
+
+    }
+
+
+
+    /* FORMAT UNIQUE */
+
+    .page-unique{
+
+        min-height:auto;
+
+        padding:20px 10px;
+
+    }
+
+
+    .badge-carte.grand{
+
+        width:100%;
+
+        max-width:360px;
+
+        height:auto;
+
+        min-height:520px;
+
+    }
+
+
+}
+
+
+
+@media(max-width:380px){
+
+
+    .badge-corps{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+
+    .badge-carte.grand{
+
+        min-height:450px;
+
+    }
+
+
+}
     </style>
 </head>
 <body>
