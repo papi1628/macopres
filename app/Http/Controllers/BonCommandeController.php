@@ -7,6 +7,8 @@ use App\Models\Programme;
 use App\Models\BonCommande;
 use App\Models\LigneBonCommande;
 use App\Models\Designation;
+use App\Http\Controllers\ContratController;
+use App\Http\Controllers\FactureController;
 
 class BonCommandeController extends Controller
 {
@@ -59,7 +61,7 @@ class BonCommandeController extends Controller
         return view('bons.imprimer', compact('bonCommande'));
     }
 
-    public function update(Request $request, BonCommande $bonCommande)
+    public function updateCondition(Request $request, BonCommande $bonCommande)
     {
         $request->validate(['condition_paiement' => 'nullable|string|max:255']);
         $bonCommande->update(['condition_paiement' => $request->condition_paiement]);
@@ -70,7 +72,7 @@ class BonCommandeController extends Controller
     {
         $programme = $bonCommande->programme;
         $bonCommande->delete();
-        return redirect()->route('programmes.show', $programme)->with('success', 'Bon de commande supprimé.');
+        return back()->with('success', 'Bon de commande supprimé.');
     }
 
     /*

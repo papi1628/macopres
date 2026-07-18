@@ -240,10 +240,14 @@ Route::middleware('auth')->group(function () {
     */
 
     Route::get('/programmes/{programme}/bons', [BonCommandeController::class, 'index'])->name('programmes.bons.index');
-    Route::get('/programmes/{programme}/factures', [FactureController::class, 'index'])->name('programmes.factures.index');
     Route::post('/programmes/{programme}/bons', [BonCommandeController::class, 'store'])->name('programmes.bons.store');
     Route::get('/bons-commande/{bonCommande}', [BonCommandeController::class, 'show'])->name('programmes.bons.show');
     Route::get('/bons-commande/{bonCommande}/imprimer', [BonCommandeController::class, 'imprimer'])->name('programmes.bons.imprimer');
+    Route::patch('/bons-commande/{bonCommande}/condition', [BonCommandeController::class, 'updateCondition'])->name('programmes.bons.condition');
+
+
+    // Facture
+    Route::get('/programmes/{programme}/factures', [FactureController::class, 'index'])->name('programmes.factures.index');
     Route::get('/bons-commande/{bonCommande}/facture', [FactureController::class, 'imprimer'])->name('programmes.bons.facture');
 
     // Fiche de production (groupée automatiquement depuis les articles du BC)
@@ -251,7 +255,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/bons-commande/{bonCommande}/fiche', [FicheProductionController::class, 'show'])->name('programmes.bons.fiche.show');
     Route::post('/bons-commande/{bonCommande}/fiche/note', [FicheProductionController::class, 'storeNote'])->name('programmes.bons.fiche.note');
     Route::get('/bons-commande/{bonCommande}/fiche/imprimer', [FicheProductionController::class, 'imprimer'])->name('programmes.bons.fiche.imprimer');
-    Route::patch('/bons-commande/{bonCommande}/condition', [BonCommandeController::class, 'update'])->name('programmes.bons.condition');
     Route::delete('/bons-commande/{bonCommande}', [BonCommandeController::class, 'destroy'])->name('programmes.bons.destroy');
 
     // Articles (lignes) d'un bon de commande

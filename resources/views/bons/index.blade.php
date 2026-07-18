@@ -109,7 +109,7 @@
                                 <div>
                                     <p class="text-[9px] font-semibold text-slate-400 uppercase mb-1">Condition de paiement</p>
                                     <select
-                                        onchange="updateCondition(this, '{{ route('programmes.bons.condition', $bon) }}')"
+                                        onchange="event.preventDefault(); updateCondition(this, '{{ route('programmes.bons.condition', $bon) }}')"
                                         class="h-7 border border-slate-200 rounded-lg px-2 py-1 text-[11px] bg-white text-slate-700">
 
                                         <option value="" {{ !$bon->condition_paiement ? 'selected' : '' }}>–</option>
@@ -171,7 +171,7 @@
                                                         <td class="py-2 text-center font-semibold">{{ $ligne->quantite }}</td>
                                                         <td class="py-2 text-right">{{ number_format($ligne->prix_unitaire, 0, ',', ' ') }}</td>
                                                         <td class="py-2 text-right font-semibold" style="color:#185FA5">{{ number_format($ligne->montant_ligne, 0, ',', ' ') }}</td>
-                                                        <td class="py-2 text-right">
+                                                        <td class="py-2 text-right whitespace-nowrap sticky right-0 bg-white">
 
                                                             <button
                                                                 type="button"
@@ -332,6 +332,11 @@ async function ajouterArticle(event, form, bonId) {
         if (!response.ok || !json.success) throw new Error("Erreur ajout article");
 
         const tbody = document.getElementById("lignes-bon-" + bonId);
+
+        console.log(tbody);
+        console.log("BON ID :", bonId);
+        console.log("TBODY CHERCHE :", "lignes-bon-" + bonId);
+
         tbody.insertAdjacentHTML("beforeend", `<tr id="ligne-${json.ligne.id}"></tr>`);
         const tr = document.getElementById("ligne-" + json.ligne.id);
         majDatasetLigne(tr, json.ligne);
@@ -345,6 +350,7 @@ async function ajouterArticle(event, form, bonId) {
         if (premierChamp) premierChamp.focus();
 
     } catch (error) {
+        
         console.error(error);
         alert("Impossible d'ajouter l'article.");
     } finally {
@@ -368,7 +374,7 @@ async function updateCondition(select, url) {
             },
             body: JSON.stringify({ condition_paiement: select.value }),
         });
-        if (!response.ok) throw new Error('Erreur');
+
     } catch (e) {
         alert("Impossible d'enregistrer.");
     }
