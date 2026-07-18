@@ -374,6 +374,10 @@ function ligneNormale(p) {
             ${p.mode_label}
         </td>
 
+        <td class="py-2.5 px-4 text-[12px] text-slate-500">
+            ${p.reference}
+        </td>
+
         <td class="py-2.5 px-4 text-right whitespace-nowrap">
             <button onclick="modifierVersement(${p.id})"
                     class="text-blue-400 hover:text-blue-600 text-[20px] mr-2">
@@ -385,6 +389,7 @@ function ligneNormale(p) {
                 ×
             </button>
         </td>
+        
     `;
 }
 

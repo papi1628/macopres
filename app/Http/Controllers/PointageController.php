@@ -27,7 +27,9 @@ class PointageController extends Controller
     {
         $date = Carbon::parse($request->get('date', today()->format('Y-m-d')));
 
-        $employes = Employe::orderBy('nom')->get();
+        $employes = Employe::whereDate('created_at', '<=', $date)
+            ->orderBy('nom')
+            ->get();
 
         $pointagesDuJour = Pointage::with('employe')
             ->whereDate('date', $date)
@@ -331,6 +333,15 @@ class PointageController extends Controller
             default   => now()->endOfMonth(),
         };
 
+        // Ne pas prendre en compte les jours avant la création de l'employé
+        $dateDebutEmploye = $employe->date_embauche
+            ? Carbon::parse($employe->date_embauche)
+            : Carbon::parse($employe->created_at);
+
+        if ($dateDebutEmploye->gt($debutPeriode)) {
+            $debutPeriode = $dateDebutEmploye;
+        }
+
         // Fériés payés de la période
         $feriesPayes = Evenement::where('type', 'ferie')
             ->where('est_paye', true)
@@ -475,18 +486,26 @@ class PointageController extends Controller
                 $joursPresents    = $pts->whereIn('statut', self::STATUTS_PRESENTS)->count();
                 $joursFeriesPayes = $pts->where('statut', 'ferie_paye')->count();
 
-                // Jours ouvrables adaptés à la date d'embauche
-                $joursOuvrablesEmploye = $joursOuvrablesMois;
-                $premierPointage = Pointage::where('employe_id', $employe->id)->orderBy('date')->first();
+                // Jours ouvrables adaptés à la création de l'employé
+                $dateDebutCalcul = $debutMois;
 
-                if ($premierPointage) {
-                    $debut = Carbon::parse($premierPointage->date);
-                    if ($debut->gt($debutMois)) {
-                        
-                        $joursOuvrablesEmploye = 0;
-                        for ($j = $debutMois->copy(); $j->lte($finMois) && $j->lte(today()); $j->addDay()) {
-                            if (!$j->isSunday()) $joursOuvrablesEmploye++;
-                        }
+                $dateDebutEmploye = $employe->date_embauche
+                    ? Carbon::parse($employe->date_embauche)
+                    : Carbon::parse($employe->created_at);
+
+                if ($dateDebutEmploye->gt($dateDebutCalcul)) {
+                    $dateDebutCalcul = $dateDebutEmploye;
+                }
+
+                $joursOuvrablesEmploye = 0;
+
+                for (
+                    $j = $dateDebutCalcul->copy();
+                    $j->lte($finMois) && $j->lte(today());
+                    $j->addDay()
+                ) {
+                    if (!$j->isSunday()) {
+                        $joursOuvrablesEmploye++;
                     }
                 }
 
