@@ -7,222 +7,376 @@
     @vite(['resources/css/app.css'])
 
    <style>
-        body {
-            font-family:'Inter',Arial,sans-serif;
-            background:#f1f5f9;
-            color: #1e293b;
-        }
 
-        .barre-outils {
-            position: sticky;
-            top: 0;
-        }
+body {
+    font-family:'Inter', Arial, sans-serif;
+    background:#f1f5f9;
+    color:#1e293b;
+}
 
-        @media print {
-            .barre-outils {
-                display: none !important;
-            }
 
-            body {
-                background: white;
-            }
+/* BARRE OUTILS */
 
-            .groupe {
-                page-break-inside: avoid;
-            }
-        }
+.barre-outils {
+    position:sticky;
+    top:0;
+}
 
 
-        .page{
+/* IMPRESSION */
 
-            max-width:800px;
-            width:100%;
+@media print {
 
-            margin:auto;
+    .barre-outils {
+        display:none !important;
+    }
 
-            background:white;
+    body {
+        background:white;
+    }
 
-            padding:35px 45px;
+    .page {
+        margin:0;
+        box-shadow:none;
+    }
 
-            min-height:1100px;
+    .groupe {
+        page-break-inside:avoid;
+    }
 
-            box-sizing:border-box;
+}
 
-        }
 
+/* PAGE A4 */
 
-        .groupe{
+.page {
+    width:210mm;
+    max-width:100%;
+    min-height:297mm;
 
-            margin-top:30px;
+    margin:20px auto;
 
-            padding-top:20px;
+    background:white;
 
-            border-top:2px solid #0C447C;
+    padding:20mm;
 
-        }
+    box-sizing:border-box;
+}
 
 
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
 
+/* GROUPES DE PRODUCTION */
 
-        table {
-            width:100%;
-            border-collapse:collapse;
-            min-width:520px;
-        }
+.groupe {
 
+    margin-top:30px;
 
-        th {
-            background:#0C447C;
-            color:white;
-            padding:10px;
-            font-size:14px;
-            text-transform:uppercase;
-            white-space:nowrap;
-        }
+    padding-top:20px;
 
-        td {
-            padding:8px;
-            font-size:12px;
-            border-bottom:1px solid #e2e8f0;
-            text-align:center;
-        }
+    border-top:2px solid #0C447C;
 
+    page-break-after:always;
 
-        img {
-            max-width: 100%;
-            height: auto;
-        }
+}
 
-        .groupe{
 
-            page-break-after:always;
+.groupe:last-child {
 
-        }
+    page-break-after:auto;
 
-        .groupe:last-child{
+}
 
-            page-break-after:auto;
 
-        }
 
-        
+/* TABLEAUX */
 
+.table-container {
 
-        /* MOBILE */
-        @media (max-width: 640px) {
+    width:100%;
 
-            body {
-                background: white;
-            }
+    overflow-x:auto;
 
+    -webkit-overflow-scrolling:touch;
 
-            .barre-outils {
-                padding: 12px 15px !important;
-                gap: 10px;
-                align-items: center;
-            }
+}
 
 
-            .barre-outils p {
-                font-size: 12px !important;
-                line-height: 1.3;
-                max-width: 65%;
-            }
+table {
 
+    width:100%;
 
-            .barre-outils button {
-                height: 36px !important;
-                padding: 0 14px !important;
-                font-size: 12px !important;
-                border-radius: 10px;
-                white-space: nowrap;
-            }
+    border-collapse:collapse;
 
+}
 
 
-            .page {
-                padding: 20px 12px 40px;
-                font-size: 12px;
-            }
+th {
 
+    background:#0C447C;
 
+    color:white;
 
-            h1 {
-                font-size: 15px !important;
-            }
+    padding:10px;
 
+    font-size:12px;
 
-            .groupe {
-                padding: 14px;
-                margin-bottom: 15px;
-                border-radius: 12px;
-            }
+    text-transform:uppercase;
 
+    white-space:nowrap;
 
+}
 
-            .groupe p {
-                line-height: 1.4;
-            }
 
+td {
 
-            table {
-                min-width: 280px;
-            }
+    padding:9px;
 
+    font-size:12px;
 
-            th,
-            td {
-                padding: 8px;
-                font-size: 14px;
-            }
+    border-bottom:1px solid #e2e8f0;
 
+    text-align:center;
 
-            .photo img {
-                width: 100%;
-                max-width: 180px;
-            }
+}
 
-        }
 
 
+/* DESCRIPTION */
 
-        /* PETITS TELEPHONES */
-        @media (max-width: 380px) {
+.description-box {
 
+    margin-top:15px;
 
-            .barre-outils {
-                flex-direction: column;
-                align-items: stretch !important;
-            }
+    margin-bottom:15px;
 
+    padding:12px;
 
-            .barre-outils p {
-                max-width: 100%;
-            }
+    background:#f8fafc;
 
+    border-radius:8px;
 
-            .barre-outils button {
-                width: 100%;
-            }
+    font-size:15px;
 
+    font-weight: 600;
 
-            .page {
-                padding: 15px 10px 30px;
-            }
+    text-align: center;
 
+}
 
-            .groupe {
-                padding: 12px;
-            }
 
-        }
 
-    </style>
+/* PHOTO */
+
+.photo-box {
+
+    height:280px;
+
+    width:100%;
+
+    border:1px solid #cbd5e1;
+
+    border-radius:12px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    overflow:hidden;
+
+    margin-top:10px;
+
+    background:#fff;
+
+}
+
+
+.photo-box img {
+
+    width:100%;
+    height:100%;
+
+    max-width:100%;
+    max-height:100%;
+
+    object-fit:cover;
+
+}
+
+
+
+.photo-box span {
+
+    color:#94a3b8;
+
+    font-size:12px;
+
+}
+
+.grid-2 {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:15px;
+
+}
+
+
+@media(max-width:640px){
+
+.grid-2 {
+
+    grid-template-columns:1fr;
+
+}
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:640px){
+
+
+    body {
+
+        background:white;
+
+    }
+
+
+    .barre-outils {
+
+        padding:12px 15px !important;
+
+        gap:10px;
+
+        flex-wrap:wrap;
+
+    }
+
+
+    .barre-outils p {
+
+        font-size:12px !important;
+
+        max-width:100%;
+
+        flex:1;
+
+    }
+
+
+    .barre-outils button {
+
+        height:36px !important;
+
+        padding:0 14px !important;
+
+        font-size:12px !important;
+
+        border-radius:10px;
+
+    }
+
+
+
+    .page {
+
+        width:100%;
+
+        min-height:auto;
+
+        margin:0;
+
+        padding:20px 12px 40px;
+
+    }
+
+
+
+    .groupe {
+
+        margin-top:20px;
+
+        padding-top:15px;
+
+    }
+
+
+
+    .photo-box {
+
+        height:220px;
+
+    }
+
+
+
+    th {
+
+        font-size:11px;
+
+        padding:8px;
+
+    }
+
+
+    td {
+
+        font-size:11px;
+
+        padding:8px;
+
+    }
+
+
+}
+
+
+
+/* PETITS TELEPHONES */
+
+@media(max-width:380px){
+
+
+    .barre-outils {
+
+        flex-direction:column;
+
+        align-items:stretch !important;
+
+    }
+
+
+    .barre-outils button {
+
+        width:100%;
+
+    }
+
+
+    .page {
+
+        padding:15px 10px 30px;
+
+    }
+
+
+    .photo-box {
+
+        height:180px;
+
+    }
+
+
+}
+
+</style>
 </head>
 <body>
 
@@ -239,41 +393,7 @@
 
     <div class="page">
 
-        <div style="
-        text-align:center;
-        border-bottom:3px solid #0C447C;
-        padding-bottom:18px;
-        margin-bottom:25px;
-        ">
-
-            <h1 style="
-            font-size:30px;
-            font-weight:900;
-            color:#0C447C;
-            margin:0;
-            ">
-                MACOPRES
-            </h1>
-
-            <p style="font-size:11px;margin-top:15px;">
-                Siège Social : DAKAR (SENEGAL), 14 Cité Fadia
-            </p>
-
-            <p style="font-size:11px;">
-                RCCM : SN.DKR.2017.B.12286
-                &nbsp; | &nbsp;
-                NINEA : 006363775-2T2
-            </p>
-
-            <p style="font-size:11px;">
-                www.macopresgroup.sn
-                -
-                contact@macopres.sn
-                -
-                +221 33 855 16 70 / +221 77 659 42 18
-            </p>
-
-        </div>
+        
 
         {{-- TITRE BC --}}
 
@@ -396,21 +516,108 @@
 
         @foreach($groupes as $groupe)
             <div class="groupe">
-                <p style="font-size:12px; margin-bottom:2px;">
-                    <strong>{{ mb_strtoupper($groupe['libelle']) }}</strong>
-                    
-                    @if($groupe['couleur']) — {{ $groupe['couleur'] }} @endif
-                    @if($groupe['matiere']) , {{ $groupe['matiere'] }} @endif
-                    @if($groupe['logo']) (avec logo) @endif
-                </p>
+                <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-start;
+                gap:15px;
+                margin-bottom:12px;
+                ">
+
+                    <div>
+
+                        <h3 style="
+                        margin:0;
+                        font-size:16px;
+                        font-weight:900;
+                        color:#0C447C;
+                        text-transform:uppercase;
+                        ">
+                            {{ $groupe['libelle'] }}
+                        </h3>
+
+
+                        <div style="
+                        margin-top:6px;
+                        display:flex;
+                        flex-wrap:wrap;
+                        gap:6px;
+                        ">
+
+                            @if($groupe['couleur'])
+                            <span style="
+                            background:#E6F1FB;
+                            color:#185FA5;
+                            padding:4px 8px;
+                            border-radius:999px;
+                            font-size:10px;
+                            font-weight:700;
+                            ">
+                                Couleur : {{ $groupe['couleur'] }}
+                            </span>
+                            @endif
+
+
+                            @if($groupe['matiere'])
+                            <span style="
+                            background:#f1f5f9;
+                            color:#475569;
+                            padding:4px 8px;
+                            border-radius:999px;
+                            font-size:10px;
+                            font-weight:700;
+                            ">
+                                Matière : {{ $groupe['matiere'] }}
+                            </span>
+                            @endif
+
+
+                            {{--@if($groupe['logo'])
+                            <span style="
+                            background:#EAF3DE;
+                            color:#3B6D11;
+                            padding:4px 8px;
+                            border-radius:999px;
+                            font-size:10px;
+                            font-weight:700;
+                            ">
+                                Avec logo
+                            </span>
+                            @endif --}}
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- <div style="
+                    background:#0C447C;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    font-size:11px;
+                    font-weight:800;
+                    white-space:nowrap;
+                    ">
+                        {{ $groupe['total'] }} pièces
+                    </div> --}}
+
+                </div>
                 @if($groupe['note']?->description)
-                    <p style="font-size:12px; color:#475569; white-space:pre-line; margin-top:4px;">{{ $groupe['note']->description }}</p>
+
+                    <div class="description-box">
+                        {{ $groupe['note']->description }}
+                    </div>
+
                 @endif
 
                 <div class="table-container">
                     <table>
                         <thead>
-                            <th>Tailles</th><th>Quantités</th></tr>
+                            <tr>
+                                <th>Tailles</th>
+                                <th>Quantités</th>
+                            </tr>
                         </thead>
                         <tbody>
                             @foreach($groupe['tailles'] as $taille => $quantite)
@@ -440,21 +647,21 @@
                 </div>
                 <div style="margin-top:14px;">
                     <p style="font-size:10px; text-transform:uppercase; color:#94a3b8; margin-bottom:6px;">Photo</p>
-                    @if($groupe['note']?->photoUrl())
-                    <div style="
-                    border:1px solid #CBD5E1;
-                    height:300px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    ">
-                        <img src="{{ $groupe['note']->photoUrl() }}" style="max-width:250%; max-height:250px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <div class="photo-box">
+
+                        @if($groupe['note']?->photoUrl())
+
+                            <img src="{{ $groupe['note']->photoUrl() }}">
+
+                        @else
+
+                            <span>
+                                Aucune photo
+                            </span>
+
+                        @endif
+
                     </div>
-                    @else
-                        <div style="width:180px; height:100px; border:1px dashed #cbd5e1; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:10px;">
-                            Aucune photo
-                        </div>
-                    @endif
                 </div>
             </div>
         @endforeach
