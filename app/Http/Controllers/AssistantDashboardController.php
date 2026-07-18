@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Employe;
 use App\Models\Pointage;
+use App\Models\BonCommande;
+use App\Models\EcheancePaiement;
+use App\Models\Ecole;
+use App\Models\Paiement;
+use App\Models\Programme;
 
 class AssistantDashboardController extends Controller
 {
@@ -12,47 +17,23 @@ class AssistantDashboardController extends Controller
     {
         $today = Carbon::today();
 
-        /*
-        |--------------------------------------------------------------------------
-        | EMPLOYÉS
-        |--------------------------------------------------------------------------
-        */
-
         $totalEmployes = Employe::count();
-
-        /*
-        |--------------------------------------------------------------------------
-        | POINTAGES DU JOUR
-        |--------------------------------------------------------------------------
-        */
 
         $pointagesAujourdhui = Pointage::with('employe')
             ->whereDate('date', $today)
             ->get();
 
         $presents = $pointagesAujourdhui
-            ->whereIn('statut', [
-    'present',
-    'retard',
-    'ferie_paye',
-])
+            ->whereIn('statut', ['present', 'retard', 'ferie_paye'])
             ->count();
 
         $retards = $pointagesAujourdhui
             ->where('statut', 'retard')
             ->count();
 
-        
-
         $absentsNonJustifies = $pointagesAujourdhui
             ->where('statut', 'Absent')
             ->count();
-
-        /*
-        |--------------------------------------------------------------------------
-        | ABSENTS
-        |--------------------------------------------------------------------------
-        */
 
         $idPresents = $pointagesAujourdhui
             ->whereIn('statut', ['present', 'retard', 'absent'])
@@ -64,12 +45,6 @@ class AssistantDashboardController extends Controller
 
         $absents = $absentsAujourdhui->count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | PREMIÈRES ARRIVÉES
-        |--------------------------------------------------------------------------
-        */
-
         $premieresArrivees = Pointage::with('employe')
             ->whereDate('date', $today)
             ->whereNotNull('heure_arrivee')
@@ -77,30 +52,14 @@ class AssistantDashboardController extends Controller
             ->take(5)
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | PRÉSENCE PAR DÉPARTEMENT
-        |--------------------------------------------------------------------------
-        */
-
-        $departements = Employe::select('departement')
-            ->distinct()
-            ->pluck('departement');
+        $departements = Employe::select('departement')->distinct()->pluck('departement');
 
         $presenceParDept = $departements->map(function ($dept) use ($today) {
-
-            $total = Employe::where('departement', $dept)
-                ->count();
+            $total = Employe::where('departement', $dept)->count();
 
             $presents = Pointage::whereDate('date', $today)
-                ->whereIn('statut', [
-    'present',
-    'retard',
-    'ferie_paye',
-])
-                ->whereHas('employe', function ($query) use ($dept) {
-                    $query->where('departement', $dept);
-                })
+                ->whereIn('statut', ['present', 'retard', 'ferie_paye'])
+                ->whereHas('employe', fn($q) => $q->where('departement', $dept))
                 ->count();
 
             return [
@@ -113,9 +72,35 @@ class AssistantDashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | VIEW
+        | COMMERCIAL — PROGRAMMES / ÉCOLES / PAIEMENTS
         |--------------------------------------------------------------------------
         */
+
+        $programmesActifs     = Programme::where('statut', 'en_cours')->count();
+        $ecolesClientes        = Ecole::count();
+        $montantTotalCommande  = BonCommande::sum('montant');
+        $montantTotalPaye      = Paiement::sum('montant');
+        $resteAPayerGlobal     = $montantTotalCommande - $montantTotalPaye;
+
+        $derniersProgrammes = Programme::with('ecole')
+            ->withSum('bonsCommande as montant_total', 'montant')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $echeancesAVenir = EcheancePaiement::with('programme.ecole')
+            ->whereBetween('date_prevue', [$today, $today->copy()->addDays(30)])
+            ->orderBy('date_prevue')
+            ->take(5)
+            ->get();
+
+        $echeancesEnRetard = EcheancePaiement::with('programme.ecole')
+            ->where('date_prevue', '<', $today)
+            ->orderBy('date_prevue')
+            ->get()
+            ->filter(fn($ech) => $ech->programme && $ech->programme->solde() > 0)
+            ->take(5)
+            ->values();
 
         return view('dashboard.directeur', compact(
             'totalEmployes',
@@ -126,6 +111,14 @@ class AssistantDashboardController extends Controller
             'premieresArrivees',
             'presenceParDept',
             'absentsAujourdhui',
+            'programmesActifs',
+            'ecolesClientes',
+            'montantTotalCommande',
+            'montantTotalPaye',
+            'resteAPayerGlobal',
+            'derniersProgrammes',
+            'echeancesAVenir',
+            'echeancesEnRetard',
         ));
     }
 }

@@ -14,10 +14,95 @@
             body { background: white; }
             .page { padding: 0 !important; }
         }
-        .page { max-width: 800px; margin: 0 auto; padding: 30px 20px 60px; font-size: 13px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .page{
+            max-width:800px;
+            width:100%;
+            margin:auto;
+            padding:30px 20px 60px;
+            box-sizing:border-box;
+            font-size:13px;
+        }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:10px;
+            min-width:100%;
+        }
+        
+        .table-scroll{
+            width:100%;
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
+        }
         th, td { padding: 7px 10px; font-size: 12px; text-align: left; border: 1px solid #e2e8f0; }
         thead th { background: #f8fafc; font-size: 10px; text-transform: uppercase; color: #64748b; }
+        @media (max-width:640px){
+
+            body{
+                background:white;
+            }
+
+            .barre-outils{
+                padding:12px 15px !important;
+                gap:10px;
+            }
+
+            .barre-outils p{
+                font-size:12px !important;
+                line-height:1.3;
+                max-width:65%;
+            }
+
+            .barre-outils button{
+                height:36px !important;
+                padding:0 14px !important;
+                font-size:12px !important;
+                border-radius:10px;
+            }
+
+            .page{
+                padding:20px 12px 35px;
+            }
+
+            h1{
+                font-size:18px !important;
+                text-align:center;
+            }
+            .signatures{
+                grid-template-columns:1fr !important;
+                gap:30px !important;
+            }
+            table{
+                min-width:520px;
+            }
+
+            th,
+            td{
+                padding:8px;
+                font-size:11px;
+            }
+        }
+
+        @media(max-width:380px){
+
+            .barre-outils{
+                flex-direction:column;
+                align-items:stretch !important;
+            }
+
+            .barre-outils p{
+                max-width:100%;
+            }
+
+            .barre-outils button{
+                width:100%;
+            }
+
+            .page{
+                padding:15px 10px 30px;
+            }
+
+        }
     </style>
 </head>
 <body>
@@ -38,7 +123,8 @@
         <h1 style="text-align:center; font-size:16px; font-weight:800; letter-spacing:.02em; margin-bottom:16px;">BORDEREAU DE LIVRAISON</h1>
 
         {{-- En-tête bordereau --}}
-        <table>
+        <div class="table-scroll">
+            <table>
             <thead>
                 <tr><th>Numéro</th><th>Date</th><th>Référence</th><th>Livreur</th></tr>
             </thead>
@@ -50,10 +136,12 @@
                     <td>{{ $livraison->livreur ?? '–' }}</td>
                 </tr>
             </tbody>
-        </table>
+            </table>
+        </div>
 
         {{-- Client --}}
-        <table>
+        <div class="table-scroll">
+            <table>
             <thead><tr><th>Client</th><th>Contact</th></tr></thead>
             <tbody>
                 <tr>
@@ -61,10 +149,12 @@
                     <td>{{ $ecole->contact_nom ?? '' }} {{ $ecole->contact_telephone ?? $ecole->telephone ?? '' }}</td>
                 </tr>
             </tbody>
-        </table>
+            </table>
+        </div>
 
         {{-- Articles livrés --}}
-        <table>
+        <div class="table-scroll">
+            <table>
             <thead>
                 <tr><th>Désignations</th><th style="text-align:center;">Quantités</th></tr>
             </thead>
@@ -80,7 +170,8 @@
                     <td style="text-align:center;">{{ $livraison->quantite }} pièces</td>
                 </tr>
             </tbody>
-        </table>
+            </table>
+        </div>
 
         {{-- Observation --}}
         <p style="margin-top:16px; font-size:12px;">
@@ -93,7 +184,7 @@
         </p>
 
         {{-- Signatures --}}
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:60px;">
+        <div class="signatures" style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:60px;">
             <div>
                 <p style="font-size:11px;">Livreur :</p>
                 <div style="border-top:1px solid #cbd5e1; margin-top:40px;"></div>

@@ -305,6 +305,144 @@
 
 </div>
 
+<style>
+
+@media(max-width:768px){
+
+    /* Empêche les débordements horizontaux */
+    body{
+        overflow-x:hidden;
+    }
+
+
+    /* HEADER */
+    .bg-white.rounded-2xl > .flex.items-center.justify-between{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .bg-white.rounded-2xl > .flex.items-center.justify-between > a{
+        width:100%;
+        justify-content:center;
+    }
+
+
+    /* Résumé 3 cartes */
+    .grid.grid-cols-3{
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+
+    /* Timeline */
+    .relative.pl-8{
+        padding-left:24px;
+    }
+
+
+    .relative.pl-8 .absolute.left-\[15px\]{
+        left:10px;
+    }
+
+
+    /* Chaque carte timeline */
+    .relative.mb-5 > a{
+        padding:14px;
+    }
+
+
+    /* Contenu interne des cartes */
+    .relative.mb-5 > a > div.flex.items-center.justify-between{
+
+        flex-direction:column;
+        align-items:flex-start;
+        gap:14px;
+
+    }
+
+
+    /* Badge + titre */
+    .relative.mb-5 > a .flex.items-center.gap-3{
+        width:100%;
+    }
+
+
+    /* Bloc montant */
+    .relative.mb-5 > a .flex.items-center.gap-6{
+
+        width:100%;
+        justify-content:space-between;
+
+        gap:10px;
+
+    }
+
+
+    .relative.mb-5 > a .text-right{
+
+        text-align:left;
+
+    }
+
+}
+
+
+/* Petits téléphones */
+@media(max-width:420px){
+
+
+    h2{
+        font-size:15px !important;
+    }
+
+
+    .rounded-xl.p-3 p.text-\[18px\]{
+
+        font-size:16px;
+
+    }
+
+
+    .relative.mb-5 > a{
+
+        border-radius:14px;
+
+    }
+
+
+    .relative.mb-5 > a .flex.items-center.gap-3{
+
+        flex-wrap:wrap;
+
+    }
+
+
+    .relative.mb-5 > a .flex.items-center.gap-6{
+
+        flex-direction:column;
+        align-items:flex-start;
+
+    }
+
+
+    /* Réduit l'espace de la timeline */
+    .relative.pl-8{
+
+        padding-left:18px;
+
+    }
+
+
+    .absolute.-left-8{
+
+        left:-22px;
+
+    }
+
+}
+
+</style>
+
 <script>
 function ligneForm() {
     return {

@@ -77,8 +77,8 @@
                     <option value="orange_money">Orange Money</option>
                     <option value="agent_mandate">Agent mandaté</option>
                 </select>
-                {{-- <input type="text" name="reference" placeholder="Référence (optionnel)"
-                       class="h-9 border border-slate-200 rounded-xl px-3 text-[12px] sm:col-span-3"> --}}
+                <input type="text" name="reference" placeholder="Référence (optionnel)"
+                       class="h-9 border border-slate-200 rounded-xl px-3 text-[12px] sm:col-span-3"> 
                 <button type="submit" class="h-9 rounded-xl text-[12px] font-bold text-white" style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                     Enregistrer
                 </button>
@@ -93,7 +93,7 @@
                         <th class="text-left px-4 py-2.5 text-[10px] font-semibold text-slate-400 uppercase">Date</th>
                         <th class="text-right px-4 py-2.5 text-[10px] font-semibold text-slate-400 uppercase">Montant</th>
                         <th class="text-left px-4 py-2.5 text-[10px] font-semibold text-slate-400 uppercase">Mode</th>
-                        {{-- <th class="text-left px-4 py-2.5 text-[10px] font-semibold text-slate-400 uppercase">Référence</th> --}}
+                        <th class="text-left px-4 py-2.5 text-[10px] font-semibold text-slate-400 uppercase">Référence</th>
                         <th class="px-4 py-2.5"></th>
                     </tr>
                 </thead>
@@ -107,7 +107,7 @@
                             <td class="py-2.5 px-4 text-[12px] text-slate-600">{{ $paiement->date->format('d/m/Y') }}</td>
                             <td class="py-2.5 px-4 text-right font-semibold text-[12px]" style="color:#3B6D11">{{ number_format($paiement->montant, 0, ',', ' ') }} F</td>
                             <td class="py-2.5 px-4 text-[12px] text-slate-500">{{ $paiement->modeLabel() }}</td>
-                            {{-- <td class="py-2.5 px-4 text-[12px] text-slate-500">{{ $paiement->reference ?? '–' }}</td> --}}
+                            <td class="py-2.5 px-4 text-[12px] text-slate-500">{{ $paiement->reference ?? '–' }}</td>
                             <td class="py-2.5 px-4 text-right whitespace-nowrap">
                                 <button type="button" onclick="modifierVersement({{ $paiement->id }})" class="text-blue-400 hover:text-blue-600 text-[20px] mr-2" title="Modifier">✎</button>
                                 <button type="button" onclick="supprimerVersement({{ $paiement->id }})" class="text-red-400 hover:text-red-600 text-[20px]" title="Supprimer">&times;</button>
@@ -153,6 +153,176 @@
     </div>
 </div>
 
+<style>
+
+body{
+    overflow-x:hidden;
+}
+
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media(max-width:768px){
+
+
+    /* HEADER */
+
+    .bg-white.rounded-2xl > .flex.items-center.justify-between{
+
+        flex-direction:column;
+        align-items:flex-start;
+
+    }
+
+
+    .bg-white.rounded-2xl > .flex.items-center.justify-between > div:last-child{
+
+        width:100%;
+        display:flex;
+        flex-direction:column;
+
+    }
+
+
+    .bg-white.rounded-2xl > .flex.items-center.justify-between > div:last-child a{
+
+        width:100%;
+        justify-content:center;
+
+    }
+
+
+
+    /* CARTES RESUME */
+
+    .grid.grid-cols-3{
+
+        grid-template-columns:1fr;
+
+        gap:10px;
+
+    }
+
+
+    /* TITRES */
+
+    h2{
+
+        font-size:15px !important;
+
+    }
+
+
+
+    /* FORMULAIRE VERSEMENT */
+
+    #form-ajout-versement{
+
+        display:flex;
+        flex-direction:column;
+
+    }
+
+
+    #form-ajout-versement input,
+    #form-ajout-versement select,
+    #form-ajout-versement button{
+
+        width:100%;
+
+    }
+
+
+
+    /* HEADER SECTION VERSEMENT */
+
+    .flex.items-center.justify-between.px-5.py-3\.5{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:10px;
+
+    }
+
+
+    #btn-toggle-ajout{
+
+        width:100%;
+
+    }
+
+
+}
+
+
+
+/* ==========================
+   PETITS TELEPHONES
+========================== */
+
+
+@media(max-width:420px){
+
+
+    .rounded-2xl{
+
+        border-radius:16px;
+
+    }
+
+
+    .text-\[18px\]{
+
+        font-size:16px;
+
+    }
+
+
+
+    /* TABLE */
+
+    table{
+
+        min-width:650px;
+
+    }
+
+
+
+    /* MODIFICATION VERSEMENT */
+
+    .grid.grid-cols-2.sm\:grid-cols-6{
+
+        display:flex;
+
+        flex-direction:column;
+
+    }
+
+
+    .grid.grid-cols-2.sm\:grid-cols-6 input,
+    .grid.grid-cols-2.sm\:grid-cols-6 select{
+
+        width:100%;
+
+    }
+
+
+    .grid.grid-cols-2.sm\:grid-cols-6 div{
+
+        justify-content:flex-end;
+
+    }
+
+
+}
+
+</style>
+
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 const modeLabels = {
@@ -195,12 +365,25 @@ function majTotaux(totaux) {
 function ligneNormale(p) {
     return `
         <td class="py-2.5 px-4 text-[12px] text-slate-600">${p.date}</td>
-        <td class="py-2.5 px-4 text-right font-semibold text-[12px]" style="color:#3B6D11">${Number(p.montant).toLocaleString('fr-FR')} F</td>
-        <td class="py-2.5 px-4 text-[12px] text-slate-500">${p.mode_label}</td>
-        <td class="py-2.5 px-4 text-[12px] text-slate-500">${p.reference || '–'}</td>
+
+        <td class="py-2.5 px-4 text-right font-semibold text-[12px]" style="color:#3B6D11">
+            ${Number(p.montant).toLocaleString('fr-FR')} F
+        </td>
+
+        <td class="py-2.5 px-4 text-[12px] text-slate-500">
+            ${p.mode_label}
+        </td>
+
         <td class="py-2.5 px-4 text-right whitespace-nowrap">
-            <button type="button" onclick="modifierVersement(${p.id})" class="text-slate-400 hover:text-blue-600 text-[13px] mr-2" title="Modifier">✎</button>
-            <button type="button" onclick="supprimerVersement(${p.id})" class="text-slate-400 hover:text-red-600 text-[16px]" title="Supprimer">&times;</button>
+            <button onclick="modifierVersement(${p.id})"
+                    class="text-blue-400 hover:text-blue-600 text-[20px] mr-2">
+                ✎
+            </button>
+
+            <button onclick="supprimerVersement(${p.id})"
+                    class="text-red-400 hover:text-red-600 text-[20px]">
+                ×
+            </button>
         </td>
     `;
 }
@@ -243,7 +426,7 @@ document.getElementById('form-ajout-versement').addEventListener('submit', async
         tr.innerHTML = ligneNormale(json.paiement);
 
         majTotaux(json.totaux);
-        form.reset();
+        form.querySelector('select[name="mode_paiement"]').value="espece";
         form.querySelector('input[name="date"]').value = "{{ now()->format('Y-m-d') }}";
         afficherAlerte('Versement enregistré.', 'success');
 

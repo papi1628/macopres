@@ -1,7 +1,7 @@
 <x-app-layout>
 <x-slot name="title">Nouvelle livraison — {{ $programme->ecole->nom }}</x-slot>
 
-<div class="space-y-5 max-w-3xl">
+<div class="space-y-5">
 
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
         <h2 class="text-[17px] font-bold text-slate-800">{{ $programme->ecole->nom }}</h2>

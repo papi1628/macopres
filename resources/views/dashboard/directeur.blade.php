@@ -47,6 +47,144 @@
         </div>
 
         {{-- ══════════════════════════════════════
+            KPI COMMERCIAL
+        ══════════════════════════════════════ --}}
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5" style="border-left:3px solid #0C447C">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Programmes en cours</p>
+                <p class="text-[28px] font-black text-slate-800 leading-none">{{ $programmesActifs }}</p>
+                <a href="{{ route('programmes.index') }}" class="text-[10px] font-semibold mt-1.5 inline-block" style="color:#185FA5">Voir tous →</a>
+            </div>
+        
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5" style="border-left:3px solid #7E22CE">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Écoles clientes</p>
+                <p class="text-[28px] font-black leading-none" style="color:#7E22CE">{{ $ecolesClientes }}</p>
+                <p class="text-[10px] text-slate-400 mt-1.5">au total</p>
+            </div>
+        
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5" style="border-left:3px solid #3B6D11">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Total commandé</p>
+                <p class="text-[20px] sm:text-[24px] font-black leading-none" style="color:#3B6D11">{{ number_format($montantTotalCommande, 0, ',', ' ') }} F</p>
+                <p class="text-[10px] text-slate-400 mt-1.5">encaissé : {{ number_format($montantTotalPaye, 0, ',', ' ') }} F</p>
+            </div>
+        
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5" style="border-left:3px solid #A32D2D">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Reste à payer (global)</p>
+                <p class="text-[20px] sm:text-[24px] font-black leading-none" style="color:{{ $resteAPayerGlobal > 0 ? '#A32D2D' : '#3B6D11' }}">
+                    {{ number_format($resteAPayerGlobal, 0, ',', ' ') }} F
+                </p>
+                <p class="text-[10px] text-slate-400 mt-1.5">tous programmes confondus</p>
+            </div>
+        
+        </div>
+        
+        {{-- ══════════════════════════════════════
+            DERNIERS PROGRAMMES + ÉCHÉANCES
+        ══════════════════════════════════════ --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        
+            {{-- Derniers programmes créés --}}
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-100">
+                    <h3 class="text-[12px] font-semibold text-slate-800">Derniers programmes</h3>
+                    <a href="{{ route('programmes.index') }}" class="text-[10px] font-semibold" style="color:#185FA5">Tout voir →</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-[11px]">
+                        <tbody class="divide-y divide-slate-50">
+                            @forelse($derniersProgrammes as $programme)
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <td class="px-4 py-2.5">
+                                        <p class="font-semibold text-slate-700">{{ $programme->ecole->nom }}</p>
+                                        <p class="text-[10px] text-slate-400">{{ $programme->annee_scolaire }}</p>
+                                    </td>
+                                    <td class="px-4 py-2.5 text-right font-semibold" style="color:#0C447C">
+                                        {{ number_format($programme->montant_total ?? 0, 0, ',', ' ') }} F
+                                    </td>
+                                    <td class="px-4 py-2.5 text-right">
+                                        <a href="{{ route('programmes.show', $programme) }}" class="text-[10px] font-semibold" style="color:#185FA5">Voir</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td class="px-4 py-8 text-center text-slate-400 text-[12px]">Aucun programme</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        
+            {{-- Échéances à venir --}}
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-100">
+                    <h3 class="text-[12px] font-semibold text-slate-800">Échéances à venir (30 j)</h3>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#FEF6E4; color:#854F0B">
+                        {{ $echeancesAVenir->count() }}
+                    </span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-[11px]">
+                        <tbody class="divide-y divide-slate-50">
+                            @forelse($echeancesAVenir as $ech)
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <td class="px-4 py-2.5">
+                                        <p class="font-semibold text-slate-700">{{ $ech->programme->ecole->nom ?? '–' }}</p>
+                                        <p class="text-[10px] text-slate-400">{{ $ech->date_prevue->format('d/m/Y') }}</p>
+                                    </td>
+                                    <td class="px-4 py-2.5 text-right font-semibold" style="color:#854F0B">
+                                        {{ number_format($ech->montant_prevu, 0, ',', ' ') }} F
+                                    </td>
+                                    <td class="px-4 py-2.5 text-right">
+                                        @if($ech->programme)
+                                            <a href="{{ route('programmes.contrat.show', $ech->programme) }}" class="text-[10px] font-semibold" style="color:#185FA5">Voir</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td class="px-4 py-8 text-center text-slate-400 text-[12px]">Aucune échéance à venir</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        
+        </div>
+        
+        {{-- ══════════════════════════════════════
+            ALERTE — ÉCHÉANCES EN RETARD
+        ══════════════════════════════════════ --}}
+        @if($echeancesEnRetard->count() > 0)
+        <div class="bg-white rounded-2xl border shadow-sm overflow-hidden" style="border-color:#F5C0C0">
+            <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b" style="border-color:#F5C0C0; background:#FCEBEB">
+                <h3 class="text-[12px] font-semibold" style="color:#A32D2D">🔴 Échéances en retard</h3>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#A32D2D; color:white">{{ $echeancesEnRetard->count() }}</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-[11px]">
+                    <tbody class="divide-y divide-slate-50">
+                        @foreach($echeancesEnRetard as $ech)
+                            <tr class="hover:bg-slate-50/60 transition-colors">
+                                <td class="px-4 py-2.5">
+                                    <p class="font-semibold text-slate-700">{{ $ech->programme->ecole->nom ?? '–' }}</p>
+                                    <p class="text-[10px]" style="color:#A32D2D">Prévue le {{ $ech->date_prevue->format('d/m/Y') }} — {{ $ech->date_prevue->diffForHumans() }}</p>
+                                </td>
+                                <td class="px-4 py-2.5 text-right font-semibold" style="color:#A32D2D">
+                                    {{ number_format($ech->montant_prevu, 0, ',', ' ') }} F
+                                </td>
+                                <td class="px-4 py-2.5 text-right">
+                                    @if($ech->programme)
+                                        <a href="{{ route('programmes.releve.show', $ech->programme) }}" class="text-[10px] font-semibold" style="color:#185FA5">Voir le relevé</a>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
+
+        {{-- ══════════════════════════════════════
              GRILLE PRINCIPALE
         ══════════════════════════════════════ --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">

@@ -7,6 +7,7 @@ use App\Models\LigneLivraison;
 use App\Models\Livraison;
 use App\Models\Programme;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LivraisonController extends Controller
 {
@@ -98,12 +99,54 @@ class LivraisonController extends Controller
         return redirect()->route('programmes.livraisons.imprimer', $livraison)->with('success', 'Livraison enregistrée.');
     }
 
+    public function update(Request $request, Livraison $livraison)
+    {
+        $request->validate([
+            'date'=>'required|date',
+            'livreur'=>'nullable|string',
+            'quantites'=>'required|array'
+        ]);
+
+
+        DB::transaction(function() use($request,$livraison){
+
+            $livraison->update([
+                'date'=>$request->date,
+                'livreur'=>$request->livreur,
+            ]);
+
+
+            foreach($request->quantites as $ligneId=>$quantite){
+
+                LigneLivraison::where('id',$ligneId)
+                    ->where('livraison_id',$livraison->id)
+                    ->update([
+                        'quantite_livree'=>$quantite
+                    ]);
+            }
+
+
+            $livraison->update([
+                'quantite'=>$livraison->lignes()
+                    ->sum('quantite_livree')
+            ]);
+
+        });
+
+
+        return response()->json([
+            'success'=>true
+        ]);
+    }
+
     public function destroy(Livraison $livraison)
     {
-        $programme = $livraison->programme;
         $livraison->delete();
 
-        return redirect()->route('programmes.livraisons.index', $programme)->with('success', 'Livraison supprimée.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Livraison supprimée.'
+        ]);
     }
 
     /*

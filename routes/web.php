@@ -310,6 +310,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/programmes/{programme}/livraisons', [LivraisonController::class, 'index'])->name('programmes.livraisons.index');
     Route::get('/programmes/{programme}/livraisons/creer', [LivraisonController::class, 'create'])->name('programmes.livraisons.create');
     Route::post('/programmes/{programme}/livraisons', [LivraisonController::class, 'store'])->name('programmes.livraisons.store');
+    Route::put('/livraisons/{livraison}', [LivraisonController::class, 'update'])
+    ->name('programmes.livraisons.update');
     Route::get('/programmes/{programme}/suivi-livraisons', [LivraisonController::class, 'suivi'])->name('programmes.livraisons.suivi');
     Route::get('/livraisons/{livraison}/imprimer', [LivraisonController::class, 'imprimer'])->name('programmes.livraisons.imprimer');
     Route::delete('/livraisons/{livraison}', [LivraisonController::class, 'destroy'])->name('programmes.livraisons.destroy');

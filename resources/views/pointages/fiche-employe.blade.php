@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                {{-- NOUVEAU : Imprimer le bulletin de salaire de cet employé, pour la période affichée --}}
+                {{-- Imprimer le bulletin de salaire de cet employé, pour la période affichée --}}
                 <a href="{{ route('impressions.fiche-employe', array_filter([
                         'employe' => $employe->id,
                         'periode' => $periode,
