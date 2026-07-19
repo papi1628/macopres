@@ -96,6 +96,29 @@ class LivraisonController extends Controller
             ]);
         }
 
+        $programme->load('bonsCommande.lignes');
+
+
+        $totalCommande = $programme->bonsCommande
+            ->flatMap->lignes
+            ->sum('quantite');
+
+
+        $totalLivre = LigneLivraison::whereHas('ligneBonCommande.bonCommande', function($q) use($programme){
+                $q->where('programme_id',$programme->id);
+            })
+            ->sum('quantite_livree');
+
+
+        if($totalLivre >= $totalCommande){
+            $programme->update([
+                'statut'=>'terminee'
+            ]);
+        }
+
+        // Vérifie si toutes les quantités du programme sont livrées
+        $programme->verifierTerminaison();
+
         return redirect()->route('programmes.livraisons.imprimer', $livraison)->with('success', 'Livraison enregistrée.');
     }
 
@@ -131,6 +154,8 @@ class LivraisonController extends Controller
                     ->sum('quantite_livree')
             ]);
 
+            $livraison->programme->verifierTerminaison();
+
         });
 
 
@@ -141,7 +166,12 @@ class LivraisonController extends Controller
 
     public function destroy(Livraison $livraison)
     {
+        $programme = $livraison->programme;
+
         $livraison->delete();
+
+        // Recalcule le statut après suppression
+        $programme->verifierTerminaison();
 
         return response()->json([
             'success' => true,

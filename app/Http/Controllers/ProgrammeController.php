@@ -140,5 +140,7 @@ class ProgrammeController extends Controller
         $programme->update(['statut' => $request->statut]);
         return back()->with('success', 'Statut mis à jour.');
     }
+
+    
 }
 

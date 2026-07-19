@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\LigneLivraison;
 
 class Programme extends Model
 {
@@ -90,4 +90,35 @@ class Programme extends Model
         $total = $this->montantTotal();
         return $total > 0 ? (int) round(($this->montantPaye() / $total) * 100) : 0;
     }
+
+    public function estTermine()
+    {
+        return $this->statut === 'terminee';
+    }
+
+    public function verifierTerminaison()
+    {
+        $termine = true;
+
+        foreach ($this->bonsCommande as $bonCommande) {
+
+            foreach ($bonCommande->lignes as $ligne) {
+
+                $livre = LigneLivraison::where(
+                    'ligne_bon_commande_id',
+                    $ligne->id
+                )->sum('quantite_livree');
+
+                if ($livre < $ligne->quantite) {
+                    $termine = false;
+                    break 2;
+                }
+            }
+        }
+
+        $this->update([
+            'statut' => $termine ? 'terminee' : 'en_cours'
+        ]);
+    }
 }
+

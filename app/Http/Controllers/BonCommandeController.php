@@ -9,6 +9,7 @@ use App\Models\LigneBonCommande;
 use App\Models\Designation;
 use App\Http\Controllers\ContratController;
 use App\Http\Controllers\FactureController;
+use Illuminate\Support\Facades\Log;
 
 class BonCommandeController extends Controller
 {
@@ -65,6 +66,14 @@ class BonCommandeController extends Controller
     {
         $request->validate(['condition_paiement' => 'nullable|string|max:255']);
         $bonCommande->update(['condition_paiement' => $request->condition_paiement]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success'            => true,
+                'condition_paiement' => $bonCommande->condition_paiement,
+            ]);
+        }
+
         return back()->with('success', 'Condition de paiement mise à jour.');
     }
 
@@ -108,8 +117,9 @@ class BonCommandeController extends Controller
         $bonCommande->recalculerMontant();
 
         // Le contrat (BC1 uniquement) et la facture (chaque BC) se génèrent/actualisent automatiquement.
-        ContratController::synchroniser($bonCommande);
-        FactureController::synchroniser($bonCommande);
+        // Protégé : si la synchro échoue, l'article reste enregistré et la réponse JSON part quand même —
+        // sinon une erreur ici casse le fetch() côté front alors que la sauvegarde a réussi.
+        $this->synchroniserSansCasser($bonCommande);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -149,14 +159,48 @@ class BonCommandeController extends Controller
 
         $bonCommande = $ligneBonCommande->bonCommande;
         $bonCommande->recalculerMontant();
-        ContratController::synchroniser($bonCommande);
-        FactureController::synchroniser($bonCommande);
+        $this->synchroniserSansCasser($bonCommande);
 
         return response()->json([
             'success' => true,
             'ligne'   => $this->ligneAsArray($ligneBonCommande->fresh()),
             'montant' => $bonCommande->montant,
         ]);
+    }
+
+    public function destroyLigneBonCommande(Request $request, LigneBonCommande $ligneBonCommande)
+    {
+        $bonCommande = $ligneBonCommande->bonCommande;
+        $ligneBonCommande->delete();
+        $bonCommande->recalculerMontant();
+
+        $this->synchroniserSansCasser($bonCommande);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'montant' => $bonCommande->montant]);
+        }
+
+        return back()->with('success', 'Article supprimé du bon de commande.');
+    }
+
+    /**
+     * Appelle la synchronisation du contrat et de la facture sans jamais faire planter
+     * la réponse HTTP en cours : une erreur ici est journalisée mais n'empêche pas
+     * l'utilisateur de recevoir la confirmation que son article a bien été enregistré.
+     */
+    private function synchroniserSansCasser(BonCommande $bonCommande): void
+    {
+        try {
+            ContratController::synchroniser($bonCommande);
+        } catch (\Throwable $e) {
+            Log::error('Échec synchronisation contrat depuis BC ' . $bonCommande->id, ['message' => $e->getMessage()]);
+        }
+
+        try {
+            FactureController::synchroniser($bonCommande);
+        } catch (\Throwable $e) {
+            Log::error('Échec synchronisation facture depuis BC ' . $bonCommande->id, ['message' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -178,21 +222,5 @@ class BonCommandeController extends Controller
             'logo'             => (bool) $ligne->logo,
             'bon_commande_id'  => $ligne->bon_commande_id,
         ];
-    }
-
-    public function destroyLigneBonCommande(Request $request, LigneBonCommande $ligneBonCommande)
-    {
-        $bonCommande = $ligneBonCommande->bonCommande;
-        $ligneBonCommande->delete();
-        $bonCommande->recalculerMontant();
-
-        ContratController::synchroniser($bonCommande);
-        FactureController::synchroniser($bonCommande);
-
-        if ($request->wantsJson()) {
-            return response()->json(['success' => true, 'montant' => $bonCommande->montant]);
-        }
-
-        return back()->with('success', 'Article supprimé du bon de commande.');
     }
 }

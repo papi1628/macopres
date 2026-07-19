@@ -30,8 +30,26 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h2 class="text-[17px] font-bold text-slate-800">{{ $programme->ecole->nom }}</h2>
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:{{ $statutStyle[1] }}; color:{{ $statutStyle[2] }}">{{ $statutStyle[0] }}</span>
+                   
+                        {{--<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                            style="background:{{ $statutStyle[1] }}; color:{{ $statutStyle[2] }}">
+                            {{ $statutStyle[0] }}
+                        </span>
+                    
+                      <button
+                        id="btn-statut"
+                        onclick="changerStatutProgramme()"
+                        class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                        style="background:#EAF3DE; color:#3B6D11; border: 1px solid #3B6D11">
+                        
+                        {{ $programme->statut === 'en_cours'
+                            ? 'Marquer terminée'
+                            : 'Remettre en cours'
+                        }}
+
+                    </button> --}}
                 </div>
+                
                 <p class="text-[11px] text-slate-400 mt-1">
                     Programme {{ $programme->annee_scolaire }} · Créé le {{ $programme->created_at->format('d/m/Y') }}
                 </p>
@@ -455,5 +473,9 @@ function ligneForm() {
         },
     };
 }
+
+
+
+
 </script>
 </x-app-layout>
