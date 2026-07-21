@@ -43,9 +43,9 @@
                         <th class="text-left px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50">
+                <tbody id="assistants-table" class="divide-y divide-slate-50">
                     @forelse ($assistants as $assistant)
-                    <tr class="hover:bg-slate-50/60 transition-colors">
+                    <tr data-id="{{ $assistant->id }}" class="hover:bg-slate-50/60 transition-colors">
                         <td class="px-4 py-3 font-mono text-[11px] font-bold" style="color:#0C447C">{{ $assistant->employe?->matricule }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2.5">
@@ -154,7 +154,9 @@
             </div>
 
             {{-- Formulaire --}}
-            <form :action="editMode ? `/assistants/${form.id}` : '{{ route('assistants.store') }}'" method="POST" class="px-6 py-5 space-y-4">
+            <form
+            @submit.prevent="saveAssistant"
+            class="px-6 py-5 space-y-4">
                 @csrf
                 <template x-if="editMode">
                     <input type="hidden" name="_method" value="PUT">
@@ -241,13 +243,17 @@
             <div class="flex gap-3">
                 <button @click="deleteModal = false"
                         class="flex-1 h-9 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50">Annuler</button>
-                <form :action="'/assistants/' + deleteId" method="POST" class="flex-1">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="w-full h-9 rounded-xl text-sm font-bold text-white transition-colors hover:opacity-90"
-                            style="background:#A32D2D">Supprimer</button>
-                </form>
+                
+                <div class="flex-1">
+                    <button 
+                    @click="deleteAssistant()"
+                    class="w-full h-9 rounded-xl text-sm font-bold text-white transition-colors hover:opacity-90"
+                    style="background:#A32D2D">
+
+                        Supprimer
+
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -299,7 +305,9 @@ function assistantsApp() {
         },
 
         openEdit(assistant) {
+
             this.editMode = true;
+
             this.form = {
                 id: assistant.id,
                 prenom: assistant.employe.prenom,
@@ -308,10 +316,10 @@ function assistantsApp() {
                 date_embauche: assistant.employe.date_embauche
                     ? assistant.employe.date_embauche.split('T')[0]
                     : '',
-                date_embauche: assistant.employe.date_embauche ?? '',
                 salaire: assistant.employe.salaire ?? '',
                 login: assistant.login ?? '',
             };
+
             this.modal = true;
         },
 
@@ -340,7 +348,192 @@ function assistantsApp() {
             link.href = 'data:image/svg+xml;base64,' + this.qr;
             link.download = this.qrMatricule + '.svg';
             link.click();
-        }
+        },
+
+        async saveAssistant() {
+
+            const url = this.editMode
+                ? `/assistants/${this.form.id}`
+                : `/assistants`;
+
+            const data = new FormData();
+
+            data.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+            if (this.editMode) {
+                data.append('_method', 'PUT');
+            }
+
+            data.append('prenom', this.form.prenom);
+            data.append('nom', this.form.nom);
+            data.append('tel', this.form.tel);
+            data.append('login', this.form.login);
+            data.append('date_embauche', this.form.date_embauche);
+            data.append('salaire', this.form.salaire);
+
+            try {
+
+                const response = await fetch(url,{
+                    method:'POST',
+                    headers:{
+                        Accept:'application/json'
+                    },
+                    body:data
+                });
+
+                const json = await response.json();
+
+                if (!response.ok || !json.success) {
+                    throw json;
+                }
+
+                const assistant = json.assistant;
+
+
+                if(this.editMode){
+
+                    document
+                    .querySelector(`[data-id="${assistant.id}"]`)
+                    .outerHTML = this.rowAssistant(assistant);
+
+
+                }else{
+
+                    document
+                    .getElementById('assistants-table')
+                    .insertAdjacentHTML(
+                        'afterbegin',
+                        this.rowAssistant(assistant)
+                    );
+
+                }
+
+
+                this.modal = false;
+
+                this.form = {
+                    id: null,
+                    prenom: '',
+                    nom: '',
+                    tel: '',
+                    departement: 'administration',
+                    date_embauche: '',
+                    salaire: '',
+                    login: '',
+                };
+
+            } catch(e){
+                console.error(e);
+            }
+
+        },
+
+        rowAssistant(assistant) {
+
+            return `
+            <tr data-id="${assistant.id}" class="hover:bg-slate-50/60 transition-colors">
+
+                <td class="px-4 py-3 font-mono text-[11px] font-bold" style="color:#0C447C">
+                    ${assistant.employe.matricule}
+                </td>
+
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2.5">
+
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-bold text-white"
+                            style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                            ${assistant.employe.prenom.charAt(0).toUpperCase()}${assistant.employe.nom.charAt(0).toUpperCase()}
+                        </div>
+
+                        <div>
+                            <p class="font-semibold text-slate-800 text-[13px]">
+                                ${assistant.employe.prenom} ${assistant.employe.nom}
+                            </p>
+                        </div>
+
+                    </div>
+                </td>
+
+                <td class="px-4 py-3 text-slate-400 text-[12px]">
+                    ${assistant.employe.tel ?? '–'}
+                </td>
+
+                <td class="px-4 py-3 text-slate-400 text-[12px]">
+                    ${assistant.login}
+                </td>
+
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-1.5">
+                        {{-- QR --}}
+                        <button @click="openQR({{ $assistant->employe->id }})"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors hover:bg-blue-50" style="color:#185FA5" title="Badge QR"
+                        style="color:#185FA5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
+                        </button>
+                        {{-- Modifier --}}
+                        <button @click="openEdit({{ $assistant->toJson() }})"
+                                class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors hover:bg-amber-50 text-amber-500" title="Modifier">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
+                        </button>
+                        {{-- Supprimer --}}
+                        <button @click="confirmDelete({{ $assistant->id }}, '{{  $assistant->employe?->prenom  }} {{ $assistant->employe?->nom }}')"
+                                class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors hover:bg-red-50 text-red-400" title="Supprimer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                        </button>
+                    </div>
+                </td>
+
+            </tr>
+            `;
+        },
+
+        async deleteAssistant(){
+
+    try {
+
+        const response = await fetch(
+            `/assistants/${this.deleteId}`,
+            {
+                method:'DELETE',
+                headers:{
+                    'X-CSRF-TOKEN':
+                    document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
+
+                    Accept:'application/json'
+                }
+            }
+        );
+
+
+        const json = await response.json();
+
+
+                if(!response.ok || !json.success){
+
+                    throw json;
+
+                }
+
+
+                document
+                .querySelector(
+                    `[data-id="${this.deleteId}"]`
+                )
+                .remove();
+
+
+                this.deleteModal=false;
+
+
+            } catch(e){
+
+                console.error(e);
+
+            }
+
+        },
     };
 }
 </script>

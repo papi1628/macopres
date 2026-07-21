@@ -43,7 +43,7 @@
                 </div>
                 <div>
                     <h2 class="text-[16px] font-black text-slate-800 leading-tight capitalize">
-                        {{ $date->locale('fr')->translatedFormat('F Y') }}
+                        <span x-text="titreMois"></span>
                     </h2>
                     <p class="text-[10px] text-slate-400">Calendrier RH — MACOPRES</p>
                 </div>
@@ -53,8 +53,10 @@
             <div class="flex items-center gap-2 flex-wrap">
 
                 {{-- Sélecteur mois/année --}}
-                <form method="GET" action="{{ route('calendrier.index') }}" class="flex items-center gap-2">
-                    <select name="mois" onchange="this.form.submit()"
+                <div class="flex items-center gap-2">
+                    <select 
+                        x-model="mois"
+                        @change="changeMonth(mois, annee)"
                             class="h-9 border border-slate-200 rounded-xl px-3 pr-8 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
                         @foreach(range(1,12) as $m)
                             <option value="{{ $m }}" {{ $m == $date->month ? 'selected' : '' }}>
@@ -62,33 +64,43 @@
                             </option>
                         @endforeach
                     </select>
-                    <select name="annee" onchange="this.form.submit()"
+                    <select 
+                        x-model="annee"
+                        @change="changeMonth(mois, annee)"
                             class="h-9 border border-slate-200 rounded-xl px-3 pr-8 text-sm focus:outline-none focus:border-blue-400 bg-white text-slate-700">
                         @foreach(range(now()->year - 2, now()->year + 2) as $y)
                             <option value="{{ $y }}" {{ $y == $date->year ? 'selected' : '' }}>{{ $y }}</option>
                         @endforeach
                     </select>
-                </form>
+                </div>
 
                 {{-- Flèches --}}
                 <div class="flex items-center gap-1">
-                    <a href="{{ route('calendrier.index', ['mois' => $date->copy()->subMonth()->month, 'annee' => $date->copy()->subMonth()->year]) }}"
-                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-slate-600">
+                    <button 
+                    @click="
+                    let d = new Date(annee, mois-2, 1);
+                    changeMonth(d.getMonth()+1, d.getFullYear());"
+                        class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-slate-600">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                         </svg>
-                    </a>
-                    <a href="{{ route('calendrier.index', ['mois' => now()->month, 'annee' => now()->year]) }}"
-                       class="flex items-center h-9 px-3 rounded-xl text-[12px] font-semibold text-white transition-all hover:-translate-y-px"
-                       style="background:linear-gradient(135deg,#185FA5,#378ADD)">
+                    </button>
+                    <button
+                    @click="changeMonth({{ now()->month }}, {{ now()->year }})"
+                    class="flex items-center h-9 px-3 rounded-xl text-[12px] font-semibold text-white"
+                    style="background:linear-gradient(135deg,#185FA5,#378ADD)">
                         Aujourd'hui
-                    </a>
-                    <a href="{{ route('calendrier.index', ['mois' => $date->copy()->addMonth()->month, 'annee' => $date->copy()->addMonth()->year]) }}"
-                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-slate-600">
+                    </button>
+                    <button 
+                        @click="
+                        let d = new Date(annee, mois, 1);
+                        changeMonth(d.getMonth()+1, d.getFullYear());
+"
+                        class="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-slate-600">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                         </svg>
-                    </a>
+                    </button>
                 </div>
 
                 {{-- Bouton ajouter --}}
@@ -139,72 +151,98 @@
 
         {{-- Jours --}}
         <div class="grid grid-cols-7">
-            @foreach($jours as $index => $jour)
-                @php
-                    $isToday    = $jour['date']->isToday();
-                    $isDimanche = $jour['date']->isSunday();
-                    $isSamedi   = $jour['date']->isSaturday();
-                    $hasFerie   = $jour['evenements']->where('type', 'ferie')->count() > 0;
-                    $borderRight = ($index + 1) % 7 !== 0;
-                    $borderBottom = $index < count($jours) - 7;
-                @endphp
+
+            <template x-for="(jour,index) in jours" :key="jour.date">
 
                 <button
-                    type="button"
-                    @click="openDay('{{ $jour['date']->format('Y-m-d') }}', {{ $jour['evenements']->toJson() }})"
-                    class="relative min-h-[90px] sm:min-h-[110px] p-2 sm:p-3 text-left transition-all hover:z-10
-                           {{ $borderRight ? 'border-r border-slate-100' : '' }}
-                           {{ $borderBottom ? 'border-b border-slate-100' : '' }}
-                           {{ !$jour['dans_mois'] ? 'opacity-30' : '' }}
-                           {{ $isToday ? 'ring-2 ring-inset ring-blue-400' : '' }}
-                    "
-                    style="
-                        {{ $isToday ? 'background:#EFF6FF;' : '' }}
-                        {{ $hasFerie && !$isToday ? 'background:#F0F7FF;' : '' }}
-                        {{ ($isDimanche || $isSamedi) && !$isToday && !$hasFerie ? 'background:#F8FAFC;' : '' }}
-                        {{ !$isDimanche && !$isSamedi && !$isToday && !$hasFerie ? 'background:white;' : '' }}
-                    "
+                type="button"
+                @click="openDay(jour.date)"
+                class="relative min-h-[90px] sm:min-h-[110px] p-2 sm:p-3 text-left border-r border-b border-slate-100"
+                :class="{
+                'opacity-30': !jour.dans_mois,
+                'ring-2 ring-inset ring-blue-400': jour.aujourdhui
+                }"
+                :style="
+                jour.aujourdhui 
+                ? 'background:#EFF6FF'
+                : jour.weekend 
+                ? 'background:#F8FAFC'
+                : 'background:white'
+                "
                 >
-                    {{-- Numéro du jour --}}
+
+
                     <div class="flex items-start justify-between mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[12px] font-bold
-                                     {{ $isToday ? 'text-white' : ($isDimanche ? 'text-red-400' : 'text-slate-700') }}"
-                              style="{{ $isToday ? 'background:linear-gradient(135deg,#185FA5,#378ADD)' : '' }}">
-                            {{ $jour['date']->day }}
+
+                        <span 
+                            class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[12px] font-bold"
+                            :class="
+                                jour.aujourdhui 
+                                ? 'text-white' 
+                                : (jour.dimanche ? 'text-red-400' : 'text-slate-700')
+                            "
+                            :style="
+                                jour.aujourdhui 
+                                ? 'background:linear-gradient(135deg,#185FA5,#378ADD)' 
+                                : ''
+                            "
+                            x-text="jour.jour">
                         </span>
 
-                        @if($isToday)
-                            <span class="hidden sm:block text-[8px] font-bold px-1.5 py-0.5 rounded-full text-white"
-                                  style="background:#185FA5">
-                                Aujourd'hui
-                            </span>
-                        @endif
+
+                        <span 
+                            x-show="jour.aujourdhui"
+                            class="hidden sm:block text-[8px] font-bold px-1.5 py-0.5 rounded-full text-white"
+                            style="background:#185FA5">
+                            Aujourd'hui
+                        </span>
+
                     </div>
 
-                    {{-- Événements --}}
-                    <div class="space-y-0.5">
-                        @foreach($jour['evenements']->take(2) as $event)
+
+                    <div class="space-y-1 mt-1">
+
+                        <!-- événements -->
+                        <template x-for="event in jour.evenements.slice(0,2)" :key="event.id">
+
                             <div class="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-md font-semibold truncate"
-                                 style="background:{{ $event->badge['bg'] }}; color:{{ $event->badge['color'] }}">
-                                {{ $event->titre }}
+                                :style="`
+                                    background:${getBadge(event.type).bg};
+                                    color:${getBadge(event.type).color}
+                                `"
+                                x-text="event.titre">
                             </div>
-                        @endforeach
 
-                        @if($jour['evenements']->count() > 2)
+                        </template>
+
+
+                        <!-- + autres -->
+                        <template x-if="jour.evenements.length > 2">
+
                             <div class="text-[9px] text-slate-400 font-semibold">
-                                +{{ $jour['evenements']->count() - 2 }} autre(s)
+                                +<span x-text="jour.evenements.length - 2"></span> autre(s)
                             </div>
-                        @endif
 
-                        @if($isDimanche && $jour['evenements']->count() === 0)
+                        </template>
+
+
+                        <!-- dimanche vide -->
+                        <template x-if="jour.dimanche && jour.evenements.length === 0">
+
                             <div class="text-[9px] px-1.5 py-0.5 rounded-md font-medium"
-                                 style="background:#F1F5F9; color:#94A3B8">
+                                style="background:#F1F5F9; color:#94A3B8">
                                 Week-end
                             </div>
-                        @endif
+
+                        </template>
+
                     </div>
+
+
                 </button>
-            @endforeach
+
+            </template>
+
         </div>
     </div>
 
@@ -301,13 +339,10 @@
                         class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-xl">&times;</button>
             </div>
 
-            <form :action="editMode ? `/calendrier/${form.id}` : '{{ route('calendrier.store') }}'"
-                  method="POST"
-                  class="px-6 py-5 space-y-4">
+            <form @submit.prevent="saveEvent"
+                class="px-6 py-5 space-y-4">
                 @csrf
-                <template x-if="editMode">
-                    <input type="hidden" name="_method" value="PUT">
-                </template>
+                
 
                 {{-- Date --}}
                 <div>
@@ -400,15 +435,16 @@
                         class="flex-1 h-9 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50">
                     Annuler
                 </button>
-                <form :action="'/calendrier/' + deleteEvent?.id" method="POST" class="flex-1">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="w-full h-9 rounded-xl text-sm font-bold text-white hover:opacity-90"
-                            style="background:#A32D2D">
-                        Supprimer
+                <div class="flex-1">
+                    <button 
+                    @click="deleteEventAjax()"
+                    class="w-full h-9 rounded-xl text-sm font-bold text-white"
+                    style="background:#A32D2D">
+
+                    Supprimer
+
                     </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -421,12 +457,17 @@ function calendrierApp() {
     return {
         dayModal: false,
         createModal: false,
+        events: [],
         deleteModal: false,
         editMode: false,
         selectedDate: '',
         selectedDateLabel: '',
         selectedEvents: [],
         deleteEvent: null,
+        jours: @json($jours),
+        mois: {{ $date->month }},
+        annee: {{ $date->year }},
+        titreMois: "{{ $date->locale('fr')->translatedFormat('F Y') }}",
 
         typeOptions: [
             { value: 'ferie',     label: 'Férié',      bg: '#DBEAFE', color: '#1D4ED8' },
@@ -443,13 +484,32 @@ function calendrierApp() {
             est_paye: false,
         },
 
-        openDay(date, events) {
+        openDay(date) {
+
             this.selectedDate = date;
-            this.selectedDateLabel = new Date(date).toLocaleDateString('fr-FR', {
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-            });
-            this.selectedEvents = events;
+
+
+            this.selectedDateLabel = new Date(date)
+                .toLocaleDateString('fr-FR', {
+                    weekday:'long',
+                    day:'numeric',
+                    month:'long',
+                    year:'numeric'
+                });
+
+
+            const jour = this.jours.find(
+                j => j.date === date
+            );
+
+
+            this.selectedEvents = jour
+                ? jour.evenements
+                : [];
+
+
             this.dayModal = true;
+
         },
 
         openCreate(date) {
@@ -487,6 +547,296 @@ function calendrierApp() {
             const map = { ferie: 'Férié'/*, repos: 'Repos', evenement: 'Événement'*/ };
             return map[type] || 'Autre';
         },
+
+        async saveEvent(){
+
+            const url = this.editMode
+                ? `/calendrier/${this.form.id}`
+                : `/calendrier`;
+
+
+            const data = new FormData();
+
+
+            data.append('_token',
+                document.querySelector('meta[name="csrf-token"]').content
+            );
+
+
+            if(this.editMode){
+                data.append('_method','PUT');
+            }
+
+
+            data.append('date', this.form.date);
+            data.append('type', this.form.type);
+            data.append('titre', this.form.titre);
+            data.append('description', this.form.description);
+
+
+            if(this.form.est_paye){
+                data.append('est_paye',1);
+            }
+
+
+            try {
+
+
+                const response = await fetch(url,{
+                    method:'POST',
+                    headers:{
+                        Accept:'application/json'
+                    },
+                    body:data
+                });
+
+
+                const json = await response.json();
+
+
+                if(!response.ok || !json.success){
+                    throw json;
+                }
+
+
+                this.createModal=false;
+
+
+                await this.refreshCalendar();
+
+                this.selectedEvents = this.getEventsForDay(this.selectedDate);
+
+
+            }catch(e){
+
+                console.error(e);
+
+            }
+
+        },
+        async deleteEventAjax(){
+
+
+            try{
+
+
+                const response = await fetch(
+                    `/calendrier/${this.deleteEvent.id}`,
+                    {
+                        method:'DELETE',
+                        headers:{
+                            'X-CSRF-TOKEN':
+                            document.querySelector(
+                            'meta[name="csrf-token"]'
+                            ).content,
+
+                            Accept:'application/json'
+                        }
+                    }
+                );
+
+
+                const json = await response.json();
+
+
+                if(!response.ok || !json.success){
+                    throw json;
+                }
+
+
+                this.deleteModal=false;
+
+
+                await this.refreshCalendar();
+
+
+            }catch(e){
+
+                console.error(e);
+
+            }
+
+        },
+
+        async refreshCalendar(){
+
+            const response = await fetch(
+                `/calendrier/navigation?mois=${this.mois}&annee=${this.annee}`
+            );
+
+
+            const json = await response.json();
+
+
+            this.jours = json.jours;
+
+
+            this.events = [];
+
+            this.jours.forEach(jour => {
+
+                jour.evenements.forEach(event => {
+
+                    this.events.push({
+                        ...event,
+                        date:event.date.substring(0,10)
+                    });
+
+                });
+
+            });
+
+        },
+
+        getEventsForDay(date){
+
+            return this.events.filter(
+                e => e.date === date
+            );
+
+        },
+
+        init(){
+
+            this.events = @json(
+                collect($jours)
+                    ->pluck('evenements')
+                    ->flatten()
+                    ->values()
+            );
+
+        },
+
+        getEventsForDay(date){
+
+            return this.events.filter(event => {
+
+                return event.date.substring(0,10) === date;
+
+            });
+
+        },
+
+        getBadge(type){
+
+            const badges = {
+
+                ferie:{
+                    bg:'#DBEAFE',
+                    color:'#1D4ED8'
+                },
+
+                repos:{
+                    bg:'#F3F4F6',
+                    color:'#374151'
+                },
+
+                evenement:{
+                    bg:'#DCFCE7',
+                    color:'#166534'
+                }
+
+            };
+
+
+            return badges[type] ?? {
+                bg:'#F1F5F9',
+                color:'#64748B'
+            };
+
+        },
+
+        async loadCalendar(){
+
+            const response = await fetch(
+                `/calendrier/data?mois=${this.mois}&annee=${this.annee}`
+            );
+
+
+            const json = await response.json();
+
+
+            this.events = json.evenements.map(event=>({
+                ...event,
+                date:event.date.substring(0,10)
+            }));
+
+
+            this.titreMois=json.titre;
+
+
+        },
+
+        changeMonth(direction){
+
+            let date = new Date(
+                this.annee,
+                this.mois-1,
+                1
+            );
+
+
+            date.setMonth(
+                date.getMonth()+direction
+            );
+
+
+            this.mois=date.getMonth()+1;
+            this.annee=date.getFullYear();
+
+
+            this.loadCalendar();
+
+        },
+
+        goToday(){
+
+            let today=new Date();
+
+            this.mois=today.getMonth()+1;
+            this.annee=today.getFullYear();
+
+            this.loadCalendar();
+
+        },
+
+        async changeMonth(mois, annee){
+
+            const response = await fetch(
+                `/calendrier/navigation?mois=${mois}&annee=${annee}`
+            );
+
+
+            const data = await response.json();
+
+
+            this.mois = mois;
+            this.annee = annee;
+
+            this.titreMois = data.mois;
+
+            this.jours = data.jours;
+
+
+            // synchronisation événements
+            this.events = [];
+
+            data.jours.forEach(jour => {
+
+                jour.evenements.forEach(event => {
+
+                    this.events.push({
+                        ...event,
+                        date:event.date.substring(0,10)
+                    });
+
+                });
+
+            });
+
+        },
+
+
     };
 }
 </script>

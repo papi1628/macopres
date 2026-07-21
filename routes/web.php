@@ -174,6 +174,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/calendrier/ferie/{date}', [CalendrierController::class, 'jourFerie'])
         ->name('calendrier.ferie');
 
+    Route::get('/calendrier/events', [CalendrierController::class, 'events'])
+        ->name('calendrier.events');
+
+    Route::get('/calendrier/data', [CalendrierController::class,'calendarData'])
+        ->name('calendrier.data');
+
+    Route::get('/calendrier/navigation', [CalendrierController::class,'navigation'])
+        ->name('calendrier.navigation');
+
+    Route::get('/calendrier/ajax', [CalendrierController::class, 'ajax'])
+        ->name('calendrier.ajax');
 
     /*
     |--------------------------------------------------------------------------

@@ -22,24 +22,19 @@ class CalendrierController extends Controller
             ->get()
             ->groupBy(fn($e) => $e->date->format('Y-m-d'));
 
-        $jours = [];
-        for ($jour = $debutCalendrier->copy(); $jour <= $finCalendrier; $jour->addDay()) {
-            $dateKey = $jour->format('Y-m-d');
-            $jours[] = [
-                'date'       => $jour->copy(),
-                'dans_mois'  => $jour->month === $date->month,
-                'weekend'    => $jour->isSunday(),
-                'evenements' => $evenements[$dateKey] ?? collect(),
-            ];
-        }
+        $calendrier = $this->genererJours($mois,$annee);
 
-        return view('calendrier.index', compact('jours', 'date'));
+
+        return view('calendrier.index', [
+            'jours' => $calendrier['jours'],
+            'date' => $date
+        ]);
     }
 
     public function store(Request $request)
     {
-        // Seul le directeur peut créer
         abort_if(auth()->user()->role !== 'directeur', 403);
+
 
         $request->validate([
             'date'        => ['required', 'date'],
@@ -49,7 +44,8 @@ class CalendrierController extends Controller
             'est_paye'    => ['nullable'],
         ]);
 
-        Evenement::create([
+
+        $evenement = Evenement::create([
             'date'        => $request->date,
             'type'        => $request->type,
             'titre'       => $request->titre,
@@ -58,12 +54,17 @@ class CalendrierController extends Controller
             'created_by'  => auth()->id(),
         ]);
 
-        return back()->with('success', "Férié « {$request->titre} » ajouté au calendrier.");
+
+        return response()->json([
+            'success' => true,
+            'event' => $evenement
+        ]);
     }
 
     public function update(Request $request, Evenement $calendrier)
     {
         abort_if(auth()->user()->role !== 'directeur', 403);
+
 
         $request->validate([
             'date'        => ['required', 'date'],
@@ -72,6 +73,7 @@ class CalendrierController extends Controller
             'description' => ['nullable', 'string'],
             'est_paye'    => ['nullable'],
         ]);
+
 
         $calendrier->update([
             'date'        => $request->date,
@@ -81,17 +83,24 @@ class CalendrierController extends Controller
             'est_paye'    => $request->boolean('est_paye'),
         ]);
 
-        return back()->with('success', "Férié « {$request->titre} » mis à jour.");
+
+        return response()->json([
+            'success' => true,
+            'event' => $calendrier
+        ]);
     }
 
     public function destroy(Evenement $calendrier)
     {
         abort_if(auth()->user()->role !== 'directeur', 403);
 
-        $titre = $calendrier->titre;
+
         $calendrier->delete();
 
-        return back()->with('success', "Férié « {$titre} » supprimé.");
+
+        return response()->json([
+            'success'=>true
+        ]);
     }
 
     /**
@@ -109,4 +118,118 @@ class CalendrierController extends Controller
             'evenement' => $evenement,
         ]);
     }
+
+    public function events(Request $request)
+    {
+        $mois  = $request->get('mois', now()->month);
+        $annee = $request->get('annee', now()->year);
+
+        $date = Carbon::create($annee, $mois, 1);
+
+        $debut = $date->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY);
+        $fin   = $date->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY);
+
+
+        $evenements = Evenement::whereBetween('date', [$debut, $fin])
+            ->get();
+
+
+        return response()->json([
+            'events' => $evenements
+        ]);
+    }
+
+    public function calendarData(Request $request)
+    {
+        $mois  = $request->get('mois', now()->month);
+        $annee = $request->get('annee', now()->year);
+
+        $date = Carbon::create($annee, $mois, 1);
+
+        $debutCalendrier = $date->copy()
+            ->startOfMonth()
+            ->startOfWeek(Carbon::MONDAY);
+
+        $finCalendrier = $date->copy()
+            ->endOfMonth()
+            ->endOfWeek(Carbon::SUNDAY);
+
+
+        $evenements = Evenement::whereBetween(
+            'date',
+            [$debutCalendrier, $finCalendrier]
+        )
+        ->get();
+
+
+        return response()->json([
+            'mois' => $mois,
+            'annee' => $annee,
+            'titre' => $date->locale('fr')
+                ->translatedFormat('F Y'),
+
+            'evenements' => $evenements
+        ]);
+    }
+
+    private function genererJours($mois, $annee)
+    {
+        $date = Carbon::create($annee, $mois, 1);
+
+        $debutCalendrier = $date->copy()
+            ->startOfMonth()
+            ->startOfWeek(Carbon::MONDAY);
+
+        $finCalendrier = $date->copy()
+            ->endOfMonth()
+            ->endOfWeek(Carbon::SUNDAY);
+
+
+        $evenements = Evenement::whereBetween('date', [
+            $debutCalendrier,
+            $finCalendrier
+        ])
+        ->get()
+        ->groupBy(fn($e) => $e->date->format('Y-m-d'));
+
+
+        $jours = [];
+
+        for(
+            $jour = $debutCalendrier->copy();
+            $jour <= $finCalendrier;
+            $jour->addDay()
+        ){
+
+            $key = $jour->format('Y-m-d');
+
+            $jours[] = [
+                'date' => $jour->copy()->format('Y-m-d'),
+                'jour' => $jour->day,
+                'dans_mois' => $jour->month === $date->month,
+                'weekend' => $jour->isWeekend(),
+                'dimanche' => $jour->isSunday(),
+                'aujourdhui' => $jour->isToday(),
+                'evenements' => $evenements[$key] ?? [],
+            ];
+        }
+
+
+        return [
+            'mois' => $date->locale('fr')->translatedFormat('F Y'),
+            'jours' => $jours
+        ];
+    }
+
+    public function navigation(Request $request)
+    {
+        return response()->json(
+            $this->genererJours(
+                $request->mois,
+                $request->annee
+            )
+        );
+    }
+
+    
 }

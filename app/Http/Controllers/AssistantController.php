@@ -94,8 +94,13 @@ class AssistantController extends Controller
             'employe_id' => $employe->id,
         ]);
 
-        return redirect('/assistants')
-            ->with('success', 'Assistant créé');
+        $user->load('employe');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Assistant créé.',
+            'assistant' => $user,
+        ]);
     }
 
     // FORMULAIRE EDIT
@@ -137,8 +142,10 @@ class AssistantController extends Controller
             'salaire'         => $request->salaire,
         ]);
 
-        return redirect('/assistants')
-            ->with('success', 'Assistant modifié');
+        return response()->json([
+            'success' => true,
+            'assistant' => $assistant->load('employe')
+        ]);
     }
 
     // DELETE
@@ -150,6 +157,9 @@ class AssistantController extends Controller
 
         $assistant->delete();
 
-        return back()->with('success', 'Assistant supprimé');
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 }
